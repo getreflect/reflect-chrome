@@ -28,10 +28,3 @@ function turnFilteringOn(callback) {
 		});
 	});
 };
-
-function denyPage(tabId) {
-	// store tab info, restore some later time
-	// https://developer.chrome.com/extensions/tabs#method-create
-	// https://developer.chrome.com/extensions/tabs#method-get
-	chrome.tabs.discard(tabId);
-};

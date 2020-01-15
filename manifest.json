@@ -19,6 +19,17 @@
   "permissions": [
     "storage",
   	"tabs",
+    "<all_urls>",
   	"contextMenus"
+  ],
+  "content_scripts": [
+    {
+    "matches": [
+        "http://*/*",
+        "https://*/*"
+        ],
+    "js": ["blocker/content.js"],
+    "run_at": "document_end"         // pay attention to this line
+    }
   ]
 }
