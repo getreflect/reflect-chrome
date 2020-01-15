@@ -59,24 +59,6 @@ chrome.browserAction.onClicked.addListener(function toggleBlocking() {
 	});
 });
 
-chrome.tabs.onUpdated.addListener(function blockIfEnabled(tabId, info, tab) {
-	chrome.storage.sync.get('isEnabled', function(data) {
-		if (data.isEnabled) {
-			runPageThroughFilter(tab);
-		}
-	});
-});
-
-function runPageThroughFilter(tab) {
-	chrome.storage.sync.get('blockedSites', function(data) {
-		data.blockedSites.forEach(function(site) {
-			if (tab.url.includes(site)) {
-				denyPage(tab.id);
-			}
-		});
-	});
-};
-
 chrome.contextMenus.create({
 	id: "baFilterListMenu",
 	title: "Show filter list",
@@ -151,11 +133,6 @@ function addUrlToBlockedSites(url, tab) {
 		data.blockedSites.push(url); // urls.hostname
 		chrome.storage.sync.set({ 'blockedSites': data.blockedSites }, function(data) {
 			console.log(url + ' added to blocked sites');
-			chrome.storage.sync.get('isEnabled', function(data) {
-				if (data.isEnabled) {
-					denyPage(tab.id);
-				}
-			});
 		});
 	});
 }
