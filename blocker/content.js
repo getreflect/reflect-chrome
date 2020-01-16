@@ -7,8 +7,6 @@
 			chrome.storage.sync.get('blockedSites', function(data) {
 				data.blockedSites.forEach(function(site) {
 					if (window.location.href.includes(site)) {
-						oldDat = $(":root").html()
-
 						// get prompt page content
 						$.get(chrome.runtime.getURL("res/pages/prompt.html"), function(page) {
 							// refresh page with our blocker page
@@ -47,7 +45,7 @@
     						chrome.storage.sync.set({ 'cachedURL': url}, function() {
 								console.log('Set cached url to: ' + url);
 							});	
-						})
+						});
 					}
 				});
 			});

@@ -1,3 +1,4 @@
+// On install script --> TODO: onboarding flow
 chrome.runtime.onInstalled.addListener(function initialization() {
 	turnFilteringOff();
 
@@ -25,6 +26,7 @@ chrome.runtime.onInstalled.addListener(function initialization() {
 	});
 });
 
+// default list of blocked sites
 function addDefaultFilters() {
 	var blockedSites = ["://www.facebook.com", "://www.twitter.com", "://www.instagram.com", "://www.youtube.com"];
 	chrome.storage.sync.set({ 'blockedSites': blockedSites }, function() {
@@ -32,20 +34,35 @@ function addDefaultFilters() {
 	});
 };
 
+// Listen for changes in chrome storage
 chrome.storage.onChanged.addListener(function(changes, namespace) {
 	for (var key in changes) {
-		if (key == "cachedURL") {
-			var storageChange = changes[key];
-			console.log('Storage key "%s" in namespace "%s" changed. ' +
-			'Old value was "%s", new value is "%s".',
-				key,
-				namespace,
-				storageChange.oldValue,
-				storageChange.newValue);
+		// watch for intent change
+		if (key == "lastIntent") {
+			// send new intent to server
+			sendIntent = JSON.stringify({intent: storageChange.newValue});
+
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", "http://localhost:8081/", true);
+			xhr.setRequestHeader('Content-Type', 'application/json');
+			xhr.send(sendIntent);
+
+			xhr.onload = function() {
+				// on success -> redirect to cached url
+				if (xhr.status == 200) {
+					chrome.storage.sync.get('cachedURL', function(data) {
+						chrome.tabs.update({url: data.cachedURL});
+						console.log("Success! Redirecting to: " + data.cachedURL);
+					});
+				} else {
+					console.log("Failed. Remaining on page.");
+				}
+			}
 		}
 	}
 });
 
+// On Chrome startup, setup extension icons
 chrome.runtime.onStartup.addListener(function() {
 	chrome.storage.sync.get('isEnabled', function(data) {
 		if (data.isEnabled) {
@@ -60,65 +77,19 @@ chrome.runtime.onStartup.addListener(function() {
 	});
 });
 
+// Toggle filtering
 chrome.browserAction.onClicked.addListener(function toggleBlocking() {
-	chrome.storage.sync.get('timerData', function(data) {
-		chrome.storage.sync.get('isEnabled', function(data) {
-			if (data.isEnabled) {
-				turnFilteringOff();
-			}
-			else {
-				turnFilteringOn();
-			}
-		});
+	chrome.storage.sync.get('isEnabled', function(data) {
+		if (data.isEnabled) {
+			turnFilteringOff();
+		}
+		else {
+			turnFilteringOn();
+		}
 	});
 });
 
-chrome.contextMenus.create({
-	id: "baFilterListMenu",
-	title: "Show filter list",
-	contexts: ["browser_action"]
-});
-
-chrome.contextMenus.create({
-	id: "baAddToFilterList",
-	title: "Block this:",
-	contexts: ["browser_action"]
-});
-
-chrome.contextMenus.create({
-	parentId: "baAddToFilterList",
-	id: "baAddSiteToFilterList",
-	title: "Page",
-	contexts: ["browser_action"]
-});
-
-chrome.contextMenus.create({
-	parentId: "baAddToFilterList",
-	id: "baAddDomainToFilterList",
-	title: "Domain",
-	contexts: ["browser_action"]
-});
-
-chrome.contextMenus.create({
-	id: "pgAddToFilterList",
-	title: "Block this:",
-	contexts: ["page"]
-});
-
-chrome.contextMenus.create({
-	parentId: "pgAddToFilterList",
-	id: "pgAddSiteToFilterList",
-	title: "Page",
-	contexts: ["page"]
-});
-
-chrome.contextMenus.create({
-	parentId: "pgAddToFilterList",
-	id: "pgAddDomainToFilterList",
-	title: "Domain",
-	contexts: ["page"]
-});
-
+// Catch menu clicks (page context and browser action context)
 chrome.contextMenus.onClicked.addListener(function contextMenuHandler(info, tab) {
 	switch (info.menuItemId) {
 		case "baFilterListMenu":
@@ -142,6 +113,7 @@ chrome.contextMenus.onClicked.addListener(function contextMenuHandler(info, tab)
 	}
 });
 
+// push current site to storage
 function addUrlToBlockedSites(url, tab) {
 	chrome.storage.sync.get('blockedSites', function(data) {
 		data.blockedSites.push(url); // urls.hostname
