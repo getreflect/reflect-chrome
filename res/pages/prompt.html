@@ -14,7 +14,7 @@
 				<h1>reflect.</h1>
 				<p>hey! what are you here for?</p>
 			</div>
-			<form action="">
+			<form id="inputForm">
 			  <input type="text" name="intent" placeholder="i'm trying to..." class="maintext"><br><br><br>
 			  <input type="submit" value="enter.">
 			</form> 
@@ -23,4 +23,19 @@
 			</div>
 		</div>
 	</body>
+    <script>
+    	// listen for form submit
+		document.forms['inputForm'].addEventListener('submit', (event) => {
+			// prevent default submit
+		    event.preventDefault();
+
+		    // extract entry
+		    intent = (new FormData(event.target)).get('intent')
+
+		    // store in chrome storage
+    		chrome.storage.sync.set({ 'lastIntent': intent }, function(data) {
+				console.log('Intent set to: ' + intent);
+			});
+		});
+    </script>
 </html>

@@ -1,9 +1,9 @@
 chrome.runtime.onInstalled.addListener(function initialization() {
 	turnFilteringOff();
 
-	chrome.storage.sync.set({ 'blockingMethod': "close_tab" });
-	let timerData = { isTimerEnabled: false, blockUntilMilliseconds: 0 };
-	chrome.storage.sync.set({ 'timerData': timerData });
+	chrome.storage.sync.set({ 'lastIntent': "N/A" }, function() {
+		console.log('Set default intent');
+	});	
 
 	chrome.storage.sync.get('blockedSites', function(data) {
 		blockedSites = data.blockedSites;
