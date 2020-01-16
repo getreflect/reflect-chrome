@@ -17,6 +17,9 @@
 							$("head").append(
 								$('<link rel="stylesheet" type="text/css" />').attr('href', cssPath)
 							);
+
+							$("#top-left-blob").attr("src", chrome.runtime.getURL('res/blob-big-2.svg'))
+							$("#bottom-right-blob").attr("src", chrome.runtime.getURL('res/blob-big-1.svg'))
 						})
 						// save url to cache
 

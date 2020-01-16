@@ -1,11 +1,78 @@
+:root {
+	--white: #fff;
+	--shale: #576ca8;
+	--blue: #8b9ac0;
+}
+
+@font-face {
+  font-family: "circular";
+  src: url("chrome-extension://__MSG_@@extension_id__/res/circular.ttf");
+}
+
+@font-face {
+  font-family: "circular-lt";
+  src: url("chrome-extension://__MSG_@@extension_id__/res/circular-light.ttf");
+}
+
+h1 {
+	font-family: "circular" !important;
+	font-weight: 350;
+	font-size: 5.5em;
+	margin-bottom: 0;
+}
+
 p {
-	font-family: "Montserrat" !important;
-	font-weight: 400;
-	font-size: 1em;
+	font-family: "circular-lt" !important;
+	font-size: 1.5em;
+	margin-top: 0.2em;
+}
+
+.col-white {
+	color: var(--white);
+}
+
+.col-blue {
+	color: var(--blue);
+}
+
+.col-shale {
+	color: var(--shale);
+}
+
+#top-left-blob {
+	transform: translate(-20vw, -30vh);
+	width: 70vw;
+}
+
+#bottom-right-blob {
+	width: 80vw;
+	transform: translate(50vw, 55vh);
+}
+
+.blob {
+	position: fixed;
+	z-index: -9999;
+}
+
+#top-text {
+	position: fixed;
+	left: 12.5vw;
+	top: 7.5vh;
+	color: var(--white);
+}
+
+#bottom-right-logo-text {
+	position: fixed;
+	color: var(--white);
+	bottom: 3em;
+	right: 3em;
 }
 
 #reflect-main {
+	position: fixed;
+	top: 0;
+	left: 0;
 	width: 100vw;
 	height: 100vh;
-	background-color: #fe0;
+	background-color: var(--white);
 }
