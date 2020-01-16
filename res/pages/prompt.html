@@ -23,19 +23,4 @@
 			</div>
 		</div>
 	</body>
-    <script>
-    	// listen for form submit
-		document.forms['inputForm'].addEventListener('submit', (event) => {
-			// prevent default submit
-		    event.preventDefault();
-
-		    // extract entry
-		    intent = (new FormData(event.target)).get('intent')
-
-		    // store in chrome storage
-    		chrome.storage.sync.set({ 'lastIntent': intent }, function(data) {
-				console.log('Intent set to: ' + intent);
-			});
-		});
-    </script>
 </html>

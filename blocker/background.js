@@ -32,6 +32,20 @@ function addDefaultFilters() {
 	});
 };
 
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+	for (var key in changes) {
+		if (key == "cachedURL") {
+			var storageChange = changes[key];
+			console.log('Storage key "%s" in namespace "%s" changed. ' +
+			'Old value was "%s", new value is "%s".',
+				key,
+				namespace,
+				storageChange.oldValue,
+				storageChange.newValue);
+		}
+	}
+});
+
 chrome.runtime.onStartup.addListener(function() {
 	chrome.storage.sync.get('isEnabled', function(data) {
 		if (data.isEnabled) {

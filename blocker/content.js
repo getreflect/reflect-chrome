@@ -16,6 +16,20 @@
 						    document.write(page);
 						    document.close();
 
+					    	// add listener for form submit
+							document.forms['inputForm'].addEventListener('submit', (event) => {
+								// prevent default submit
+							    event.preventDefault();
+
+							    // extract entry
+							    intent = (new FormData(event.target)).get('intent')
+
+							    // store in chrome storage
+								chrome.storage.sync.set({ 'lastIntent': intent }, function(data) {
+									console.log('Intent set to: ' + intent);
+								});
+							});
+
 						    // load css
     						var cssPath = chrome.runtime.getURL('res/common.css');
 							$("head").append(
@@ -27,9 +41,13 @@
 							$("#bottom-right-blob").attr("src", chrome.runtime.getURL('res/blob-big-1.svg'))
 							$("#small-blob1").attr("src", chrome.runtime.getURL('res/blob-med.svg'))
 							$("#small-blob2").attr("src", chrome.runtime.getURL('res/blob-small.svg'))
-						})
 
-						// save url to cache
+							// save url to cache
+						    var url = location.href;
+    						chrome.storage.sync.set({ 'cachedURL': url}, function() {
+								console.log('Set cached url to: ' + url);
+							});	
+						})
 					}
 				});
 			});
