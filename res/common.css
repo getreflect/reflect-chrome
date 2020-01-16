@@ -1,0 +1,11 @@
+p {
+	font-family: "Montserrat" !important;
+	font-weight: 400;
+	font-size: 1em;
+}
+
+#reflect-main {
+	width: 100vw;
+	height: 100vh;
+	background-color: #fe0;
+}
