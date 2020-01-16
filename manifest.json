@@ -3,7 +3,7 @@
 
   "name": "reflect.",
   "description": "a mindful website blocker for the productive.",
-  "version": "0.0",
+  "version": "0.3",
   "options_page": "options/options.html",
 
   "background": {
@@ -11,16 +11,21 @@
   	"persistent": false
   },
   "icons": {
-    "16": "res/icon.png"
+    "16": "res/icon.png",
+    "48": "res/icon.png",
+    "128": "res/icon.png"
   },
   "browser_action": {
-	   "default_icon": "res/icon.png"
+    "default_icon": "res/icon.png",
+    "icons": {
+      "16": "res/icon.png"
+    }
   },
   "permissions": [
     "storage",
-  	"tabs",
+    "tabs",
     "<all_urls>",
-  	"contextMenus"
+    "contextMenus"
   ],
   "content_scripts": [
     {

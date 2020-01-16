@@ -37,6 +37,8 @@ function addDefaultFilters() {
 // Listen for changes in chrome storage
 chrome.storage.onChanged.addListener(function(changes, namespace) {
 	for (var key in changes) {
+		var storageChange = changes[key];
+
 		// watch for intent change
 		if (key == "lastIntent") {
 			// send new intent to server
