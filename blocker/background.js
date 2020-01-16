@@ -35,12 +35,12 @@ function addDefaultFilters() {
 chrome.runtime.onStartup.addListener(function() {
 	chrome.storage.sync.get('isEnabled', function(data) {
 		if (data.isEnabled) {
-			icon = 'blocker/res/on.png';
+			icon = 'res/on.png';
 		}
 		else if (!data.isEnabled) {
-			icon = 'blocker/res/off.png';
+			icon = 'res/off.png';
 		} else {
-			icon = 'blocker/res/icon.png';
+			icon = 'res/icon.png';
 		}
 		chrome.browserAction.setIcon({ path: { "16": icon } });
 	});

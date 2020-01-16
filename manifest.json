@@ -11,10 +11,10 @@
   	"persistent": false
   },
   "icons": {
-    "16": "blocker/res/icon.png"
+    "16": "res/icon.png"
   },
   "browser_action": {
-	   "default_icon": "blocker/res/icon.png"
+	   "default_icon": "res/icon.png"
   },
   "permissions": [
     "storage",
@@ -28,8 +28,11 @@
         "http://*/*",
         "https://*/*"
         ],
-    "js": ["blocker/content.js"],
+    "js": ["jquery-3.4.1.min.js", "blocker/content.js"],
     "run_at": "document_end"         // pay attention to this line
     }
+  ],
+  "web_accessible_resources": [
+    "res/*"
   ]
 }
