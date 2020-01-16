@@ -1,0 +1,23 @@
+{
+  "name": "reflect",
+  "version": "1.0.0",
+  "description": "",
+  "main": "blocker/background.js",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^6.8.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jackyzha0/reflect-chrome.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jackyzha0/reflect-chrome/issues"
+  },
+  "homepage": "https://github.com/jackyzha0/reflect-chrome#readme"
+}
