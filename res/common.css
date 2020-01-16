@@ -40,18 +40,62 @@ p {
 }
 
 #top-left-blob {
-	transform: translate(-20vw, -30vh);
 	width: 70vw;
+	left: -20vw;
+	top: -30vh;
 }
 
 #bottom-right-blob {
 	width: 80vw;
-	transform: translate(50vw, 55vh);
+	left:50vw;
+	top: 55vh;
+}
+
+#small-blob1 {
+	width: 20vw;
+	left:75vw;
+	top: -15vh;
+}
+
+#small-blob2 {
+	width: 15vw;
+	left:65vw;
+	top: 25vh;
 }
 
 .blob {
 	position: fixed;
 	z-index: -9999;
+}
+
+.maintext::placeholder {
+	font-family: "circular-lt"
+}
+
+form {
+	position: fixed;
+	left: 12.5vw;
+	top: 50vh;
+}
+
+input[type=text] {
+	width: 25vw;
+	border-radius: 20px;
+	border: 3px solid var(--shale);
+	padding: 0.5em 2em;
+	cursor: pointer;
+	font-size: 1em;
+}
+
+input[type=submit] {
+	border-radius: 20px;
+	background-color: var(--shale);
+	color: var(--white);
+	border: 0px;
+	padding: 0.5em 2em;
+	cursor: pointer;
+	font-family: "circular";
+	font-size: 1em;
 }
 
 #top-text {
