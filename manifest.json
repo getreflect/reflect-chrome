@@ -34,7 +34,7 @@
         "https://*/*"
         ],
     "js": ["jquery-3.4.1.min.js", "blocker/content.js"],
-    "run_at": "document_end"         // pay attention to this line
+    "run_at": "document_start"         // pay attention to this line
     }
   ],
   "web_accessible_resources": [

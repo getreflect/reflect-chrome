@@ -15,9 +15,9 @@ chrome.storage.sync.get('isEnabled', function(data) {
 });
 
 function iterWhitelist() {
-	console.log("YEET");
 	// iterate whitelisted sites
 	chrome.storage.sync.get('whitelistedSites', function(data) {
+		console.log(data.whitelistedSites);
 		data.whitelistedSites.forEach(function(whitelistobj) {
 
 			// check if site is whitelisted
