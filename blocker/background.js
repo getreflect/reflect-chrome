@@ -2,15 +2,26 @@
 chrome.runtime.onInstalled.addListener(function initialization() {
 	turnFilteringOff();
 
+
+	// set last intent to N/A
 	chrome.storage.sync.set({ 'lastIntent': "N/A" }, function() {
-		console.log('Set default intent');
+		console.log('Set default intent.');
 	});	
 
+	// set whitelist
+	var whitelist = [];
+	chrome.storage.sync.set({ 'whitelistedSites': whitelist }, function() {
+		console.log('Default whitelist sites have been set.');
+	});
+
+	// populate blocked sites
 	chrome.storage.sync.get('blockedSites', function(data) {
 		blockedSites = data.blockedSites;
+
+		// check to see if extension was installed before
 		if (typeof blockedSites != "undefined" && blockedSites != null
 			&& blockedSites.length != null && blockedSites.length > 0) {
-			var defaultListConfirm = confirm("Welcome back! \nDo you want to load your old filter list?");
+			var defaultListConfirm = confirm("Welcome back to reflect! \nDo you want to load your old filter list?");
 			if (defaultListConfirm) {
 				console.log("User confirmed keeping a previous filter list");
 			}
@@ -28,7 +39,7 @@ chrome.runtime.onInstalled.addListener(function initialization() {
 
 // default list of blocked sites
 function addDefaultFilters() {
-	var blockedSites = ["://www.facebook.com", "://www.twitter.com", "://www.instagram.com", "://www.youtube.com"];
+	var blockedSites = ["facebook.com", "twitter.com", "instagram.com", "youtube.com"];
 	chrome.storage.sync.set({ 'blockedSites': blockedSites }, function() {
 		console.log('Default blocked sites have been loaded.');
 	});
@@ -53,6 +64,13 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 				// on success -> redirect to cached url
 				if (xhr.status == 200) {
 					chrome.storage.sync.get('cachedURL', function(data) {
+						// add whitelist period for site
+						chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+							let urls = tabs.map(x => x.url);
+							var domain = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/)[1].replace("www.", "");
+							addUrlToWhitelistedSites(domain, 600);
+						});
+
 						chrome.tabs.update({url: data.cachedURL});
 						console.log("Success! Redirecting to: " + data.cachedURL);
 					});
@@ -108,7 +126,7 @@ chrome.contextMenus.onClicked.addListener(function contextMenuHandler(info, tab)
 		case "pgAddDomainToFilterList":
 			chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
 				let urls = tabs.map(x => x.url);
-				var domain = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/)[1];
+				var domain = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/)[1].replace("www.", "");
 				addUrlToBlockedSites(domain, tab);
 			});
 			break;
@@ -121,6 +139,20 @@ function addUrlToBlockedSites(url, tab) {
 		data.blockedSites.push(url); // urls.hostname
 		chrome.storage.sync.set({ 'blockedSites': data.blockedSites }, function(data) {
 			console.log(url + ' added to blocked sites');
+		});
+	});
+}
+
+// push current site to whitelist with time to whitelist
+function addUrlToWhitelistedSites(url, time) {
+	chrome.storage.sync.get('whitelistedSites', function(data) {
+		let whitelistObj = {
+			siteURL: url,
+			expiry: new Date(date.getTime() + minutes*60000)
+		}
+		data.whitelistedSites.push(url); // urls.hostname
+		chrome.storage.sync.set({ 'whitelistedSites': data.whitelistedSites }, function(data) {
+			console.log(url + ' added to whitelisted sites');
 		});
 	});
 }

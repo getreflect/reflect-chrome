@@ -40,27 +40,27 @@ p {
 }
 
 #top-left-blob {
-	width: 70vw;
-	left: -20vw;
-	top: -30vh;
+	width: 75em;
+	left: -28em;
+	top: -15em;
 }
 
 #bottom-right-blob {
-	width: 80vw;
-	left:50vw;
-	top: 55vh;
+	width: 75em;
+	left: 35em;
+	bottom: -30em;
 }
 
 #small-blob1 {
-	width: 20vw;
-	left:75vw;
-	top: -15vh;
+	width: 20em;
+	left:70em;
+	top: -8em;
 }
 
 #small-blob2 {
-	width: 15vw;
-	left:65vw;
-	top: 25vh;
+	width: 16em;
+	left:55em;
+	top: 25em;
 }
 
 .blob {
@@ -79,7 +79,7 @@ form {
 }
 
 input[type=text] {
-	width: 25vw;
+	width: 25em;
 	border-radius: 20px;
 	border: 3px solid var(--shale);
 	padding: 0.5em 2em;
