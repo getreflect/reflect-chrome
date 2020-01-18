@@ -9,7 +9,7 @@ chrome.runtime.onInstalled.addListener(function initialization() {
 	});	
 
 	// set whitelist
-	var whitelist = [];
+	var whitelist = JSON.stringify([]);
 	chrome.storage.sync.set({ 'whitelistedSites': whitelist }, function() {
 		console.log('Default whitelist sites have been set.');
 	});
@@ -68,7 +68,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 						chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
 							let urls = tabs.map(x => x.url);
 							var domain = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/)[1].replace("www.", "");
-							addUrlToWhitelistedSites(domain, 600);
+							addUrlToWhitelistedSites(domain, 5);
 						});
 
 						chrome.tabs.update({url: data.cachedURL});
@@ -143,15 +143,27 @@ function addUrlToBlockedSites(url, tab) {
 	});
 }
 
+function addMinutes(date, minutes) {
+    return new Date(date.getTime() + minutes*60000);
+}
+
 // push current site to whitelist with time to whitelist
-function addUrlToWhitelistedSites(url, time) {
+function addUrlToWhitelistedSites(url, minutes) {
 	chrome.storage.sync.get('whitelistedSites', function(data) {
-		let whitelistObj = {
-			siteURL: url,
-			expiry: new Date(date.getTime() + minutes*60000)
-		}
-		data.whitelistedSites.push(url); // urls.hostname
-		chrome.storage.sync.set({ 'whitelistedSites': data.whitelistedSites }, function(data) {
+
+		m = new Map(JSON.parse(data.whitelistedSites));
+
+		expiry = addMinutes(new Date(), minutes)
+
+		m[url] = expiry
+
+		console.log(m);
+
+		mstring = JSON.stringify(m)
+
+		console.log(mstring);
+
+		chrome.storage.sync.set({ 'whitelistedSites': mstring }, function(data) {
 			console.log(url + ' added to whitelisted sites');
 		});
 	});

@@ -17,22 +17,23 @@ chrome.storage.sync.get('isEnabled', function(data) {
 function iterWhitelist() {
 	// iterate whitelisted sites
 	chrome.storage.sync.get('whitelistedSites', function(data) {
-		console.log(data.whitelistedSites);
-		data.whitelistedSites.forEach(function(whitelistobj) {
+		strippedURL = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/)[1].replace("www.", "");
 
-			// check if site is whitelisted
-			if (window.location.href.includes(whitelistobj.siteURL)) {
-				// check if time ok
-				if ((new Date) < whitelistobj.expiry) {
-					
-				} else {
-					loadBlockPage()
-				}
+		// if url in whitelist
+		m = JSON.parse(data.whitelistedSites)
+
+		if (m.hasOwnProperty(strippedURL)) {
+			console.log("whitelisted");
+
+			// check if expired
+			if ((new Date) >= m[strippedURL]) {
+				console.log("expired");
+				loadBlockPage()
 			}
-		});
-
-		// no whitelist pages matched, block
-		loadBlockPage()
+		} else {
+			console.log("blocked");
+			loadBlockPage()
+		}
 	})
 }
 
