@@ -29,10 +29,7 @@
   ],
   "content_scripts": [
     {
-    "matches": [
-        "http://*/*",
-        "https://*/*"
-        ],
+    "matches": [ "*://*/*" ],
     "js": ["jquery-3.4.1.min.js", "blocker/content.js"],
     "run_at": "document_start"         // pay attention to this line
     }
