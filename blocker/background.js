@@ -156,12 +156,7 @@ function addUrlToWhitelistedSites(url, minutes) {
 		expiry = addMinutes(new Date(), minutes)
 
 		m[url] = expiry
-
-		console.log(m);
-
 		mstring = JSON.stringify(m)
-
-		console.log(mstring);
 
 		chrome.storage.sync.set({ 'whitelistedSites': mstring }, function(data) {
 			console.log(url + ' added to whitelisted sites');
