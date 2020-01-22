@@ -8,9 +8,9 @@ document.addEventListener('DOMContentLoaded', function renderFilterListTable() {
 
 function setDeleteButtonsListeners() {
 	let buttons = document.getElementsByTagName("button");
-	for (i = 0; i < buttons.length; i++) {
+	for (var i = 0; i < buttons.length; i++) {
 		buttons[i].addEventListener("click", function() {
-			let url = document.getElementById(this.id[0] + "site").innerHTML;
+			let url = document.getElementById(this.id[0] + "site")?.innerHTML;
 			let id = this.id[0];
 			chrome.storage.sync.get('blockedSites', function(data) {
 				let blockedSites = data.blockedSites;
@@ -24,19 +24,22 @@ function setDeleteButtonsListeners() {
 	};
 };
 
-function drawFilterListTable(callback) {
+function drawFilterListTable(callback: Function | undefined) {
 	chrome.storage.sync.get('blockedSites', function(data) {
 		let blockedSites = data.blockedSites;
 		let tableDiv = document.getElementById('filterList');
 		let table = "<table>";
 		let counter = 0;
-		blockedSites.forEach(function(site) {
+		blockedSites.forEach(function(site: string) {
 			table += "<tr><td id =\"" + counter + "site\">"
 				+ site + "</td><td><button id =\"" + counter++
 				+ "button\">&times;</button ></td></tr>";
 		});
 		table += "</table>";
-		document.getElementById('filterList').innerHTML = table;
+		let filterList = document.getElementById('filterList')
+		if (filterList != null) {
+			filterList.innerHTML = table;
+		}		
 
 		if (callback === undefined) {
 			callback = function() { };
@@ -46,19 +49,19 @@ function drawFilterListTable(callback) {
 };
 
 function setAddButtonListener() {
-	document.getElementById('urlInput').addEventListener("keypress", function(event) {
+	document.getElementById('urlInput')?.addEventListener("keypress", function(event) {
 		if (event.keyCode == ENTER_KEY_CODE) {
 			addUrlToFilterList();
 		}
 	});
 	let addButton = document.getElementById('add');
-	addButton.addEventListener('click', function() {
+	addButton?.addEventListener('click', function() {
 		addUrlToFilterList();
 	});
 };
 
 function addUrlToFilterList() {
-	let urlInput = document.getElementById('urlInput');
+	let urlInput = document.getElementById('urlInput') as HTMLFormElement;
 	if (urlInput.value != "") {
 		chrome.storage.sync.get('blockedSites', function(data) {
 			let blockedSites = data.blockedSites;

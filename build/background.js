@@ -101,7 +101,7 @@ chrome.browserAction.onClicked.addListener(function toggleBlocking() {
 chrome.contextMenus.onClicked.addListener(function contextMenuHandler(info, tab) {
     switch (info.menuItemId) {
         case "baFilterListMenu":
-            chrome.tabs.create({ url: 'options/options.html' });
+            chrome.tabs.create({ url: 'res/pages/options.html' });
             break;
         case "baAddSiteToFilterList":
         case "pgAddSiteToFilterList":
