@@ -1,3 +1,6 @@
+import { turnFilteringOff, turnFilteringOn } from "./toggling";
+import { addMinutes, cleanDomain } from "./util";
+
 // On install script --> TODO: onboarding flow
 chrome.runtime.onInstalled.addListener(function initialization() {
 	turnFilteringOff();
@@ -16,7 +19,7 @@ chrome.runtime.onInstalled.addListener(function initialization() {
 
 	// populate blocked sites
 	chrome.storage.sync.get('blockedSites', function(data) {
-		blockedSites = data.blockedSites;
+		let blockedSites = data.blockedSites;
 
 		// check to see if extension was installed before
 		if (typeof blockedSites != "undefined" && blockedSites != null
@@ -53,7 +56,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 		// watch for intent change
 		if (key == "lastIntent") {
 			// send new intent to server
-			sendIntent = JSON.stringify({intent: storageChange.newValue});
+			let sendIntent = JSON.stringify({intent: storageChange.newValue});
 
 			var xhr = new XMLHttpRequest();
 			xhr.open("POST", "http://localhost:8081/", true);
@@ -67,7 +70,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 						// add whitelist period for site
 						chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
 							let urls = tabs.map(x => x.url);
-							var domain = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/)[1].replace("www.", "");
+							var domain = cleanDomain(urls)
 							addUrlToWhitelistedSites(domain, 5);
 						});
 
@@ -76,6 +79,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 					});
 				} else {
 					console.log("Failed. Remaining on page.");
+					// show blocked page 
 				}
 			}
 		}
@@ -85,13 +89,12 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 // On Chrome startup, setup extension icons
 chrome.runtime.onStartup.addListener(function() {
 	chrome.storage.sync.get('isEnabled', function(data) {
+		let icon = 'res/icon.png';
 		if (data.isEnabled) {
 			icon = 'res/on.png';
 		}
 		else if (!data.isEnabled) {
 			icon = 'res/off.png';
-		} else {
-			icon = 'res/icon.png';
 		}
 		chrome.browserAction.setIcon({ path: { "16": icon } });
 	});
@@ -126,7 +129,7 @@ chrome.contextMenus.onClicked.addListener(function contextMenuHandler(info, tab)
 		case "pgAddDomainToFilterList":
 			chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
 				let urls = tabs.map(x => x.url);
-				var domain = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/)[1].replace("www.", "");
+				let domain = cleanDomain(urls)
 				addUrlToBlockedSites(domain, tab);
 			});
 			break;
@@ -134,31 +137,29 @@ chrome.contextMenus.onClicked.addListener(function contextMenuHandler(info, tab)
 });
 
 // push current site to storage
-function addUrlToBlockedSites(url, tab) {
+function addUrlToBlockedSites(url: string | undefined, tab: object | undefined) {
 	chrome.storage.sync.get('blockedSites', function(data) {
 		data.blockedSites.push(url); // urls.hostname
-		chrome.storage.sync.set({ 'blockedSites': data.blockedSites }, function(data) {
+		chrome.storage.sync.set({ 'blockedSites': data.blockedSites }, function() {
 			console.log(url + ' added to blocked sites');
 		});
 	});
 }
 
-function addMinutes(date, minutes) {
-    return new Date(date.getTime() + minutes*60000);
-}
 
 // push current site to whitelist with time to whitelist
-function addUrlToWhitelistedSites(url, minutes) {
+function addUrlToWhitelistedSites(url: string, minutes: number) {
 	chrome.storage.sync.get('whitelistedSites', function(data) {
 
-		m = new Map(JSON.parse(data.whitelistedSites));
+		let m: Map<string, Date> = new Map(JSON.parse(data.whitelistedSites));
 
-		expiry = addMinutes(new Date(), minutes)
+		let expiry: Date = addMinutes(new Date(), minutes)
 
-		m[url] = expiry
-		mstring = JSON.stringify(m)
+		m.set(url, expiry)
 
-		chrome.storage.sync.set({ 'whitelistedSites': mstring }, function(data) {
+		let mstring = JSON.stringify(m)
+
+		chrome.storage.sync.set({ 'whitelistedSites': mstring }, function() {
 			console.log(url + ' added to whitelisted sites');
 		});
 	});

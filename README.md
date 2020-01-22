@@ -24,3 +24,13 @@ Help! How do I get Python set up?
 * On Windows, follow the instructions [here.](https://www.python.org/downloads/release/python-376/) Make sure you select the `Add Python to PATH` option!
 * On Mac, if you have Homebrew installed, just do `brew install python`
 * Afterwards, do `pip install flask` to install Flask
+
+<br>
+
+I'm getting errors about `Cannot find namespace/name chrome`.
+* Install the `@types` library by doing `npm i @types/chrome` in the directory.
+
+<br>
+
+I'm getting errors about `Cannot find name $`.
+* Install the JQuery support by doing `npm i @types/jquery` in the directory.

@@ -7,7 +7,7 @@
   "options_page": "options/options.html",
 
   "background": {
-    "scripts": ["blocker/background.js", "blocker/toggling.js"],
+    "scripts": ["build/background.js", "build/toggling.js"],
   	"persistent": false
   },
   "icons": {
@@ -30,7 +30,7 @@
   "content_scripts": [
     {
     "matches": [ "*://*/*" ],
-    "js": ["jquery-3.4.1.min.js", "blocker/content.js"],
+    "js": ["jquery-3.4.1.min.js", "build/content.js"],
     "run_at": "document_start"         // pay attention to this line
     }
   ],
