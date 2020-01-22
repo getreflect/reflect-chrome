@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 chrome.storage.sync.get('isEnabled', function (data) {
     // check to see if reflect is enabled
     if (data.isEnabled) {
@@ -17,12 +15,12 @@ chrome.storage.sync.get('isEnabled', function (data) {
 function iterWhitelist() {
     // iterate whitelisted sites
     chrome.storage.sync.get('whitelistedSites', function (data) {
-        var activeURL = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/);
+        let activeURL = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/);
         // activeURL exists
         if (activeURL != null) {
-            var strippedURL = activeURL[1].replace("www.", "");
+            let strippedURL = activeURL[1].replace("www.", "");
             // if url in whitelist
-            var m = JSON.parse(data.whitelistedSites);
+            let m = JSON.parse(data.whitelistedSites);
             if (m.hasOwnProperty(strippedURL)) {
                 console.log("whitelisted");
                 // check if expired
@@ -47,16 +45,16 @@ function loadBlockPage() {
         document.open();
         document.write(page);
         document.close();
-        var f = document.forms.namedItem("inputForm");
+        let f = document.forms.namedItem("inputForm");
         // add listener for form submit
-        (_a = f) === null || _a === void 0 ? void 0 : _a.addEventListener('submit', function (event) {
+        (_a = f) === null || _a === void 0 ? void 0 : _a.addEventListener('submit', (event) => {
             // prevent default submit
             event.preventDefault();
             // extract entry
-            var targ = event.target;
-            var intent = (new FormData(targ)).get('intent');
+            let targ = event.target;
+            let intent = (new FormData(targ)).get('intent');
             // store in chrome storage
-            chrome.storage.sync.set({ 'lastIntent': intent }, function () {
+            chrome.storage.sync.set({ 'lastIntent': intent }, () => {
                 console.log('Intent set to: ' + intent);
             });
         });

@@ -1,5 +1,3 @@
-import { cleanDomain } from "./util";
-
 chrome.storage.sync.get('isEnabled', function(data) {
 	// check to see if reflect is enabled
 	if (data.isEnabled) {

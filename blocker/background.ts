@@ -1,6 +1,3 @@
-import { turnFilteringOff, turnFilteringOn } from "./toggling";
-import { addMinutes, cleanDomain } from "./util";
-
 // On install script --> TODO: onboarding flow
 chrome.runtime.onInstalled.addListener(function initialization() {
 	turnFilteringOff();
@@ -164,3 +161,18 @@ function addUrlToWhitelistedSites(url: string, minutes: number) {
 		});
 	});
 }
+
+function turnFilteringOff() {
+	chrome.storage.sync.set({ 'isEnabled': false }, function() {
+		chrome.browserAction.setIcon({ path: { "16": 'res/off.png' } });
+		console.log('Filtering disabled');
+	});
+}
+
+function turnFilteringOn() {
+	chrome.storage.sync.set({ 'isEnabled': true }, function() {
+		chrome.browserAction.setIcon({ path: 'res/on.png' }, function() {
+			console.log('Filtering enabled.');
+		});
+	});
+};

@@ -7,7 +7,7 @@
   "options_page": "options/options.html",
 
   "background": {
-    "scripts": ["build/background.js", "build/toggling.js"],
+    "scripts": ["build/background.js", "build/contextMenus.js", "build/util.js"],
   	"persistent": false
   },
   "icons": {
