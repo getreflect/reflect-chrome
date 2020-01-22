@@ -16,7 +16,7 @@ chrome.runtime.onInstalled.addListener(function initialization() {
 
 	// populate blocked sites
 	chrome.storage.sync.get('blockedSites', function(data) {
-		let blockedSites = data.blockedSites;
+		let blockedSites: string[] = data.blockedSites;
 
 		// check to see if extension was installed before
 		if (typeof blockedSites != "undefined" && blockedSites != null
