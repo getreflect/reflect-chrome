@@ -56,7 +56,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 			let sendIntent = JSON.stringify({intent: storageChange.newValue});
 
 			var xhr = new XMLHttpRequest();
-			xhr.open("POST", "http://localhost:8081/", true);
+			xhr.open("POST", "https://reflect-nlp.herokuapp.com/", true);
 			xhr.setRequestHeader('Content-Type', 'application/json');
 			xhr.send(sendIntent);
 

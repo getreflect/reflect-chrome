@@ -7,10 +7,11 @@ First, ensure you have [TypeScript](https://www.typescriptlang.org/) installed. 
 ## Getting set up
 0. Open CMD and navigate to a convenient folder through `cd`
 1. Clone the repository by doing `git clone https://github.com/jackyzha0/reflect-chrome.git`
-2. Load the extension by opening Chrome first turning on developer mode in extensions `Settings > Extensions`.
-3. Then, click `Load unpacked extension` and select the `reflect-chrome` folder.
-4. To run the Python web server, make sure you have Python and Flask installed (see FAQ for more details). Then, clone the web server repository by doing `git clone https://github.com/jackyzha0/reflect-nlp.git` in your project folder.
-5. Next, run the web server by doing `python server.py`
+2. Compile the TypeScript to JavaScript by running `tsc`.
+3. Load the extension by opening Chrome first turning on developer mode in extensions `Settings > Extensions`.
+4. Then, click `Load unpacked extension` and select the `reflect-chrome` folder.
+5. To run the Python web server, make sure you have Python and Flask installed (see FAQ for more details). Then, clone the web server repository by doing `git clone https://github.com/jackyzha0/reflect-nlp.git` in your project folder.
+6. Next, run the web server by doing `python server.py`
 
 ## Git Workflow
 0. Get an up to date version of the remote by doing `git pull`
