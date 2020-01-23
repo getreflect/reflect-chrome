@@ -3,7 +3,7 @@ chrome.storage.sync.get('isEnabled', function(data) {
 	if (data.isEnabled) {
 		// check for is blocked
 		chrome.storage.sync.get('blockedSites', function(data) {
-			data.blockedSites.forEach(function(site) {
+			data.blockedSites.forEach(function(site: string) {
 
 				// is blocked
 				if (window.location.href.includes(site)) {
@@ -17,23 +17,29 @@ chrome.storage.sync.get('isEnabled', function(data) {
 function iterWhitelist() {
 	// iterate whitelisted sites
 	chrome.storage.sync.get('whitelistedSites', function(data) {
-		strippedURL = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/)[1].replace("www.", "");
+		let activeURL : RegExpMatchArray | null = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/)
 
-		// if url in whitelist
-		m = JSON.parse(data.whitelistedSites)
+		// activeURL exists
+		if (activeURL != null) {
+			let strippedURL: string = activeURL[1].replace("www.", "");
 
-		if (m.hasOwnProperty(strippedURL)) {
-			console.log("whitelisted");
+			// if url in whitelist
+			let m: {[key: string]: Date} = JSON.parse(data.whitelistedSites)
 
-			// check if expired
-			if ((new Date) >= m[strippedURL]) {
-				console.log("expired");
+			if (m.hasOwnProperty(strippedURL)) {
+				console.log("whitelisted");
+
+				// check if expired
+				if ((new Date) >= m[strippedURL]) {
+					console.log("expired");
+					loadBlockPage()
+				}
+			} else {
+				console.log("blocked");
 				loadBlockPage()
 			}
-		} else {
-			console.log("blocked");
-			loadBlockPage()
 		}
+		// otherwise do nothing
 	})
 }
 
@@ -45,16 +51,19 @@ function loadBlockPage() {
 	    document.write(page);
 	    document.close();
 
+	    let f: HTMLFormElement | null = document.forms.namedItem("inputForm");
+
     	// add listener for form submit
-		document.forms['inputForm'].addEventListener('submit', (event) => {
+		f?.addEventListener('submit', (event) => {
 			// prevent default submit
 		    event.preventDefault();
 
 		    // extract entry
-		    intent = (new FormData(event.target)).get('intent')
+		    let targ: HTMLFormElement | null = event.target as HTMLFormElement;
+		    let intent = (new FormData(targ)).get('intent')
 
 		    // store in chrome storage
-			chrome.storage.sync.set({ 'lastIntent': intent }, function(data) {
+			chrome.storage.sync.set({ 'lastIntent': intent }, () => {
 				console.log('Intent set to: ' + intent);
 			});
 		});

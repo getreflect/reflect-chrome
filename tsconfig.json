@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "noImplicitAny": false,
+        "sourceMap": false,
+        "outDir": "build",
+        "noEmitOnError": true,
+        "typeRoots": [ "node_modules/@types" ]
+    }
+}
