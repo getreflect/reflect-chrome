@@ -4,7 +4,7 @@
   "name": "reflect.",
   "description": "a mindful website blocker for the productive.",
   "version": "0.3",
-  "options_page": "options/options.html",
+  "options_page": "res/pages/options.html",
 
   "background": {
     "scripts": ["build/background.js", "build/contextMenus.js", "build/util.js"],
