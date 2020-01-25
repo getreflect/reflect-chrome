@@ -38,7 +38,7 @@ chrome.runtime.onInstalled.addListener(function initialization() {
 });
 
 // default list of blocked sites
-function addDefaultFilters() {
+function addDefaultFilters() : void {
 	var blockedSites = ["facebook.com", "twitter.com", "instagram.com", "youtube.com"];
 	chrome.storage.sync.set({ 'blockedSites': blockedSites }, function() {
 		console.log('Default blocked sites have been loaded.');
@@ -134,7 +134,7 @@ chrome.contextMenus.onClicked.addListener(function contextMenuHandler(info, tab)
 });
 
 // push current site to storage
-function addUrlToBlockedSites(url: string | undefined, tab: object | undefined) {
+function addUrlToBlockedSites(url: string | undefined, tab: object | undefined) : void {
 	chrome.storage.sync.get('blockedSites', function(data) {
 		data.blockedSites.push(url); // urls.hostname
 		chrome.storage.sync.set({ 'blockedSites': data.blockedSites }, function() {
@@ -145,7 +145,7 @@ function addUrlToBlockedSites(url: string | undefined, tab: object | undefined) 
 
 
 // push current site to whitelist with time to whitelist
-function addUrlToWhitelistedSites(url: string, minutes: number) {
+function addUrlToWhitelistedSites(url: string, minutes: number) : void {
 	chrome.storage.sync.get('whitelistedSites', function(data) {
 
 		let m: {[key: string]: Date} = JSON.parse(data.whitelistedSites)
