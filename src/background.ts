@@ -9,7 +9,7 @@ chrome.runtime.onInstalled.addListener(function initialization() {
 	});	
 
 	// set whitelist
-	var whitelist = JSON.stringify([]);
+	var whitelist: {[key: string]: Date} = {};
 	chrome.storage.sync.set({ 'whitelistedSites': whitelist }, function() {
 		console.log('Default whitelist sites have been set.');
 	});
@@ -148,7 +148,7 @@ function addUrlToBlockedSites(url: string | undefined, tab: object | undefined) 
 function addUrlToWhitelistedSites(url: string, minutes: number) {
 	chrome.storage.sync.get('whitelistedSites', function(data) {
 
-		let m: {[key: string]: Date} = JSON.parse(data.whitelistedSites)
+		let m: {[key: string]: Date} = data.whitelistedSites
 
 		let expiry: Date = addMinutes(new Date(), minutes)
 

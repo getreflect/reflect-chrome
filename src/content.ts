@@ -24,7 +24,7 @@ function iterWhitelist() {
 			let strippedURL: string = activeURL[1].replace("www.", "");
 
 			// if url in whitelist
-			let m: {[key: string]: Date} = JSON.parse(data.whitelistedSites)
+			let m: {[key: string]: Date} = data.whitelistedSites
 
 			if (m.hasOwnProperty(strippedURL)) {
 				console.log("whitelisted");
