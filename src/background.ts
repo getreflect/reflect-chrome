@@ -148,15 +148,13 @@ function addUrlToBlockedSites(url: string | undefined, tab: object | undefined) 
 function addUrlToWhitelistedSites(url: string, minutes: number) {
 	chrome.storage.sync.get('whitelistedSites', function(data) {
 
-		let m: Map<string, Date> = new Map(JSON.parse(data.whitelistedSites));
+		let m: {[key: string]: Date} = JSON.parse(data.whitelistedSites)
 
 		let expiry: Date = addMinutes(new Date(), minutes)
 
-		m.set(url, expiry)
+		m[url] = expiry;
 
-		let mstring = JSON.stringify(m)
-
-		chrome.storage.sync.set({ 'whitelistedSites': mstring }, function() {
+		chrome.storage.sync.set({ 'whitelistedSites': m }, function() {
 			console.log(url + ' added to whitelisted sites');
 		});
 	});
