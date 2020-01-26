@@ -1,9 +1,9 @@
-chrome.storage.sync.get('isEnabled', function(data) {
+chrome.storage.sync.get('isEnabled', (data) => {
 	// check to see if reflect is enabled
 	if (data.isEnabled) {
 		// check for is blocked
-		chrome.storage.sync.get('blockedSites', function(data) {
-			data.blockedSites.forEach(function(site: string) {
+		chrome.storage.sync.get('blockedSites', (data) => {
+			data.blockedSites.forEach((site: string) => {
 
 				// is blocked
 				if (window.location.href.includes(site)) {
@@ -16,7 +16,7 @@ chrome.storage.sync.get('isEnabled', function(data) {
 
 function iterWhitelist() : void {
 	// iterate whitelisted sites
-	chrome.storage.sync.get('whitelistedSites', function(data) {
+	chrome.storage.sync.get('whitelistedSites', (data) => {
 		let activeURL : RegExpMatchArray | null = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/)
 
 		// activeURL exists
@@ -45,7 +45,7 @@ function iterWhitelist() : void {
 
 function loadBlockPage() : void {
 	// get prompt page content
-	$.get(chrome.runtime.getURL("res/pages/prompt.html"), function(page) {
+	$.get(chrome.runtime.getURL("res/pages/prompt.html"), (page) => {
 		// refresh page with our blocker page
         document.open();
 	    document.write(page);
@@ -82,7 +82,7 @@ function loadBlockPage() : void {
 
 		// save url to cache
 	    var url: string = location.href;
-		chrome.storage.sync.set({ 'cachedURL': url}, function() {
+		chrome.storage.sync.set({ 'cachedURL': url}, () => {
 			console.log('Set cached url to: ' + url);
 		});	
 	});

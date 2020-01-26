@@ -4,18 +4,18 @@ chrome.runtime.onInstalled.addListener(function initialization() {
 
 
 	// set last intent to N/A
-	chrome.storage.sync.set({ 'lastIntent': "N/A" }, function() {
+	chrome.storage.sync.set({ 'lastIntent': "N/A" }, () => {
 		console.log('Set default intent.');
 	});	
 
 	// set whitelist
 	var whitelist: {[key: string]: Date} = {};
-	chrome.storage.sync.set({ 'whitelistedSites': whitelist }, function() {
+	chrome.storage.sync.set({ 'whitelistedSites': whitelist }, () => {
 		console.log('Default whitelist sites have been set.');
 	});
 
 	// populate blocked sites
-	chrome.storage.sync.get('blockedSites', function(data) {
+	chrome.storage.sync.get('blockedSites', (data) => {
 		let blockedSites: string[] = data.blockedSites;
 
 		// check to see if extension was installed before
@@ -38,15 +38,15 @@ chrome.runtime.onInstalled.addListener(function initialization() {
 });
 
 // default list of blocked sites
-function addDefaultFilters() : void{
+function addDefaultFilters() : void {
 	var blockedSites: string[] = ["facebook.com", "twitter.com", "instagram.com", "youtube.com"];
-	chrome.storage.sync.set({ 'blockedSites': blockedSites }, function() {
+	chrome.storage.sync.set({ 'blockedSites': blockedSites }, () => {
 		console.log('Default blocked sites have been loaded.');
 	});
 };
 //TODO
 // Listen for changes in chrome storage
-chrome.storage.onChanged.addListener(function(changes, namespace) { 
+chrome.storage.onChanged.addListener((changes, namespace) => { 
 	for (var key in changes) {
 		var storageChange: chrome.storage.StorageChange = changes[key]; 
 
@@ -63,9 +63,9 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 			xhr.onload = function() {
 				// on success -> redirect to cached url
 				if (xhr.status == 200) {
-					chrome.storage.sync.get('cachedURL', function(data) {
+					chrome.storage.sync.get('cachedURL', (data) => {
 						// add whitelist period for site
-						chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+						chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 							let urls: string[] = tabs.map(x => x.url);
 							var domain: string = cleanDomain(urls)
 							addUrlToWhitelistedSites(domain, 5);
@@ -84,8 +84,8 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 });
 
 // On Chrome startup, setup extension icons
-chrome.runtime.onStartup.addListener(function() {
-	chrome.storage.sync.get('isEnabled', function(data) {
+chrome.runtime.onStartup.addListener( () => {
+	chrome.storage.sync.get('isEnabled', (data) => {
 		let icon: string = 'res/icon.png';
 		if (data.isEnabled) {
 			icon = 'res/on.png';
@@ -99,7 +99,7 @@ chrome.runtime.onStartup.addListener(function() {
 
 // Toggle filtering
 chrome.browserAction.onClicked.addListener(function toggleBlocking() {
-	chrome.storage.sync.get('isEnabled', function(data) {
+	chrome.storage.sync.get('isEnabled', (data) => {
 		if (data.isEnabled) {
 			turnFilteringOff();
 		}
@@ -117,14 +117,14 @@ chrome.contextMenus.onClicked.addListener(function contextMenuHandler(info, tab)
 			break;
 		case "baAddSiteToFilterList":
 		case "pgAddSiteToFilterList":
-			chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+			chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 				let urls: string[]= tabs.map(x => x.url);
 				addUrlToBlockedSites(urls[0], tab);
 			});
 			break;
 		case "baAddDomainToFilterList":
 		case "pgAddDomainToFilterList":
-			chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+			chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 				let urls: string[] = tabs.map(x => x.url);
 				let domain: string= cleanDomain(urls)
 				addUrlToBlockedSites(domain, tab);
@@ -135,9 +135,9 @@ chrome.contextMenus.onClicked.addListener(function contextMenuHandler(info, tab)
 
 // push current site to storage
 function addUrlToBlockedSites(url: string | undefined, tab: object | undefined) : void {
-	chrome.storage.sync.get('blockedSites', function(data) {
+	chrome.storage.sync.get('blockedSites', (data) => {
 		data.blockedSites.push(url); // urls.hostname
-		chrome.storage.sync.set({ 'blockedSites': data.blockedSites }, function() {
+		chrome.storage.sync.set({ 'blockedSites': data.blockedSites }, () => {
 			console.log(url + ' added to blocked sites');
 		});
 	});
@@ -146,7 +146,7 @@ function addUrlToBlockedSites(url: string | undefined, tab: object | undefined) 
 
 // push current site to whitelist with time to whitelist
 function addUrlToWhitelistedSites(url: string, minutes: number) : void {
-	chrome.storage.sync.get('whitelistedSites', function(data) {
+	chrome.storage.sync.get('whitelistedSites', (data) => {
 
 		let m: {[key: string]: Date} = data.whitelistedSites
 
@@ -154,22 +154,22 @@ function addUrlToWhitelistedSites(url: string, minutes: number) : void {
 
 		m[url] = expiry;
 
-		chrome.storage.sync.set({ 'whitelistedSites': m }, function() {
+		chrome.storage.sync.set({ 'whitelistedSites': m }, () => {
 			console.log(url + ' added to whitelisted sites');
 		});
 	});
 }
 
-function turnFilteringOff() {
-	chrome.storage.sync.set({ 'isEnabled': false }, function() {
+function turnFilteringOff() : void {
+	chrome.storage.sync.set({ 'isEnabled': false }, () => {
 		chrome.browserAction.setIcon({ path: { "16": 'res/off.png' } });
 		console.log('Filtering disabled');
 	});
 }
 
-function turnFilteringOn() {
-	chrome.storage.sync.set({ 'isEnabled': true }, function() {
-		chrome.browserAction.setIcon({ path: 'res/on.png' }, function() {
+function turnFilteringOn() : void {
+	chrome.storage.sync.set({ 'isEnabled': true }, () => {
+		chrome.browserAction.setIcon({ path: 'res/on.png' }, () => {
 			console.log('Filtering enabled.');
 		});
 	});
