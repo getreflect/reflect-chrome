@@ -60,7 +60,7 @@ function loadBlockPage() {
 
 		    // extract entry
 		    let targ: HTMLFormElement | null = event.target as HTMLFormElement;
-		    let intent = (new FormData(targ)).get('intent')
+		    let intent: FormDataEntryValue = (new FormData(targ)).get('intent')
 
 		    // store in chrome storage
 			chrome.storage.sync.set({ 'lastIntent': intent }, () => {
@@ -69,7 +69,7 @@ function loadBlockPage() {
 		});
 
 	    // load css
-		var cssPath = chrome.runtime.getURL('res/common.css');
+		var cssPath: string = chrome.runtime.getURL('res/common.css');
 		$("head").append(
 			$('<link rel="stylesheet" type="text/css" />').attr('href', cssPath)
 		);
@@ -81,7 +81,7 @@ function loadBlockPage() {
 		$("#small-blob2").attr("src", chrome.runtime.getURL('res/blob-small.svg'))
 
 		// save url to cache
-	    var url = location.href;
+	    var url: string = location.href;
 		chrome.storage.sync.set({ 'cachedURL': url}, function() {
 			console.log('Set cached url to: ' + url);
 		});	
