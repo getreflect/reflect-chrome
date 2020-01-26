@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function renderFilterListTable() {
 	setAddButtonListener();
 });
 
-function setDeleteButtonsListeners() {
+function setDeleteButtonsListeners() : void {
 	let buttons: HTMLCollectionOf<HTMLButtonElement> = document.getElementsByTagName("button");
 	for (var i = 0; i < buttons.length; i++) {
 		buttons[i].addEventListener("click", function() {
@@ -24,7 +24,7 @@ function setDeleteButtonsListeners() {
 	};
 };
 
-function drawFilterListTable(callback: Function | undefined) {
+function drawFilterListTable(callback: Function | undefined) : void {
 	chrome.storage.sync.get('blockedSites', function(data) {
 		let blockedSites: string[] = data.blockedSites;
 		let tableDiv: HTMLElement = document.getElementById('filterList');
@@ -48,7 +48,7 @@ function drawFilterListTable(callback: Function | undefined) {
 	});
 };
 
-function setAddButtonListener() {
+function setAddButtonListener() : void {
 	document.getElementById('urlInput')?.addEventListener("keypress", function(event) {
 		if (event.keyCode == ENTER_KEY_CODE) {
 			addUrlToFilterList();
@@ -60,7 +60,7 @@ function setAddButtonListener() {
 	});
 };
 
-function addUrlToFilterList() {
+function addUrlToFilterList() : void {
 	let urlInput: HTMLFormElement = document.getElementById('urlInput') as HTMLFormElement;
 	if (urlInput.value != "") {
 		chrome.storage.sync.get('blockedSites', function(data) {

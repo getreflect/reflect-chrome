@@ -14,7 +14,7 @@ chrome.storage.sync.get('isEnabled', function(data) {
 	}
 });
 
-function iterWhitelist() {
+function iterWhitelist() : void {
 	// iterate whitelisted sites
 	chrome.storage.sync.get('whitelistedSites', function(data) {
 		let activeURL : RegExpMatchArray | null = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/)
@@ -43,7 +43,7 @@ function iterWhitelist() {
 	})
 }
 
-function loadBlockPage() {
+function loadBlockPage() : void {
 	// get prompt page content
 	$.get(chrome.runtime.getURL("res/pages/prompt.html"), function(page) {
 		// refresh page with our blocker page
