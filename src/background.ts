@@ -72,7 +72,7 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 						});
 
 						chrome.tabs.update({url: data.cachedURL});
-						console.log("Success! Redirecting to: " + data.cachedURL);
+						console.log(`Success! Redirecting to: ${data.cachedURL}`);
 					});
 				} else {
 					console.log("Failed. Remaining on page.");
@@ -138,7 +138,7 @@ function addUrlToBlockedSites(url: string | undefined, tab: object | undefined) 
 	chrome.storage.sync.get('blockedSites', (data) => {
 		data.blockedSites.push(url); // urls.hostname
 		chrome.storage.sync.set({ 'blockedSites': data.blockedSites }, () => {
-			console.log(url + ' added to blocked sites');
+			console.log(`${url} added to blocked sites`);
 		});
 	});
 }
@@ -155,7 +155,7 @@ function addUrlToWhitelistedSites(url: string, minutes: number) : void {
 		m[url] = expiry;
 
 		chrome.storage.sync.set({ 'whitelistedSites': m }, () => {
-			console.log(url + ' added to whitelisted sites');
+			console.log(`${url} added to whitelisted sites`);
 		});
 	});
 }

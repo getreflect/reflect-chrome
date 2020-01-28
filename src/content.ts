@@ -83,7 +83,7 @@ function loadBlockPage() : void {
 		// save url to cache
 	    var url: string = location.href;
 		chrome.storage.sync.set({ 'cachedURL': url}, () => {
-			console.log('Set cached url to: ' + url);
+			console.log(`Set cached url to: ${url}`);
 		});	
 	});
 }

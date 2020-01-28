@@ -16,7 +16,7 @@ function setDeleteButtonsListeners() : void {
 				let blockedSites: string[]  = data.blockedSites;
 				blockedSites.splice(id, 1);
 				chrome.storage.sync.set({ 'blockedSites': blockedSites }, () => {
-					console.log(url + " has been removed from filter list");
+					console.log(`removed ${url} from blocked list`);
 					drawFilterListTable(setDeleteButtonsListeners);
 				});
 			});
@@ -42,7 +42,7 @@ function drawFilterListTable(callback: Function | undefined) : void {
 		}		
 
 		if (callback === undefined) {
-      // create empty callback
+      		// create empty callback
 			callback = () => { };
 		}
 		callback();
@@ -68,7 +68,7 @@ function addUrlToFilterList() : void {
 			let blockedSites: string[] = data.blockedSites;
 			blockedSites.push(urlInput.value)
 			chrome.storage.sync.set({ 'blockedSites': blockedSites }, () => {
-				console.log(urlInput + " has been added to filter list");
+				console.log(`added ${urlInput} from blocked list`);
 				urlInput.value = "";
 				drawFilterListTable(setDeleteButtonsListeners);
 			});
