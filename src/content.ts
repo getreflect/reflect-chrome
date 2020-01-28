@@ -30,7 +30,8 @@ function iterWhitelist() : void {
 				console.log("whitelisted");
 
 				// check if expired
-				if ((new Date) >= m[strippedURL]) {
+				const parsedDate: Date = new Date(m[strippedURL])
+				if ((new Date) >= parsedDate) {
 					console.log("expired");
 					loadBlockPage()
 				}
