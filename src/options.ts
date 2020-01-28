@@ -8,10 +8,10 @@ document.addEventListener('DOMContentLoaded', function renderFilterListTable() {
 
 function setDeleteButtonsListeners() : void {
 	let buttons: HTMLCollectionOf<HTMLButtonElement> = document.getElementsByTagName("button");
-	for (var i = 0; i < buttons.length; i++) {
-		buttons[i].addEventListener("click", () => {
-			let id: number = parseInt(this.id[0]);
-			let url: string = document.getElementById(this.id[0] + "site")?.innerHTML;
+	for (const button of buttons) {
+		button.addEventListener("click", () => {
+			let id: number = parseInt(button.id[0]);
+			let url: string = document.getElementById(button.id[0] + "site")?.innerHTML;
 			chrome.storage.sync.get('blockedSites', (data) => {
 				let blockedSites: string[]  = data.blockedSites;
 				blockedSites.splice(id, 1);
