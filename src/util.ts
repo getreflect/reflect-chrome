@@ -12,7 +12,7 @@ function cleanDomain(urls: (string | undefined)[]): string {
 
 	} else {
 		// regex match for url
-		let activeURL : RegExpMatchArray | null = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/)
+		const activeURL : RegExpMatchArray | null = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/)
 
 		// no matching sites, return empty
 		if (activeURL == null) {

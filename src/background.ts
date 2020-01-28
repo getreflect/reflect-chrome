@@ -9,7 +9,7 @@ chrome.runtime.onInstalled.addListener(function initialization() {
 	});	
 
 	// set whitelist
-	var whitelist: {[key: string]: Date} = {};
+	const whitelist: {[key: string]: Date} = {};
 	chrome.storage.sync.set({ 'whitelistedSites': whitelist }, () => {
 		console.log('Default whitelist sites have been set.');
 	});
@@ -21,7 +21,7 @@ chrome.runtime.onInstalled.addListener(function initialization() {
 		// check to see if extension was installed before
 		if (typeof blockedSites != "undefined" && blockedSites != null
 			&& blockedSites.length != null && blockedSites.length > 0) {
-			var defaultListConfirm: boolean = confirm("Welcome back to reflect! \nDo you want to load your old filter list?");
+			const defaultListConfirm: boolean = confirm("Welcome back to reflect! \nDo you want to load your old filter list?");
 			if (defaultListConfirm) {
 				console.log("User confirmed keeping a previous filter list");
 			}
@@ -39,7 +39,7 @@ chrome.runtime.onInstalled.addListener(function initialization() {
 
 // default list of blocked sites
 function addDefaultFilters() : void {
-	var blockedSites: string[] = ["facebook.com", "twitter.com", "instagram.com", "youtube.com"];
+	const blockedSites: string[] = ["facebook.com", "twitter.com", "instagram.com", "youtube.com"];
 	chrome.storage.sync.set({ 'blockedSites': blockedSites }, () => {
 		console.log('Default blocked sites have been loaded.');
 	});
@@ -47,15 +47,15 @@ function addDefaultFilters() : void {
 //TODO
 // Listen for changes in chrome storage
 chrome.storage.onChanged.addListener((changes, namespace) => { 
-	for (var key in changes) {
-		var storageChange: chrome.storage.StorageChange = changes[key]; 
+	for (const key in changes) {
+		const storageChange: chrome.storage.StorageChange = changes[key]; 
 
 		// watch for intent change
 		if (key == "lastIntent") {
 			// send new intent to server
-			let sendIntent: string = JSON.stringify({intent: storageChange.newValue});
+			const sendIntent: string = JSON.stringify({intent: storageChange.newValue});
 
-			var xhr: XMLHttpRequest = new XMLHttpRequest();
+			let xhr: XMLHttpRequest = new XMLHttpRequest();
 			xhr.open("POST", "https://reflect-nlp.herokuapp.com/", true);
 			xhr.setRequestHeader('Content-Type', 'application/json');
 			xhr.send(sendIntent);
@@ -66,8 +66,8 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 					chrome.storage.sync.get('cachedURL', (data) => {
 						// add whitelist period for site
 						chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-							let urls: string[] = tabs.map(x => x.url);
-							var domain: string = cleanDomain(urls)
+							const urls: string[] = tabs.map(x => x.url);
+							const domain: string = cleanDomain(urls)
 							addUrlToWhitelistedSites(domain, 5);
 						});
 
@@ -118,15 +118,15 @@ chrome.contextMenus.onClicked.addListener(function contextMenuHandler(info, tab)
 		case "baAddSiteToFilterList":
 		case "pgAddSiteToFilterList":
 			chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-				let urls: string[]= tabs.map(x => x.url);
+				const urls: string[]= tabs.map(x => x.url);
 				addUrlToBlockedSites(urls[0], tab);
 			});
 			break;
 		case "baAddDomainToFilterList":
 		case "pgAddDomainToFilterList":
 			chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-				let urls: string[] = tabs.map(x => x.url);
-				let domain: string= cleanDomain(urls)
+				const urls: string[] = tabs.map(x => x.url);
+				const domain: string= cleanDomain(urls)
 				addUrlToBlockedSites(domain, tab);
 			});
 			break;

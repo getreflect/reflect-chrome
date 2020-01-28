@@ -17,14 +17,14 @@ chrome.storage.sync.get('isEnabled', (data) => {
 function iterWhitelist() : void {
 	// iterate whitelisted sites
 	chrome.storage.sync.get('whitelistedSites', (data) => {
-		let activeURL : RegExpMatchArray | null = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/)
+		const activeURL : RegExpMatchArray | null = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/)
 
 		// activeURL exists
 		if (activeURL != null) {
-			let strippedURL: string = activeURL[1].replace("www.", "");
+			const strippedURL: string = activeURL[1].replace("www.", "");
 
 			// if url in whitelist
-			let m: {[key: string]: Date} = data.whitelistedSites
+			const m: {[key: string]: Date} = data.whitelistedSites
 
 			if (m.hasOwnProperty(strippedURL)) {
 				console.log("whitelisted");
@@ -51,7 +51,7 @@ function loadBlockPage() : void {
 	    document.write(page);
 	    document.close();
 
-	    let f: HTMLFormElement | null = document.forms.namedItem("inputForm");
+	    const f: HTMLFormElement | null = document.forms.namedItem("inputForm");
 
     	// add listener for form submit
 		f?.addEventListener('submit', (event) => {
@@ -59,8 +59,8 @@ function loadBlockPage() : void {
 		    event.preventDefault();
 
 		    // extract entry
-		    let targ: HTMLFormElement | null = event.target as HTMLFormElement;
-		    let intent: FormDataEntryValue = (new FormData(targ)).get('intent')
+		    const targ: HTMLFormElement | null = event.target as HTMLFormElement;
+		    const intent: FormDataEntryValue = (new FormData(targ)).get('intent')
 
 		    // store in chrome storage
 			chrome.storage.sync.set({ 'lastIntent': intent }, () => {
@@ -69,7 +69,7 @@ function loadBlockPage() : void {
 		});
 
 	    // load css
-		var cssPath: string = chrome.runtime.getURL('res/common.css');
+		const cssPath: string = chrome.runtime.getURL('res/common.css');
 		$("head").append(
 			$('<link rel="stylesheet" type="text/css" />').attr('href', cssPath)
 		);
@@ -81,7 +81,7 @@ function loadBlockPage() : void {
 		$("#small-blob2").attr("src", chrome.runtime.getURL('res/blob-small.svg'))
 
 		// save url to cache
-	    var url: string = location.href;
+	    const url: string = location.href;
 		chrome.storage.sync.set({ 'cachedURL': url}, () => {
 			console.log(`Set cached url to: ${url}`);
 		});	
