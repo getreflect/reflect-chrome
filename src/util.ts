@@ -6,7 +6,6 @@ function cleanDomain(urls: (string | undefined)[]): string {
 	
 	// check to see if urls exist
 	if (urls[0] == undefined) {
-	
 		// return empty if not
 		return ""
 
