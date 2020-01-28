@@ -156,9 +156,6 @@ function addUrlToWhitelistedSites(url: string, minutes: number) : void {
 
 		chrome.storage.sync.set({ 'whitelistedSites': m }, () => {
 			console.log(`${url} added to whitelisted sites`);
-			chrome.storage.sync.get(['whitelistedSites'], (data) => {
-				console.log(data.whitelistedSites);
-			});
 		});
 	});
 }
