@@ -1,9 +1,9 @@
-chrome.storage.sync.get('isEnabled', (data) => {
+chrome.storage.sync.get('isEnabled', (storage) => {
 	// check to see if reflect is enabled
-	if (data.isEnabled) {
+	if (storage.isEnabled) {
 		// check for is blocked
-		chrome.storage.sync.get('blockedSites', (data) => {
-			data.blockedSites.forEach((site: string) => {
+		chrome.storage.sync.get('blockedSites', (storage) => {
+			storage.blockedSites.forEach((site: string) => {
 
 				// is blocked
 				if (window.location.href.includes(site)) {
@@ -16,7 +16,7 @@ chrome.storage.sync.get('isEnabled', (data) => {
 
 function iterWhitelist() : void {
 	// iterate whitelisted sites
-	chrome.storage.sync.get('whitelistedSites', (data) => {
+	chrome.storage.sync.get('whitelistedSites', (storage) => {
 		const activeURL : RegExpMatchArray | null = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/)
 
 		// activeURL exists
@@ -24,13 +24,14 @@ function iterWhitelist() : void {
 			const strippedURL: string = activeURL[1].replace("www.", "");
 
 			// if url in whitelist
-			const m: {[key: string]: Date} = data.whitelistedSites
+			const m: {[key: string]: Date} = storage.whitelistedSites
 
 			if (m.hasOwnProperty(strippedURL)) {
 				console.log("whitelisted");
 
 				// check if expired
-				if ((new Date) >= m[strippedURL]) {
+				const parsedDate: Date = new Date(m[strippedURL])
+				if ((new Date) >= parsedDate) {
 					console.log("expired");
 					loadBlockPage()
 				}

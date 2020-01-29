@@ -12,8 +12,8 @@ function setDeconsteButtonsListeners() : void {
 		button.addEventListener("click", () => {
 			const id: number = parseInt(button.id[0]);
 			const url: string = document.getElementById(button.id[0] + "site")?.innerHTML;
-			chrome.storage.sync.get('blockedSites', (data) => {
-				const blockedSites: string[]  = data.blockedSites;
+			chrome.storage.sync.get('blockedSites', (storage) => {
+				const blockedSites: string[]  = storage.blockedSites;
 				blockedSites.splice(id, 1);
 				chrome.storage.sync.set({ 'blockedSites': blockedSites }, () => {
 					console.log(`removed ${url} from blocked list`);
@@ -25,8 +25,8 @@ function setDeconsteButtonsListeners() : void {
 };
 
 function drawFilterListTable(callback: Function | undefined) : void {
-	chrome.storage.sync.get('blockedSites', (data) => {
-		const blockedSites: string[] = data.blockedSites;
+	chrome.storage.sync.get('blockedSites', (storage) => {
+		const blockedSites: string[] = storage.blockedSites;
 		const tableDiv: HTMLElement = document.getElementById('filterList');
 		let table: string = "<table>";
 		let counter: number = 0;
@@ -64,8 +64,8 @@ function setAddButtonListener() : void {
 function addUrlToFilterList() : void {
 	const urlInput: HTMLFormElement = document.getElementById('urlInput') as HTMLFormElement;
 	if (urlInput.value != "") {
-		chrome.storage.sync.get('blockedSites', (data) => {
-			const blockedSites: string[] = data.blockedSites;
+		chrome.storage.sync.get('blockedSites', (storage) => {
+			const blockedSites: string[] = storage.blockedSites;
 			blockedSites.push(urlInput.value)
 			chrome.storage.sync.set({ 'blockedSites': blockedSites }, () => {
 				console.log(`added ${urlInput} from blocked list`);
