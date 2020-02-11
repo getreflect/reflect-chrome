@@ -69,16 +69,16 @@ function loadBlockPage() : void {
 }
 
 function addFormListener() : void {
-    const f: HTMLFormElement | null = document.forms.namedItem("inputForm");
+    const form: HTMLFormElement | null = document.forms.namedItem("inputForm");
 
 	// add listener for form submit
-	f?.addEventListener('submit', (event) => {
+	form?.addEventListener('submit', (event) => {
 		// prevent default submit
 	    event.preventDefault();
 
 	    // extract entry
 	    const intentForm: HTMLFormElement | null = event.target as HTMLFormElement;
-	    const intent: FormDataEntryValue = (new FormData(intentForm)).get('intent')
+	    const intent: FormDataEntryValue = new FormData(intentForm).get('intent')
 
 	    callBackgroundWithIntent(intent.toString());
 	});
