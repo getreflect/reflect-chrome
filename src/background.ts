@@ -6,12 +6,6 @@ const WHITELIST_PERIOD: number = 5;
 chrome.runtime.onInstalled.addListener(function initialization() {
 	turnFilteringOff();
 
-
-	// set last intent to N/A
-	chrome.storage.sync.set({ 'lastIntent': "N/A" }, () => {
-		console.log('Set default intent.');
-	});	
-
 	// set whitelist
 	const whitelist: {[key: string]: Date} = {};
 	chrome.storage.sync.set({ 'whitelistedSites': whitelist }, () => {
@@ -68,20 +62,17 @@ chrome.runtime.onConnect.addListener(function(port) {
 
 		// handle response
 		xhr.onload = function() {
-			// on success -> redirect to cached url
 			if (xhr.status == 200) {
-				chrome.storage.sync.get('cachedURL', (storage) => {
-					// add whitelist period for site
-					chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-						const urls: string[] = tabs.map(x => x.url);
-						const domain: string = cleanDomain(urls)
-						addUrlToWhitelistedSites(domain, WHITELIST_PERIOD);
-					});
-
-					// send status to tab
-					port.postMessage({status: "ok"});
-					console.log(`Success! Redirecting`);
+				// add whitelist period for site
+				chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+					const urls: string[] = tabs.map(x => x.url);
+					const domain: string = cleanDomain(urls)
+					addUrlToWhitelistedSites(domain, WHITELIST_PERIOD);
 				});
+
+				// send status to tab
+				port.postMessage({status: "ok"});
+				console.log(`Success! Redirecting`);
 			} else {
 				// send status to tab
 				port.postMessage({status: "invalid"});
