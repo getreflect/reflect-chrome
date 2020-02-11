@@ -77,8 +77,8 @@ function addFormListener() : void {
 	    event.preventDefault();
 
 	    // extract entry
-	    const targ: HTMLFormElement | null = event.target as HTMLFormElement;
-	    const intent: FormDataEntryValue = (new FormData(targ)).get('intent')
+	    const intentForm: HTMLFormElement | null = event.target as HTMLFormElement;
+	    const intent: FormDataEntryValue = (new FormData(intentForm)).get('intent')
 
 	    callBackgroundWithIntent(intent.toString());
 	});
@@ -92,7 +92,7 @@ function callBackgroundWithIntent(intent: string) : void {
 	// TODO !!!
 	// Display loader while we wait for response
 
-	port.onMessage.addListener(function(msg) {
+	port.onMessage.addListener((msg) => {
 		switch (msg.status) {
 			case "ok":
 				// show success message

@@ -3,7 +3,7 @@ const REQ_TIMEOUT: number = 2000; // time in milliseconds
 const WHITELIST_PERIOD: number = 5;
 
 // On install script --> TODO: onboarding flow
-chrome.runtime.onInstalled.addListener(function initialization() {
+chrome.runtime.onInstalled.addListener(() => {
 	turnFilteringOff();
 
 	// set whitelist
@@ -44,11 +44,11 @@ function addDefaultFilters() : void {
 };
 
 // Listen for new runtime connections
-chrome.runtime.onConnect.addListener(function(port) {
+chrome.runtime.onConnect.addListener((port) => {
 	// check comm channel
-	console.assert(port.name == "intentStatus");
+	console.assert(port.name === "intentStatus");
 
-	port.onMessage.addListener(function(msg) {
+	port.onMessage.addListener((msg) => {
 		// extract intent from message
 		const intent: string = msg.intent;
 
@@ -61,8 +61,8 @@ chrome.runtime.onConnect.addListener(function(port) {
 		xhr.send(sendIntent);
 
 		// handle response
-		xhr.onload = function() {
-			if (xhr.status == 200) {
+		xhr.onload = () => {
+			if (xhr.status === 200) {
 				// add whitelist period for site
 				chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 					const urls: string[] = tabs.map(x => x.url);
@@ -81,7 +81,7 @@ chrome.runtime.onConnect.addListener(function(port) {
 		}
 
 		// if timeout
-		xhr.ontimeout = function (e) {
+		xhr.ontimeout = (e) => {
 			port.postMessage({status: "timeout"});
 		};
 	});
@@ -102,7 +102,7 @@ chrome.runtime.onStartup.addListener(() => {
 });
 
 // Toggle filtering
-chrome.browserAction.onClicked.addListener(function toggleBlocking() {
+chrome.browserAction.onClicked.addListener(() => {
 	chrome.storage.sync.get('isEnabled', (storage) => {
 		if (storage.isEnabled) {
 			turnFilteringOff();
@@ -114,7 +114,7 @@ chrome.browserAction.onClicked.addListener(function toggleBlocking() {
 });
 
 // Catch menu clicks (page context and browser action context)
-chrome.contextMenus.onClicked.addListener(function contextMenuHandler(info, tab) {
+chrome.contextMenus.onClicked.addListener((info, tab) => {
 	switch (info.menuItemId) {
 		case "baFilterListMenu":
 			chrome.tabs.create({ url: 'res/pages/options.html' });
