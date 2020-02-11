@@ -1,3 +1,5 @@
+const SERVER_URL: string = "http://35.226.43.7/api";
+
 // On install script --> TODO: onboarding flow
 chrome.runtime.onInstalled.addListener(function initialization() {
 	turnFilteringOff();
@@ -56,7 +58,7 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 			const sendIntent: string = JSON.stringify({intent: storageChange.newValue});
 
 			let xhr: XMLHttpRequest = new XMLHttpRequest();
-			xhr.open("POST", "https://reflect-nlp.herokuapp.com/", true);
+			xhr.open("POST", SERVER_URL, true);
 			xhr.setRequestHeader('Content-Type', 'application/json');
 			xhr.send(sendIntent);
 
