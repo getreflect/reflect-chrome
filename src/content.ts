@@ -44,48 +44,6 @@ function iterWhitelist() : void {
 	})
 }
 
-function addFormListener() : void {
-    const f: HTMLFormElement | null = document.forms.namedItem("inputForm");
-
-	// add listener for form submit
-	f?.addEventListener('submit', (event) => {
-		// prevent default submit
-	    event.preventDefault();
-
-	    // extract entry
-	    const targ: HTMLFormElement | null = event.target as HTMLFormElement;
-	    const intent: FormDataEntryValue = (new FormData(targ)).get('intent')
-
-	    // open connection to runtime (background.ts)
-	    const port = chrome.runtime.connect({name: "intentStatus"});
-		port.postMessage({intent: intent});
-
-		// TODO !!!
-		// Display loader while we wait for response
-
-		port.onMessage.addListener(function(msg) {
-			switch (msg.status) {
-				case "ok":
-					location.reload();
-					// show success message
-					// optional: transition?
-					// set tab to location.href
-					break;
-
-				case "invalid":
-					// shake input
-					// clear input
-					break;
-				
-				case "timeout":
-					// show error message
-					// show option to try again
-					break;
-			}
-		});
-	});
-}
-
 function loadBlockPage() : void {
 	// get prompt page content
 	$.get(chrome.runtime.getURL("res/pages/prompt.html"), (page) => {
@@ -107,5 +65,53 @@ function loadBlockPage() : void {
 		$("#bottom-right-blob").attr("src", chrome.runtime.getURL('res/blob-big-1.svg'))
 		$("#small-blob1").attr("src", chrome.runtime.getURL('res/blob-med.svg'))
 		$("#small-blob2").attr("src", chrome.runtime.getURL('res/blob-small.svg'))
+	});
+}
+
+function addFormListener() : void {
+    const f: HTMLFormElement | null = document.forms.namedItem("inputForm");
+
+	// add listener for form submit
+	f?.addEventListener('submit', (event) => {
+		// prevent default submit
+	    event.preventDefault();
+
+	    // extract entry
+	    const targ: HTMLFormElement | null = event.target as HTMLFormElement;
+	    const intent: FormDataEntryValue = (new FormData(targ)).get('intent')
+
+	    callBackgroundWithIntent(intent.toString());
+	});
+}
+
+function callBackgroundWithIntent(intent: string) : void {
+    // open connection to runtime (background.ts)
+    const port = chrome.runtime.connect({name: "intentStatus"});
+	port.postMessage({intent: intent});
+
+	// TODO !!!
+	// Display loader while we wait for response
+
+	port.onMessage.addListener(function(msg) {
+		switch (msg.status) {
+			case "ok":
+				// show success message
+				// optional: transition?
+				location.reload();
+				break;
+
+			case "invalid":
+				// shake input
+				// clear input
+				break;
+			
+			case "timeout":
+				// show error message
+				// show option to try again
+				break;
+		}
+
+		// close connection
+		port.disconnect()
 	});
 }
