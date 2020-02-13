@@ -1,14 +1,10 @@
 const SERVER_URL: string = "http://35.226.43.7/api";
+const REQ_TIMEOUT: number = 2000; // time in milliseconds
+const WHITELIST_PERIOD: number = 5;
 
 // On install script --> TODO: onboarding flow
-chrome.runtime.onInstalled.addListener(function initialization() {
+chrome.runtime.onInstalled.addListener(() => {
 	turnFilteringOff();
-
-
-	// set last intent to N/A
-	chrome.storage.sync.set({ 'lastIntent': "N/A" }, () => {
-		console.log('Set default intent.');
-	});	
 
 	// set whitelist
 	const whitelist: {[key: string]: Date} = {};
@@ -46,47 +42,53 @@ function addDefaultFilters() : void {
 		console.log('Default blocked sites have been loaded.');
 	});
 };
-//TODO
-// Listen for changes in chrome storage
-chrome.storage.onChanged.addListener((changes, namespace) => { 
-	for (const key in changes) {
-		const storageChange: chrome.storage.StorageChange = changes[key]; 
 
-		// watch for intent change
-		if (key == "lastIntent") {
-			// send new intent to server
-			const sendIntent: string = JSON.stringify({intent: storageChange.newValue});
+// Listen for new runtime connections
+chrome.runtime.onConnect.addListener((port) => {
+	// check comm channel
+	console.assert(port.name === "intentStatus");
 
-			let xhr: XMLHttpRequest = new XMLHttpRequest();
-			xhr.open("POST", SERVER_URL, true);
-			xhr.setRequestHeader('Content-Type', 'application/json');
-			xhr.send(sendIntent);
+	port.onMessage.addListener((msg) => {
+		// extract intent from message
+		const intent: string = msg.intent;
 
-			xhr.onload = function() {
-				// on success -> redirect to cached url
-				if (xhr.status == 200) {
-					chrome.storage.sync.get('cachedURL', (storage) => {
-						// add whitelist period for site
-						chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-							const urls: string[] = tabs.map(x => x.url);
-							const domain: string = cleanDomain(urls)
-							addUrlToWhitelistedSites(domain, 5);
-						});
+		// send new intent to server
+		const sendIntent: string = JSON.stringify({intent: intent});
+		let xhr: XMLHttpRequest = new XMLHttpRequest();
+		xhr.open("POST", SERVER_URL, true);
+		xhr.timeout = REQ_TIMEOUT;
+		xhr.setRequestHeader('Content-Type', 'application/json');
+		xhr.send(sendIntent);
 
-						chrome.tabs.update({url: storage.cachedURL});
-						console.log(`Success! Redirecting to: ${storage.cachedURL}`);
-					});
-				} else {
-					console.log("Failed. Remaining on page.");
-					// show blocked page 
-				}
+		// handle response
+		xhr.onload = () => {
+			if (xhr.status === 200) {
+				// add whitelist period for site
+				chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+					const urls: string[] = tabs.map(x => x.url);
+					const domain: string = cleanDomain(urls)
+					addUrlToWhitelistedSites(domain, WHITELIST_PERIOD);
+				});
+
+				// send status to tab
+				port.postMessage({status: "ok"});
+				console.log(`Success! Redirecting`);
+			} else {
+				// send status to tab
+				port.postMessage({status: "invalid"});
+				console.log("Failed. Remaining on page.");
 			}
 		}
-	}
+
+		// if timeout
+		xhr.ontimeout = (e) => {
+			port.postMessage({status: "timeout"});
+		};
+	});
 });
 
 // On Chrome startup, setup extension icons
-chrome.runtime.onStartup.addListener( () => {
+chrome.runtime.onStartup.addListener(() => {
 	chrome.storage.sync.get('isEnabled', (storage) => {
 		let icon: string = 'res/icon.png';
 		if (storage.isEnabled) {
@@ -100,7 +102,7 @@ chrome.runtime.onStartup.addListener( () => {
 });
 
 // Toggle filtering
-chrome.browserAction.onClicked.addListener(function toggleBlocking() {
+chrome.browserAction.onClicked.addListener(() => {
 	chrome.storage.sync.get('isEnabled', (storage) => {
 		if (storage.isEnabled) {
 			turnFilteringOff();
@@ -112,7 +114,7 @@ chrome.browserAction.onClicked.addListener(function toggleBlocking() {
 });
 
 // Catch menu clicks (page context and browser action context)
-chrome.contextMenus.onClicked.addListener(function contextMenuHandler(info, tab) {
+chrome.contextMenus.onClicked.addListener((info, tab) => {
 	switch (info.menuItemId) {
 		case "baFilterListMenu":
 			chrome.tabs.create({ url: 'res/pages/options.html' });

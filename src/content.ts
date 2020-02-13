@@ -52,22 +52,7 @@ function loadBlockPage() : void {
 	    document.write(page);
 	    document.close();
 
-	    const f: HTMLFormElement | null = document.forms.namedItem("inputForm");
-
-    	// add listener for form submit
-		f?.addEventListener('submit', (event) => {
-			// prevent default submit
-		    event.preventDefault();
-
-		    // extract entry
-		    const targ: HTMLFormElement | null = event.target as HTMLFormElement;
-		    const intent: FormDataEntryValue = (new FormData(targ)).get('intent')
-
-		    // store in chrome storage
-			chrome.storage.sync.set({ 'lastIntent': intent }, () => {
-				console.log('Intent set to: ' + intent);
-			});
-		});
+	    addFormListener();
 
 	    // load css
 		const cssPath: string = chrome.runtime.getURL('res/common.css');
@@ -80,11 +65,53 @@ function loadBlockPage() : void {
 		$("#bottom-right-blob").attr("src", chrome.runtime.getURL('res/blob-big-1.svg'))
 		$("#small-blob1").attr("src", chrome.runtime.getURL('res/blob-med.svg'))
 		$("#small-blob2").attr("src", chrome.runtime.getURL('res/blob-small.svg'))
+	});
+}
 
-		// save url to cache
-	    const url: string = location.href;
-		chrome.storage.sync.set({ 'cachedURL': url}, () => {
-			console.log(`Set cached url to: ${url}`);
-		});	
+function addFormListener() : void {
+    const form: HTMLFormElement | null = document.forms.namedItem("inputForm");
+
+	// add listener for form submit
+	form?.addEventListener('submit', (event) => {
+		// prevent default submit
+	    event.preventDefault();
+
+	    // extract entry
+	    const intentForm: HTMLFormElement | null = event.target as HTMLFormElement;
+	    const intent: FormDataEntryValue = new FormData(intentForm).get('intent')
+
+	    callBackgroundWithIntent(intent.toString());
+	});
+}
+
+function callBackgroundWithIntent(intent: string) : void {
+    // open connection to runtime (background.ts)
+    const port = chrome.runtime.connect({name: "intentStatus"});
+	port.postMessage({intent: intent});
+
+	// TODO !!!
+	// Display loader while we wait for response
+
+	port.onMessage.addListener((msg) => {
+		switch (msg.status) {
+			case "ok":
+				// show success message
+				// optional: transition?
+				location.reload();
+				break;
+
+			case "invalid":
+				// shake input
+				// clear input
+				break;
+			
+			case "timeout":
+				// show error message
+				// show option to try again
+				break;
+		}
+
+		// close connection
+		port.disconnect()
 	});
 }
