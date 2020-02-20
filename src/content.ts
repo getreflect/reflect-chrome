@@ -100,7 +100,7 @@ function callBackgroundWithIntent(intent: string) : void {
 				location.reload();
 				break;
 
-			case "invalid":			
+			case "invalid":
 				$('#textbox').effect("shake");
 				// clear input
 				break;

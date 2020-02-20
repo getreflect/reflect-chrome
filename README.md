@@ -23,5 +23,5 @@ First, ensure you have [TypeScript](https://www.typescriptlang.org/) installed. 
 ## FAQ
 I'm getting errors about `Cannot find namespace/name ___`.
 * Install the JQuery support by doing `npm i @types/jquery` in the directory.
-* Install the JQuery support by doing `npm i @types/jqueryui` in the directory.
+* Install the JQuery UI Library by doing `npm i @types/jqueryui` in the directory.
 * Install the `@types` library by doing `npm i @types/chrome` in the directory.
