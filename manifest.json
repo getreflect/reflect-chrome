@@ -30,7 +30,7 @@
   "content_scripts": [
     {
     "matches": [ "*://*/*" ],
-    "js": ["jquery-3.4.1.min.js", "build/content.js"],
+    "js": ["jquery-3.4.1.min.js","jquery-ui.min.js", "build/content.js"],
     "run_at": "document_start"         // pay attention to this line
     }
   ],

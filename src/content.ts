@@ -101,13 +101,12 @@ function callBackgroundWithIntent(intent: string) : void {
 				break;
 
 			case "invalid":
-				// shake input
+				$('#textbox').effect("shake");
 				// clear input
 				break;
 			
 			case "timeout":
-				// show error message
-				// show option to try again
+				$('#textbox').effect("shake");
 				break;
 		}
 
