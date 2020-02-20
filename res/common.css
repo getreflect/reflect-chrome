@@ -39,6 +39,10 @@ p {
 	color: var(--shale);
 }
 
+input:focus, textarea:focus, select:focus{
+    outline: none;
+}
+
 #top-left-blob {
 	width: 75em;
 	left: -28em;
@@ -61,6 +65,12 @@ p {
 	width: 16em;
 	left:55em;
 	top: 25em;
+}
+
+#textbox {
+	position: relative;
+	display: block;
+	margin-bottom: 2em;
 }
 
 .blob {
