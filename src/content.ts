@@ -1,3 +1,6 @@
+const REFLECT_INFO = "#576ca8";
+const REFLECT_ERR = "#ff4a47";
+
 chrome.storage.sync.get('isEnabled', (storage) => {
 	// check to see if reflect is enabled
 	if (storage.isEnabled) {
@@ -13,6 +16,15 @@ chrome.storage.sync.get('isEnabled', (storage) => {
 		});
 	}
 });
+
+function displayStatus(message: string, duration: number = 3000, colour: string = REFLECT_INFO) : void {
+	// set content
+	$("#statusContent").css("color", colour);
+	$("#statusContent").text(message);
+
+	// show, wait, then hide
+	$("#statusContent").show().delay(duration).fadeOut()
+}
 
 function iterWhitelist() : void {
 	// iterate whitelisted sites
@@ -79,8 +91,9 @@ function addFormListener() : void {
 	    // extract entry
 	    const intentForm: HTMLFormElement | null = event.target as HTMLFormElement;
 	    const intent: FormDataEntryValue = new FormData(intentForm).get('intent')
+	    const intentString: string = intent.toString()
 
-	    callBackgroundWithIntent(intent.toString());
+	    callBackgroundWithIntent(intentString);
 	});
 }
 
@@ -89,8 +102,7 @@ function callBackgroundWithIntent(intent: string) : void {
     const port = chrome.runtime.connect({name: "intentStatus"});
 	port.postMessage({intent: intent});
 
-	// TODO !!!
-	// Display loader while we wait for response
+	displayStatus("connecting...", 3000, REFLECT_INFO);
 
 	port.onMessage.addListener((msg) => {
 		switch (msg.status) {

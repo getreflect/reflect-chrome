@@ -14,8 +14,12 @@
 				<p>hey! what are you here for?</p>
 			</div>
 			<form id="inputForm">
-			  <input type="text" id="textbox" name="intent" placeholder="i'm trying to..." class="maintext" required>
-			  <input type="submit" value="enter.">
+				<input type="text" id="textbox" name="intent" placeholder="i'm trying to..." class="maintext" autocomplete="off" required autofocus>
+			  	<p id="statusMessage">
+				  	<span>&nbsp;</span>
+				  	<span id="statusContent"></span>
+				</p>
+				<input type="submit" value="enter.">
 			</form> 
 			<div id="bottom-right-logo-text">
 				<h1>r.</h1>
