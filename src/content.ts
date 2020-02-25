@@ -93,8 +93,6 @@ function addFormListener() : void {
 	    const intent: FormDataEntryValue = new FormData(intentForm).get('intent')
 	    const intentString: string = intent.toString()
 
-	    displayStatus("connecting...", 3000, REFLECT_INFO);
-
 	    callBackgroundWithIntent(intentString);
 	});
 }
@@ -104,8 +102,7 @@ function callBackgroundWithIntent(intent: string) : void {
     const port = chrome.runtime.connect({name: "intentStatus"});
 	port.postMessage({intent: intent});
 
-	// TODO !!!
-	// Display loader while we wait for response
+	displayStatus("connecting...", 3000, REFLECT_INFO);
 
 	port.onMessage.addListener((msg) => {
 		switch (msg.status) {
