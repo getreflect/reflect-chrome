@@ -70,7 +70,6 @@ input:focus, textarea:focus, select:focus{
 #textbox {
 	position: relative;
 	display: block;
-	margin-bottom: 2em;
 }
 
 .blob {
@@ -120,6 +119,12 @@ input[type=submit] {
 	color: var(--white);
 	bottom: 3em;
 	right: 3em;
+}
+
+#statusMessage {
+	font-family: "circular-lt";
+	font-size: 1em;
+	margin: 1em 0.5em 1.5em 0em;
 }
 
 #reflect-main {
