@@ -1,4 +1,4 @@
-const SERVER_URL: string = "http://35.226.43.7/api";
+const SERVER_URL: string = "http://34.67.167.214/api";
 const REQ_TIMEOUT: number = 2000; // time in milliseconds
 const WHITELIST_PERIOD: number = 5;
 
@@ -49,11 +49,12 @@ chrome.runtime.onConnect.addListener((port) => {
 	console.assert(port.name === "intentStatus");
 
 	port.onMessage.addListener((msg) => {
-		// extract intent from message
+		// extract intent and url from message
 		const intent: string = msg.intent;
+		const url: string = msg.url;
 
 		// send new intent to server
-		const sendIntent: string = JSON.stringify({intent: intent});
+		const sendIntent: string = JSON.stringify({intent: intent, url: url});
 		let xhr: XMLHttpRequest = new XMLHttpRequest();
 		xhr.open("POST", SERVER_URL, true);
 		xhr.timeout = REQ_TIMEOUT;

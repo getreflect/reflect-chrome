@@ -100,7 +100,7 @@ function addFormListener() : void {
 function callBackgroundWithIntent(intent: string) : void {
     // open connection to runtime (background.ts)
     const port = chrome.runtime.connect({name: "intentStatus"});
-	port.postMessage({intent: intent});
+	port.postMessage({intent: intent, url: window.location.href});
 
 	displayStatus("connecting...", 3000, REFLECT_INFO);
 
