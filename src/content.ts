@@ -109,16 +109,23 @@ function callBackgroundWithIntent(intent: string) : void {
 			case "ok":
 				// show success message
 				// optional: transition?
+				displayStatus("got it! 5 minutes starting now.", 3000, REFLECT_INFO);
 				location.reload();
 				break;
 
 			case "invalid":
 				$('#textbox').effect("shake");
+
+				// display message
+				displayStatus("that doesn't seem to productive. try being more specific.", 3000, REFLECT_ERR);
+
 				// clear input
+				$("#textbox").val("");
 				break;
 			
 			case "timeout":
-				$('#textbox').effect("shake");
+				// display message
+				displayStatus("couldn't reach server, try again later.", 3000, REFLECT_ERR);
 				break;
 		}
 
