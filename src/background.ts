@@ -56,8 +56,8 @@ chrome.runtime.onConnect.addListener((port) => {
 		// send new intent to server
 		const sendIntent: string = JSON.stringify({intent: intent, url: url});
 		let xhr: XMLHttpRequest = new XMLHttpRequest();
-		xhr.open("POST", SERVER_URL, true);
 		xhr.timeout = REQ_TIMEOUT;
+		xhr.open("POST", SERVER_URL, true);
 		xhr.setRequestHeader('Content-Type', 'application/json');
 		xhr.send(sendIntent);
 
@@ -81,8 +81,12 @@ chrome.runtime.onConnect.addListener((port) => {
 			}
 		}
 
-		// if timeout
+		// if timeout or error (e.g. not internet connection)
 		xhr.ontimeout = (e) => {
+			port.postMessage({status: "timeout"});
+		};
+
+		xhr.onerror = (e) => {
 			port.postMessage({status: "timeout"});
 		};
 	});
