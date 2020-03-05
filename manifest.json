@@ -7,7 +7,7 @@
   "options_page": "res/pages/options.html",
 
   "background": {
-    "scripts": ["build/background.js", "build/contextMenus.js", "build/util.js"],
+    "scripts": ["build/background.js", "build/contextMenus.js", "build/util.js", "build/nn.js"],
   	"persistent": false
   },
   "icons": {

@@ -1,6 +1,9 @@
 {
     "compilerOptions": {
+    	"module": "es6",
         "target": "es6",
+        "moduleResolution": "node",
+        "skipLibCheck": true,
         "noImplicitAny": false,
         "sourceMap": false,
         "outDir": "build",
