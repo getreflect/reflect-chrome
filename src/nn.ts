@@ -1,5 +1,18 @@
 import * as tf from '@tensorflow/tfjs';
 
+function cleanStr(inputIntent: string ) : string {
+	// strip punctuation
+
+	// strip capitalization
+
+	// remove personal prefix
+
+} 
+
+function tokenize(cleanedIntent: string) : number[] {
+	
+}
+
 class IntentClassifier {
 
 	model: tf.GraphModel;
