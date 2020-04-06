@@ -146,7 +146,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 // Load ML model stuff
-const model: IntentClassifier = new IntentClassifier("acc88.04");
+const model: IntentClassifier = new IntentClassifier("acc84.78");
 console.log(model)
 
 // push current site to storage

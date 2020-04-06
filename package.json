@@ -4,7 +4,7 @@
   "description": "",
   "main": "blocker/background.js",
   "dependencies": {
-    "@tensorflow/tfjs": "^1.6.0",
+    "@tensorflow/tfjs": "^1.7.2",
     "@tensorflow/tfjs-node": "^1.7.2",
     "@types/chrome": "0.0.92",
     "@types/jquery": "^3.3.31",

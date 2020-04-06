@@ -21,7 +21,7 @@ export class Tokenizer {
 // Load local ML Model
 export class IntentClassifier {
 
-	model: tf.GraphModel;
+	model: tf.LayersModel;
 	tokenizer: Tokenizer;
 	readonly SEQ_MAX_LEN = 75;
 
@@ -42,20 +42,21 @@ export class IntentClassifier {
 		const startTime = performance.now();
 
 		// attempt to load model
-		try {
-			const modelDir = chrome.runtime.getURL('res/models/'+modelName+'/model.json');
-			this.model = await tf.loadGraphModel(modelDir);
+		const modelDir = chrome.runtime.getURL('res/models/'+modelName+'/model.json');
 
-			// Warms up the model by causing intermediate tensor values
-			// to be built and pushed to GPU.
-			// tf.tidy(() => {
-			// 	this.model.predict(tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]));
-			// });
+		console.log(modelDir)
 
-			const totalTime = Math.floor(performance.now() - startTime);
-			console.log(`Model loaded and initialized in ${totalTime} ms...`);
-		} catch {
-			console.error(`Unable to load model.`);
-		}
+		const model = await tf.loadLayersModel(modelDir);
+
+		console.log(model);
+
+		// Warms up the model by causing intermediate tensor values
+		// to be built and pushed to GPU.
+		// tf.tidy(() => {
+		// 	this.model.predict(tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3]));
+		// });
+
+		const totalTime = Math.floor(performance.now() - startTime);
+		console.log(`Model loaded and initialized in ${totalTime} ms...`);
 	}
 }
