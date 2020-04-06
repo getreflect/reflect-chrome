@@ -2,7 +2,7 @@
 a mindful website blocker for the productive.
 
 ## Building the project
-First, ensure you have [TypeScript](https://www.typescriptlang.org/) installed. Then, in the root directory of this project, run `tsc` to compile the `.ts` files to `.js` files which you can find in the `build` directory.
+First, ensure you have [TypeScript](https://www.typescriptlang.org/) installed. Then, install the `node` package dependencies by doing `npm i`. Finally, `npm run build`.
 
 ## Getting set up
 0. Open CMD and navigate to a convenient folder through `cd`

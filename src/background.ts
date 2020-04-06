@@ -1,3 +1,6 @@
+import 'babel-polyfill';
+import {Tokenizer, IntentClassifier} from "./nn"
+
 const SERVER_URL: string = "http://34.67.167.214/api";
 const REQ_TIMEOUT: number = 2000; // time in milliseconds
 const WHITELIST_PERIOD: number = 5;
@@ -36,7 +39,7 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 // default list of blocked sites
-function addDefaultFilters() : void {
+function addDefaultFilters(): void {
 	const blockedSites: string[] = ["facebook.com", "twitter.com", "instagram.com", "youtube.com"];
 	chrome.storage.sync.set({ 'blockedSites': blockedSites }, () => {
 		console.log('Default blocked sites have been loaded.');
@@ -142,8 +145,12 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 	}
 });
 
+// Load ML model stuff
+const model: IntentClassifier = new IntentClassifier("acc88.04");
+console.log(model)
+
 // push current site to storage
-function addUrlToBlockedSites(url: string | undefined, tab: object | undefined) : void {
+function addUrlToBlockedSites(url: string | undefined, tab: object | undefined): void {
 	chrome.storage.sync.get('blockedSites', (storage) => {
 		storage.blockedSites.push(url); // urls.hostname
 		chrome.storage.sync.set({ 'blockedSites': storage.blockedSites }, () => {
@@ -154,7 +161,7 @@ function addUrlToBlockedSites(url: string | undefined, tab: object | undefined) 
 
 
 // push current site to whitelist with time to whitelist
-function addUrlToWhitelistedSites(url: string, minutes: number) : void {
+function addUrlToWhitelistedSites(url: string, minutes: number): void {
 	chrome.storage.sync.get('whitelistedSites', (storage) => {
 
 		let whitelistedSites: {[key: string]: string} = storage.whitelistedSites

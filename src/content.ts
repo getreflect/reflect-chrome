@@ -17,7 +17,7 @@ chrome.storage.sync.get('isEnabled', (storage) => {
 	}
 });
 
-function displayStatus(message: string, duration: number = 3000, colour: string = REFLECT_INFO) : void {
+function displayStatus(message: string, duration: number = 3000, colour: string = REFLECT_INFO): void {
 	// set content
 	$("#statusContent").css("color", colour);
 	$("#statusContent").text(message);
@@ -26,7 +26,7 @@ function displayStatus(message: string, duration: number = 3000, colour: string 
 	$("#statusContent").show().delay(duration).fadeOut()
 }
 
-function iterWhitelist() : void {
+function iterWhitelist(): void {
 	// iterate whitelisted sites
 	chrome.storage.sync.get('whitelistedSites', (storage) => {
 		const activeURL : RegExpMatchArray | null = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/)
@@ -56,7 +56,7 @@ function iterWhitelist() : void {
 	})
 }
 
-function loadBlockPage() : void {
+function loadBlockPage(): void {
 	// get prompt page content
 	$.get(chrome.runtime.getURL("res/pages/prompt.html"), (page) => {
 		// refresh page with our blocker page
@@ -80,7 +80,7 @@ function loadBlockPage() : void {
 	});
 }
 
-function addFormListener() : void {
+function addFormListener(): void {
     const form: HTMLFormElement | null = document.forms.namedItem("inputForm");
 
 	// add listener for form submit
@@ -97,7 +97,7 @@ function addFormListener() : void {
 	});
 }
 
-function callBackgroundWithIntent(intent: string) : void {
+function callBackgroundWithIntent(intent: string): void {
     // open connection to runtime (background.ts)
     const port = chrome.runtime.connect({name: "intentStatus"});
 	port.postMessage({intent: intent, url: window.location.href});

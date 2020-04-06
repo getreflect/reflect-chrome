@@ -1,13 +1,12 @@
 {
     "compilerOptions": {
-    	"module": "es6",
         "target": "es6",
-        "moduleResolution": "node",
-        "skipLibCheck": true,
-        "noImplicitAny": false,
         "sourceMap": false,
+        "types": ["@types/chrome", "node", "@types/jquery", "@types/jqueryui"],
+        "typeRoots": ["node_modules/@types"],
+        "moduleResolution": "node",
+        "lib": ["es2017", "dom"],
+        "skipLibCheck": true,
         "outDir": "build",
-        "noEmitOnError": true,
-        "typeRoots": [ "node_modules/@types" ]
     }
 }
