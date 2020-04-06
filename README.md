@@ -18,15 +18,18 @@ build # stores intermediate js files compiled from ts [GENERATED]
  | - nn.js            # functionality, do it in `src/`
  | - options.js
  | - util.js
-dist
- | - res
+dist # distribution folder, select this when loading as extension
+ | - res # resources folder
  |   | - models # stores converted keras models (jackyzha0/reflect-nlp/nlp)
  |   |   | - acc%%.%% # where %%.%% represents accuracy on the test set
  |   |   |   | - group1-shar1of1.bin # binary storage of model weights
  |   |   |   | - model.json # stores architecture of model
  |   |   |   | - tokenizer.json # stores word tokenizer mappings
  |   |   ...
- |   | - pages # 
+ |   | - pages # html files
+ |   |   | - options.html # page to edit website whitelist
+ |   |   | - prompt.html # actual block page
+ |   | ... # misc. svg files, fonts, css, and images
  | - src # final source code, generated from `npm run build` [GENERATED]
  | - jquery-3.4.1.min.js # jquery source code, used for DOM manipulation
  | - jquery-ui.min.js # jquery ui source code, used for animations
