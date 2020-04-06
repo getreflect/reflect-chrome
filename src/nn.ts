@@ -2,14 +2,26 @@ import * as tf from '@tensorflow/tfjs';
 
 export class Tokenizer {
 
+	wordMap: Map<string, string>;
+
 	constructor(modelName: string) {
 		const url = chrome.runtime.getURL('res/models/'+modelName+'/tokenizer.json');
 
 		fetch(url)
 		    .then((response) => response.json())
-		    .then((json) => {
-		    	console.log(json);
-		    });
+		    .then((jsonString) => JSON.parse(jsonString))
+		    .then((json) => json.config.word_index)
+		    .then((wordMappingString) => this.wordMap = JSON.parse(wordMappingString));
+	}
+
+	lookup(key: string): number {
+		const val: (string | undefined) = this.wordMap.get(key);
+
+		if (!val) {
+			return 0;
+		} else {
+			return parseInt(val);
+		}
 	}
 
 	tokenize(cleanedIntent: string): number[] {
