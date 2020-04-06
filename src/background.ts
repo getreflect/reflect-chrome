@@ -147,7 +147,6 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
 // Load ML model stuff
 const model: IntentClassifier = new IntentClassifier("acc84.78");
-console.log(model)
 
 // push current site to storage
 function addUrlToBlockedSites(url: string | undefined, tab: object | undefined): void {

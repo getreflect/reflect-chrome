@@ -43,12 +43,7 @@ export class IntentClassifier {
 
 		// attempt to load model
 		const modelDir = chrome.runtime.getURL('res/models/'+modelName+'/model.json');
-
-		console.log(modelDir)
-
-		const model = await tf.loadLayersModel(modelDir);
-
-		console.log(model);
+		this.model = await tf.loadLayersModel(modelDir);
 
 		// Warms up the model by causing intermediate tensor values
 		// to be built and pushed to GPU.
