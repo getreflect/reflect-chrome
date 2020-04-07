@@ -97,7 +97,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 // Load ML model stuff
-const model: nn.IntentClassifier = new nn.IntentClassifier("acc84.78");
+const model: nn.IntentClassifier = new nn.IntentClassifier("acc82.03");
 
 // Listen for new runtime connections
 chrome.runtime.onConnect.addListener((port) => {
