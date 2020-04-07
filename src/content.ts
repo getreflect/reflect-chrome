@@ -110,11 +110,19 @@ function callBackgroundWithIntent(intent: string): void {
 				location.reload();
 				break;
 
+			case "too_short":
+				$('#textbox').effect("shake");
+
+				// display message
+				displayStatus("your response is a little short. be more specific!", 3000, REFLECT_ERR);
+				$("#textbox").val("");
+				break;
+
 			case "invalid":
 				$('#textbox').effect("shake");
 
 				// display message
-				displayStatus("that doesn't seem to productive. try being more specific.", 3000, REFLECT_ERR);
+				displayStatus("that doesn't seem to be productive. try being more specific.", 3000, REFLECT_ERR);
 
 				// clear input
 				$("#textbox").val("");

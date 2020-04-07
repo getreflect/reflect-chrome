@@ -109,23 +109,32 @@ chrome.runtime.onConnect.addListener((port) => {
 		const intent: string = msg.intent;
 		const url: string = msg.url;
 
-		const valid: boolean = await model.predict(intent);
-
-		if (valid) {
-			// add whitelist period for site
-			chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-				const urls: string[] = tabs.map(x => x.url);
-				const domain: string = cleanDomain(urls)
-				addUrlToWhitelistedSites(domain, WHITELIST_PERIOD);
-			});
-
+		// check if too short
+		const words: string[] = intent.split(" ");
+		if (words.length <= 3) {
 			// send status to tab
-			port.postMessage({status: "ok"});
-			console.log(`Success! Redirecting`);
+			port.postMessage({status: "too_short"});
 		} else {
-			// send status to tab
-			port.postMessage({status: "invalid"});
-			console.log("Failed. Remaining on page.");
+
+			// send to nlp model for prediction
+			const valid: boolean = await model.predict(intent);
+
+			if (valid) {
+				// add whitelist period for site
+				chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+					const urls: string[] = tabs.map(x => x.url);
+					const domain: string = cleanDomain(urls)
+					addUrlToWhitelistedSites(domain, WHITELIST_PERIOD);
+				});
+
+				// send status to tab
+				port.postMessage({status: "ok"});
+				console.log(`Success! Redirecting`);
+			} else {
+				// send status to tab
+				port.postMessage({status: "invalid"});
+				console.log("Failed. Remaining on page.");
+			}
 		}
 	});
 });
