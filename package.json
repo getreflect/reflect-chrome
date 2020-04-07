@@ -4,16 +4,24 @@
   "description": "",
   "main": "blocker/background.js",
   "dependencies": {
+    "@tensorflow/tfjs": "^1.7.2",
+    "@tensorflow/tfjs-node": "^1.7.2",
     "@types/chrome": "0.0.92",
     "@types/jquery": "^3.3.31",
     "@types/jqueryui": "^1.12.10",
     "typescript": "^3.7.5"
   },
-  "devDependencies": {
-    "eslint": "^6.8.0"
-  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "copy": "cp build/content.js dist/src/ && cp build/contextMenus.js dist/src/ && cp build/options.js dist/src/ && cp build/util.js dist/src/",
+    "parcel": "parcel build build/background.js -d dist/src/ -o background && parcel build build/nn.js -d dist/src/ -o nn",
+    "build": "tsc && npm run parcel && npm run copy"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "clang-format": "^1.2.3",
+    "parcel-bundler": "^1.7.1"
   },
   "repository": {
     "type": "git",

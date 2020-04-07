@@ -1,0 +1,137 @@
+:root {
+	--white: #fff;
+	--shale: #576ca8;
+	--blue: #8b9ac0;
+}
+
+@font-face {
+  font-family: "circular";
+  src: url("chrome-extension://__MSG_@@extension_id__/res/circular.ttf");
+}
+
+@font-face {
+  font-family: "circular-lt";
+  src: url("chrome-extension://__MSG_@@extension_id__/res/circular-light.ttf");
+}
+
+h1 {
+	font-family: "circular" !important;
+	font-weight: 350;
+	font-size: 5.5em;
+	margin-bottom: 0;
+}
+
+p {
+	font-family: "circular-lt" !important;
+	font-size: 1.5em;
+	margin-top: 0.2em;
+}
+
+.col-white {
+	color: var(--white);
+}
+
+.col-blue {
+	color: var(--blue);
+}
+
+.col-shale {
+	color: var(--shale);
+}
+
+input:focus, textarea:focus, select:focus{
+    outline: none;
+}
+
+#top-left-blob {
+	width: 75em;
+	left: -28em;
+	top: -15em;
+}
+
+#bottom-right-blob {
+	width: 75em;
+	left: 35em;
+	bottom: -30em;
+}
+
+#small-blob1 {
+	width: 20em;
+	left:70em;
+	top: -8em;
+}
+
+#small-blob2 {
+	width: 16em;
+	left:55em;
+	top: 25em;
+}
+
+#textbox {
+	position: relative;
+	display: block;
+}
+
+.blob {
+	position: fixed;
+	z-index: -9999;
+}
+
+.maintext::placeholder {
+	font-family: "circular-lt"
+}
+
+form {
+	position: fixed;
+	left: 12.5vw;
+	top: 50vh;
+}
+
+input[type=text] {
+	width: 25em;
+	border-radius: 20px;
+	border: 3px solid var(--shale);
+	padding: 0.5em 2em;
+	cursor: pointer;
+	font-size: 1em;
+}
+
+input[type=submit] {
+	border-radius: 20px;
+	background-color: var(--shale);
+	color: var(--white);
+	border: 0px;
+	padding: 0.5em 2em;
+	cursor: pointer;
+	font-family: "circular";
+	font-size: 1em;
+}
+
+#top-text {
+	position: fixed;
+	left: 12.5vw;
+	top: 7.5vh;
+	color: var(--white);
+}
+
+#bottom-right-logo-text {
+	position: fixed;
+	color: var(--white);
+	bottom: 3em;
+	right: 3em;
+}
+
+#statusMessage {
+	font-family: "circular-lt";
+	font-size: 1em;
+	margin: 1em 0.5em 1.5em 0em;
+}
+
+#reflect-main {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: var(--white);
+}

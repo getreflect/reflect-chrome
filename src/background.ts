@@ -1,3 +1,6 @@
+import 'babel-polyfill';
+import * as nn from "./nn"
+
 const SERVER_URL: string = "http://34.67.167.214/api";
 const REQ_TIMEOUT: number = 2000; // time in milliseconds
 const WHITELIST_PERIOD: number = 5;
@@ -36,61 +39,12 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 // default list of blocked sites
-function addDefaultFilters() : void {
+function addDefaultFilters(): void {
 	const blockedSites: string[] = ["facebook.com", "twitter.com", "instagram.com", "youtube.com"];
 	chrome.storage.sync.set({ 'blockedSites': blockedSites }, () => {
 		console.log('Default blocked sites have been loaded.');
 	});
 };
-
-// Listen for new runtime connections
-chrome.runtime.onConnect.addListener((port) => {
-	// check comm channel
-	console.assert(port.name === "intentStatus");
-
-	port.onMessage.addListener((msg) => {
-		// extract intent and url from message
-		const intent: string = msg.intent;
-		const url: string = msg.url;
-
-		// send new intent to server
-		const sendIntent: string = JSON.stringify({intent: intent, url: url});
-		let xhr: XMLHttpRequest = new XMLHttpRequest();
-		xhr.timeout = REQ_TIMEOUT;
-		xhr.open("POST", SERVER_URL, true);
-		xhr.setRequestHeader('Content-Type', 'application/json');
-		xhr.send(sendIntent);
-
-		// handle response
-		xhr.onload = () => {
-			if (xhr.status === 200) {
-				// add whitelist period for site
-				chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-					const urls: string[] = tabs.map(x => x.url);
-					const domain: string = cleanDomain(urls)
-					addUrlToWhitelistedSites(domain, WHITELIST_PERIOD);
-				});
-
-				// send status to tab
-				port.postMessage({status: "ok"});
-				console.log(`Success! Redirecting`);
-			} else {
-				// send status to tab
-				port.postMessage({status: "invalid"});
-				console.log("Failed. Remaining on page.");
-			}
-		}
-
-		// if timeout or error (e.g. not internet connection)
-		xhr.ontimeout = (e) => {
-			port.postMessage({status: "timeout"});
-		};
-
-		xhr.onerror = (e) => {
-			port.postMessage({status: "timeout"});
-		};
-	});
-});
 
 // On Chrome startup, setup extension icons
 chrome.runtime.onStartup.addListener(() => {
@@ -142,8 +96,42 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 	}
 });
 
+// Load ML model stuff
+const model: nn.IntentClassifier = new nn.IntentClassifier("acc84.78");
+
+// Listen for new runtime connections
+chrome.runtime.onConnect.addListener((port) => {
+	// check comm channel
+	console.assert(port.name === "intentStatus");
+
+	port.onMessage.addListener(async (msg) => {
+		// extract intent and url from message
+		const intent: string = msg.intent;
+		const url: string = msg.url;
+
+		const valid: boolean = await model.predict(intent);
+
+		if (valid) {
+			// add whitelist period for site
+			chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+				const urls: string[] = tabs.map(x => x.url);
+				const domain: string = cleanDomain(urls)
+				addUrlToWhitelistedSites(domain, WHITELIST_PERIOD);
+			});
+
+			// send status to tab
+			port.postMessage({status: "ok"});
+			console.log(`Success! Redirecting`);
+		} else {
+			// send status to tab
+			port.postMessage({status: "invalid"});
+			console.log("Failed. Remaining on page.");
+		}
+	});
+});
+
 // push current site to storage
-function addUrlToBlockedSites(url: string | undefined, tab: object | undefined) : void {
+function addUrlToBlockedSites(url: string | undefined, tab: object | undefined): void {
 	chrome.storage.sync.get('blockedSites', (storage) => {
 		storage.blockedSites.push(url); // urls.hostname
 		chrome.storage.sync.set({ 'blockedSites': storage.blockedSites }, () => {
@@ -154,7 +142,7 @@ function addUrlToBlockedSites(url: string | undefined, tab: object | undefined) 
 
 
 // push current site to whitelist with time to whitelist
-function addUrlToWhitelistedSites(url: string, minutes: number) : void {
+function addUrlToWhitelistedSites(url: string, minutes: number): void {
 	chrome.storage.sync.get('whitelistedSites', (storage) => {
 
 		let whitelistedSites: {[key: string]: string} = storage.whitelistedSites

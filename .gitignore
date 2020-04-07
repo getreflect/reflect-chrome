@@ -1,5 +1,4 @@
 .DS_Store
-.eslintrc.js
-node_modules
+.cache
 build
-package-lock.json
+node_modules
