@@ -45,9 +45,12 @@ export class Tokenizer {
 	}
 
 	pad(tokens: number[]): number[] {
-		let paddedArray = new Array(this.max_len).fill(0);
-		for (var i = 0; i < tokens.length; i++) {
-			paddedArray[i] = tokens[i]
+		const paddedArray: number[] = Array(this.max_len).fill(0, 0, this.max_len);
+
+		for (var i = 0; i < paddedArray.length ; i++) {
+			if (tokens[i] != undefined) {
+				paddedArray[i+(this.max_len - tokens.length)] = tokens[i]
+			}
 		}
 
 		return paddedArray
@@ -56,8 +59,6 @@ export class Tokenizer {
 	tokenize(intent: string): number[] {
 		// clean string and split into array
 		const splitString: string[] = this.cleanStr(intent).split(" ")
-
-		console.log(this.lookup("asdfasdfasdfsdf"))
 
 		// lookup each item and return
 		const tokens: number[] = splitString.map((word) => (this.lookup(word)))
@@ -77,24 +78,20 @@ export class IntentClassifier {
 		this.loadModel(modelName);
 	}
 
-	predict(intent: string, threshold: number = 0.5): boolean {
+	async predict(intent: string, threshold: number = 0.5): Promise<boolean> {
 		// tokenize and convert to 1d tensor
 		const tokens: number[] = this.tokenizer.tokenize(intent);
 		const inputTensor: tf.Tensor = tf.tensor2d([tokens]);
 
 		// predict
-		(this.model.predict(inputTensor) as tf.Tensor).data().then(predictions => {
-			// get raw prediction tensor
-			const confidenceTensor: tf.Tensor = tf.argMax(predictions);
-
-			// sync tensor value from gpu to cpu
-			const confidence: number = confidenceTensor.dataSync()[0];
-
-			if (confidence > 0.5) {
+		return (this.model.predict(inputTensor) as tf.Tensor).data().then(predictions => {
+			const confidence: number = predictions[0];
+			if (confidence > threshold) {
 				return true;
+			} else {
+				return false;
 			}
 		})
-		return false;
 	}
 
 	async loadModel(modelName: string) {
@@ -115,7 +112,7 @@ export class IntentClassifier {
 
 		// Warms up the model by causing intermediate tensor values
 		// to be built and pushed to GPU.
-		tf.tidy(() => this.predict(""));
+		this.predict("");
 		console.log("Model warmed.")
 	}
 }
