@@ -22,18 +22,3 @@ function cleanDomain(urls: (string | undefined)[]): string {
 		}
 	}
 }
-
-function cleanStr(inputIntent: string): string {
-	// strip punctuation
-	const noPunc = inputIntent.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
-
-	// strip capitalization
-	const lower = noPunc.toLowerCase()
-
-	// remove personal prefix
-	const noPrefix = lower.replace("im ", "")
-						  .replace("i ", "")
-
-	// cleanup leftover spaces (2+ spaces to 1)
-	return noPrefix.replace(/\s{2,}/g, " ");
-}

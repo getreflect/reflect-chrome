@@ -20,14 +20,3 @@ function cleanDomain(urls) {
         }
     }
 }
-function cleanStr(inputIntent) {
-    // strip punctuation
-    const noPunc = inputIntent.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-    // strip capitalization
-    const lower = noPunc.toLowerCase();
-    // remove personal prefix
-    const noPrefix = lower.replace("im ", "")
-        .replace("i ", "");
-    // cleanup leftover spaces (2+ spaces to 1)
-    return noPrefix.replace(/\s{2,}/g, " ");
-}

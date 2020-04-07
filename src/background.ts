@@ -1,5 +1,5 @@
 import 'babel-polyfill';
-import {Tokenizer, IntentClassifier} from "./nn"
+import * as nn from "./nn"
 
 const SERVER_URL: string = "http://34.67.167.214/api";
 const REQ_TIMEOUT: number = 2000; // time in milliseconds
@@ -146,7 +146,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 // Load ML model stuff
-const model: IntentClassifier = new IntentClassifier("acc84.78");
+const model: nn.IntentClassifier = new nn.IntentClassifier("acc84.78");
 
 // push current site to storage
 function addUrlToBlockedSites(url: string | undefined, tab: object | undefined): void {
