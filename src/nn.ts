@@ -80,7 +80,7 @@ export class IntentClassifier {
 	predict(intent: string, threshold: number = 0.5): boolean {
 		// tokenize and convert to 1d tensor
 		const tokens: number[] = this.tokenizer.tokenize(intent);
-		const inputTensor: tf.Tensor = tf.tensor1d(tokens);
+		const inputTensor: tf.Tensor = tf.tensor2d([tokens]);
 
 		// predict
 		(this.model.predict(inputTensor) as tf.Tensor).data().then(predictions => {
