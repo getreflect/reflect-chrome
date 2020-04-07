@@ -85,6 +85,11 @@ export class IntentClassifier {
 
 		// predict
 		return (this.model.predict(inputTensor) as tf.Tensor).data().then(predictions => {
+
+			// garbage collect finished tensor to prevent mem leak
+			tf.dispose(inputTensor)
+
+			// threshold net output
 			const confidence: number = predictions[0];
 			if (confidence > threshold) {
 				return true;

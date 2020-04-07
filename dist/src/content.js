@@ -83,7 +83,6 @@ function callBackgroundWithIntent(intent) {
     // open connection to runtime (background.ts)
     const port = chrome.runtime.connect({ name: "intentStatus" });
     port.postMessage({ intent: intent, url: window.location.href });
-    displayStatus("connecting...", 3000, REFLECT_INFO);
     port.onMessage.addListener((msg) => {
         switch (msg.status) {
             case "ok":
@@ -98,10 +97,6 @@ function callBackgroundWithIntent(intent) {
                 displayStatus("that doesn't seem to productive. try being more specific.", 3000, REFLECT_ERR);
                 // clear input
                 $("#textbox").val("");
-                break;
-            case "timeout":
-                // display message
-                displayStatus("couldn't reach server, try again later.", 3000, REFLECT_ERR);
                 break;
         }
         // close connection

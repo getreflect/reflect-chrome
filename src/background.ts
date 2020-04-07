@@ -110,7 +110,6 @@ chrome.runtime.onConnect.addListener((port) => {
 		const url: string = msg.url;
 
 		const valid: boolean = await model.predict(intent);
-		console.log(valid)
 
 		if (valid) {
 			// add whitelist period for site
