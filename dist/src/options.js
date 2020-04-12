@@ -26,7 +26,7 @@ function saveCurrentOptions() {
 function restoreSavedOptions() {
     chrome.storage.sync.get('whitelistTime', (storage) => {
         const WHITELIST_PERIOD = storage.whitelistTime;
-        document.getElementById('whitelistTime').value = storage.whitelistTime;
+        document.getElementById('whitelistTime').value = WHITELIST_PERIOD;
     });
 }
 function updateButtonListeners() {

@@ -33,7 +33,7 @@ function saveCurrentOptions(): void {
 function restoreSavedOptions(): void {
 	chrome.storage.sync.get('whitelistTime', (storage) => {
 		const WHITELIST_PERIOD: number = storage.whitelistTime;
-		(document.getElementById('whitelistTime') as HTMLFormElement).value = storage.whitelistTime;
+		(document.getElementById('whitelistTime') as HTMLFormElement).value = WHITELIST_PERIOD;
 	})
 }
 
