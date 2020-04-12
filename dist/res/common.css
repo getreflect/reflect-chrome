@@ -4,8 +4,39 @@
 	--blue: #8b9ac0;
 }
 
-table, th, td {
-	border: 1px solid black;
+table {
+	margin-top: 3em;
+	width: 60%;
+	border: 1.2px solid var(--blue);
+	border-radius: 5px;
+}
+
+.shadow {
+	box-shadow: 0 14px 28px rgba(0,0,0,0.06), 0 10px 10px rgba(0,0,0,0.02);
+}
+
+.hover {
+	transition: all 1s ease-in;
+}
+
+.hover:hover {
+	box-shadow: 0 14px 28px rgba(0,0,0,0.18), 0 10px 10px rgba(0,0,0,0.04);
+}
+
+button {
+  background-color: var(--white);
+  color: #dd6666;
+  border: none;
+  margin: 0em;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.urlDisplay {
+	margin: 0.2em 0.5em !important;
+	display: inline-block !important;
 }
 
 .options_panel {

@@ -34,16 +34,22 @@ function updateButtonListeners(): void {
 	};
 };
 
+function generateWebsiteDiv(id: number, site: string): string {
+	return "<tr>" +
+				`<td style="width: 95%"><p class="urlDisplay" id=${id}>${site}</p></td>` +
+				`<td style="width: 5%"><button id=${id}>&times;</button></td>` +
+		   "</tr>"
+}
+
 function drawFilterListTable(): void {
 	chrome.storage.sync.get('blockedSites', (storage) => {
 		const blockedSites: string[] = storage.blockedSites;
 		const tableDiv: HTMLElement = document.getElementById('filterList');
-		let table: string = "<table>";
-		let counter: number = 0;
+		let table: string = '<table class="hover shadow">';
+		let cur_id: number = 0;
 		blockedSites.forEach((site: string) => {
-			table += "<tr><td id =\"" + counter + "site\">"
-				+ site + "</td><td><button id =\"" + counter++
-				+ "button\">&times;</button ></td></tr>";
+			table += generateWebsiteDiv(cur_id, site)
+			cur_id++;
 		});
 		table += "</table>";
 		const filterList: HTMLElement = document.getElementById('filterList')
