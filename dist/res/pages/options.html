@@ -1,18 +1,29 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<style>
-			table, th, td {
-				border: 1px solid black;
-			}
-		</style>
+		<link rel="stylesheet" href="/res/common.css">
 		<script src="/src/options.js"></script>
 	</head>
-	<body>
-		<div id = "filterList"></div>
-		<div id = "addSite">
-			<input type="text" id="urlInput" />
-			<input type="submit" id="add" value="add">
+	<body id="reflectMain">
+		<div class="contentCol">
+			<div class="options_panel">
+				<h1>options.</h1>
+				<p>buttons and knobs to customize your reflect experience.</p>
+				<br>
+
+				<!-- change default block time (5min) -->
+				<!-- option to clear all stored data -->
+			</div>
+
+			<br>
+
+			<h1>sites.</h1>
+			<p>a list of sites you would like to be more mindful of. sites added here will have the reflect prompt shown to you.</p>
+			<div id = "addSite">
+				<input type="text" id="urlInput" />
+				<input class="urlSubmit" type="submit" id="add" value="add site">
+			</div>
+			<div id = "filterList"></div>
 		</div>
 	</body>
 </html>
