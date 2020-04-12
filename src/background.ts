@@ -1,10 +1,6 @@
 import 'babel-polyfill';
 import * as nn from "./nn"
 
-const SERVER_URL: string = "http://34.67.167.214/api";
-const REQ_TIMEOUT: number = 2000; // time in milliseconds
-const WHITELIST_PERIOD: number = 5;
-
 // On install script --> TODO: onboarding flow
 chrome.runtime.onInstalled.addListener(() => {
 	turnFilteringOff();
@@ -13,6 +9,11 @@ chrome.runtime.onInstalled.addListener(() => {
 	const whitelist: {[key: string]: Date} = {};
 	chrome.storage.sync.set({ 'whitelistedSites': whitelist }, () => {
 		console.log('Default whitelist sites have been set.');
+	});
+
+	// set default block value
+	chrome.storage.sync.set({'whitelistTime': 5}, () => {
+	    console.log('Default whitelist period set.')
 	});
 
 	// populate blocked sites
@@ -109,33 +110,41 @@ chrome.runtime.onConnect.addListener((port) => {
 		const intent: string = msg.intent;
 		const url: string = msg.url;
 
-		// check if too short
-		const words: string[] = intent.split(" ");
-		if (words.length <= 3) {
-			// send status to tab
-			port.postMessage({status: "too_short"});
-		} else {
+		// get whitelist period
+		chrome.storage.sync.get('whitelistTime', async (storage) => {
+		    const WHITELIST_PERIOD: number = storage.whitelistTime;
 
-			// send to nlp model for prediction
-			const valid: boolean = await model.predict(intent);
+			// check if too short
+			const words: string[] = intent.split(" ");
 
-			if (valid) {
-				// add whitelist period for site
-				chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-					const urls: string[] = tabs.map(x => x.url);
-					const domain: string = cleanDomain(urls)
-					addUrlToWhitelistedSites(domain, WHITELIST_PERIOD);
-				});
+			if (words.length <= 3) {
 
 				// send status to tab
-				port.postMessage({status: "ok"});
-				console.log(`Success! Redirecting`);
+				port.postMessage({status: "too_short"});
+
 			} else {
-				// send status to tab
-				port.postMessage({status: "invalid"});
-				console.log("Failed. Remaining on page.");
+
+				// send to nlp model for prediction
+				const valid: boolean = await model.predict(intent);
+
+				if (valid) {
+					// add whitelist period for site
+					chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+						const urls: string[] = tabs.map(x => x.url);
+						const domain: string = cleanDomain(urls)
+						addUrlToWhitelistedSites(domain, WHITELIST_PERIOD);
+					});
+
+					// send status to tab
+					port.postMessage({status: "ok"});
+					console.log(`Success! Redirecting`);
+				} else {
+					// send status to tab
+					port.postMessage({status: "invalid"});
+					console.log("Failed. Remaining on page.");
+				}
 			}
-		}
+		});
 	});
 });
 

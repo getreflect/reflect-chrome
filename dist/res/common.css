@@ -5,10 +5,17 @@
 }
 
 table {
+	width: 75%;
+}
+
+.styled {
 	margin-top: 3em;
-	width: 60%;
 	border: 1.2px solid var(--blue);
 	border-radius: 5px;
+}
+
+th, td {
+	border: none;
 }
 
 .shadow {
@@ -32,6 +39,7 @@ button {
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
+  cursor: pointer;
 }
 
 .urlDisplay {
@@ -41,6 +49,7 @@ button {
 
 .options_panel {
 	padding-top: 2em;
+	padding-bottom: 5em;
 }
 
 .contentCol {
@@ -58,12 +67,29 @@ button {
   src: url("chrome-extension://__MSG_@@extension_id__/res/circular-light.ttf");
 }
 
-h1 {
+h1, h2, h3 {
 	font-family: "circular" !important;
-	font-weight: 350;
-	font-size: 5.5em;
 	margin-bottom: 0;
 	margin-top: 0;
+}
+
+.bold {
+	font-weight: 700 !important;
+}
+
+h1 {
+	font-weight: 300;
+	font-size: 5.5em;
+}
+
+h2 {
+	font-weight: 200;
+	font-size: 4em;
+}
+
+h3 {
+	font-weight: normal;
+	font-size: 2em;
 }
 
 p {
@@ -126,10 +152,23 @@ input:focus, textarea:focus, select:focus{
 	font-family: "circular-lt"
 }
 
-form {
+#inputForm {
 	position: fixed;
 	left: 12.5vw;
 	top: 50vh;
+}
+
+.subtext {
+	font-size: 1em;
+}
+
+input[type=number] {
+	width: 3em;
+	border-radius: 20px;
+	border: 3px solid var(--shale);
+	padding: 0.5em 2em;
+	cursor: pointer;
+	font-size: 1em;
 }
 
 input[type=text] {

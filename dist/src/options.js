@@ -3,7 +3,32 @@ const ENTER_KEY_CODE = 13;
 document.addEventListener('DOMContentLoaded', function renderFilterListTable() {
     drawFilterListTable();
     setAddButtonListener();
+    restoreSavedOptions();
+    // options listeners
+    setupOptionsListener();
 });
+function setupOptionsListener() {
+    document.getElementById('save').addEventListener('click', saveCurrentOptions);
+}
+function saveCurrentOptions() {
+    // get all form values
+    const whitelistTimeElement = document.getElementById('whitelistTime');
+    const whitelistTime = whitelistTimeElement.value;
+    chrome.storage.sync.set({ 'whitelistTime': whitelistTime }, () => {
+        // Update status to let user know options were saved.
+        const status = document.getElementById('statusContent');
+        status.textContent = 'options saved.';
+        setTimeout(() => {
+            status.textContent = '';
+        }, 1500);
+    });
+}
+function restoreSavedOptions() {
+    chrome.storage.sync.get('whitelistTime', (storage) => {
+        const WHITELIST_PERIOD = storage.whitelistTime;
+        document.getElementById('whitelistTime').value = storage.whitelistTime;
+    });
+}
 function updateButtonListeners() {
     // get all buttons
     const buttons = document.getElementsByTagName("button");
@@ -40,7 +65,7 @@ function drawFilterListTable() {
     chrome.storage.sync.get('blockedSites', (storage) => {
         const blockedSites = storage.blockedSites;
         const tableDiv = document.getElementById('filterList');
-        let table = '<table class="hover shadow">';
+        let table = '<table class="hover shadow styled">';
         let cur_id = 0;
         blockedSites.forEach((site) => {
             table += generateWebsiteDiv(cur_id, site);

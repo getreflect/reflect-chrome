@@ -4,7 +4,38 @@ const ENTER_KEY_CODE = 13;
 document.addEventListener('DOMContentLoaded', function renderFilterListTable() {
 	drawFilterListTable();
 	setAddButtonListener();
+	restoreSavedOptions();
+
+	// options listeners
+	setupOptionsListener();
 });
+
+function setupOptionsListener(): void {
+	document.getElementById('save').addEventListener('click',
+    saveCurrentOptions);
+}
+
+function saveCurrentOptions(): void {
+	// get all form values
+	const whitelistTimeElement: HTMLFormElement = document.getElementById('whitelistTime') as HTMLFormElement;
+	const whitelistTime: number = whitelistTimeElement.value
+
+	chrome.storage.sync.set({'whitelistTime': whitelistTime}, () => {
+	    // Update status to let user know options were saved.
+	    const status = document.getElementById('statusContent');
+	    status.textContent = 'options saved.';
+	    setTimeout(() => {
+	    	status.textContent = '';
+	    }, 1500);
+	});
+}
+
+function restoreSavedOptions(): void {
+	chrome.storage.sync.get('whitelistTime', (storage) => {
+		const WHITELIST_PERIOD: number = storage.whitelistTime;
+		(document.getElementById('whitelistTime') as HTMLFormElement).value = storage.whitelistTime;
+	})
+}
 
 function updateButtonListeners(): void {
 	// get all buttons
@@ -25,7 +56,7 @@ function updateButtonListeners(): void {
 				blockedSites.splice(id, 1);
 
 				// sync with chrome storage
-				chrome.storage.sync.set({ 'blockedSites': blockedSites }, () => {
+				chrome.storage.sync.set({'blockedSites': blockedSites }, () => {
 					console.log(`removed ${url} from blocked list`);
 					drawFilterListTable();
 				});
@@ -45,7 +76,7 @@ function drawFilterListTable(): void {
 	chrome.storage.sync.get('blockedSites', (storage) => {
 		const blockedSites: string[] = storage.blockedSites;
 		const tableDiv: HTMLElement = document.getElementById('filterList');
-		let table: string = '<table class="hover shadow">';
+		let table: string = '<table class="hover shadow styled">';
 		let cur_id: number = 0;
 		blockedSites.forEach((site: string) => {
 			table += generateWebsiteDiv(cur_id, site)
