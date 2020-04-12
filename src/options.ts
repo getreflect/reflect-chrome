@@ -2,29 +2,39 @@ const ENTER_KEY_CODE = 13;
 
 // On page load, draw table and add button listener
 document.addEventListener('DOMContentLoaded', function renderFilterListTable() {
-	drawFilterListTable(setDeconsteButtonsListeners);
+	drawFilterListTable();
 	setAddButtonListener();
 });
 
-function setDeconsteButtonsListeners(): void {
-	const buttons: HTMLCollectionOf<HTMLButtonElement> = document.getElementsByTagName("button");
+function updateButtonListeners(): void {
+	// get all buttons
+	const buttons = document.getElementsByTagName("button");
 	for (const button of <any>buttons) {
 		button.addEventListener("click", () => {
+			// get button ID
 			const id: number = parseInt(button.id[0]);
+
+			// get url
 			const url: string = document.getElementById(button.id[0] + "site")?.innerHTML;
+
+			// get blockedSites
 			chrome.storage.sync.get('blockedSites', (storage) => {
 				const blockedSites: string[]  = storage.blockedSites;
+
+				// remove by ID
 				blockedSites.splice(id, 1);
+
+				// sync with chrome storage
 				chrome.storage.sync.set({ 'blockedSites': blockedSites }, () => {
 					console.log(`removed ${url} from blocked list`);
-					drawFilterListTable(setDeconsteButtonsListeners);
+					drawFilterListTable();
 				});
 			});
 		});
 	};
 };
 
-function drawFilterListTable(callback: Function | undefined): void {
+function drawFilterListTable(): void {
 	chrome.storage.sync.get('blockedSites', (storage) => {
 		const blockedSites: string[] = storage.blockedSites;
 		const tableDiv: HTMLElement = document.getElementById('filterList');
@@ -41,36 +51,50 @@ function drawFilterListTable(callback: Function | undefined): void {
 			filterList.innerHTML = table;
 		}		
 
-		if (callback === undefined) {
-      		// create empty callback
-			callback = () => { };
-		}
-		callback();
+		updateButtonListeners()
 	});
 };
 
+// sets event listeners for add new url operations
 function setAddButtonListener(): void {
-	document.getElementById('urlInput')?.addEventListener("keypress", (event) => {
+	const urlInputElement: HTMLElement = document.getElementById('urlInput')
+
+	// add key listener to submit new url on <ENTER> pressed
+	urlInputElement.addEventListener("keypress", (event) => {
 		if (event.keyCode == ENTER_KEY_CODE) {
 			addUrlToFilterList();
 		}
 	});
+
+	// add click listener to add URL button
 	const addButton: HTMLElement = document.getElementById('add');
-	addButton?.addEventListener('click', () => {
+	addButton.addEventListener('click', () => {
 		addUrlToFilterList();
 	});
 };
 
 function addUrlToFilterList(): void {
+	// get urlInput
 	const urlInput: HTMLFormElement = document.getElementById('urlInput') as HTMLFormElement;
+
+	// see if value is non-empty
 	if (urlInput.value != "") {
 		chrome.storage.sync.get('blockedSites', (storage) => {
+			// get current blocked sites
 			const blockedSites: string[] = storage.blockedSites;
+
+			// add to blocked sites
 			blockedSites.push(urlInput.value)
+
+			// sync changes with chrome storage
 			chrome.storage.sync.set({ 'blockedSites': blockedSites }, () => {
 				console.log(`added ${urlInput} from blocked list`);
+
+				// clear input
 				urlInput.value = "";
-				drawFilterListTable(setDeconsteButtonsListeners);
+
+				// redraw filterList
+				drawFilterListTable();
 			});
 		});
 	}
