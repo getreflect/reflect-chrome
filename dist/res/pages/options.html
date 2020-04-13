@@ -1,18 +1,40 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<style>
-			table, th, td {
-				border: 1px solid black;
-			}
-		</style>
-		<script src="/build/options.js"></script>
+		<link rel="stylesheet" href="/res/common.css">
+		<script src="/src/options.js"></script>
 	</head>
-	<body>
-		<div id = "filterList"></div>
-		<div id = "addSite">
-			<input type="text" id="urlInput" />
-			<input type="submit" id="add" value="add">
+	<body id="reflectMain">
+		<div class="contentCol">
+			<div class="options_panel">
+				<h1 class="bold">options.</h1>
+				<p>buttons and knobs to customize your reflect experience.</p>
+
+				<table>
+					<tr>
+						<td style="width:90%">
+							<h3 class="setting">whitelist time.</h3>
+							<p class="subtext">time allowed on a website after successful intent (minutes).</p>
+						</td>
+						<td style="width:10%">
+							<input id="whitelistTime" type="number" min="0">
+						</td>
+					</tr>
+				</table>
+			  	<p id="statusMessage">
+				  	<span>&nbsp;</span>
+				  	<span id="statusContent"></span>
+				</p>
+				<input id="save" type="submit" value="save">
+			</div>
+
+			<h2>sites.</h2>
+			<p>a list of sites you would like to be more mindful of. sites added here will have the reflect prompt shown to you.</p>
+			<div id="addSite">
+				<input type="text" id="urlInput" />
+				<input class="urlSubmit" type="submit" id="add" value="add site">
+			</div>
+			<div id="filterList"></div>
 		</div>
 	</body>
 </html>

@@ -4,6 +4,59 @@
 	--blue: #8b9ac0;
 }
 
+table {
+	width: 75%;
+}
+
+.styled {
+	margin-top: 3em;
+	border: 1.2px solid var(--blue);
+	border-radius: 5px;
+}
+
+th, td {
+	border: none;
+}
+
+.shadow {
+	box-shadow: 0 14px 28px rgba(0,0,0,0.06), 0 10px 10px rgba(0,0,0,0.02);
+}
+
+.hover {
+	transition: all 1s ease-in;
+}
+
+.hover:hover {
+	box-shadow: 0 14px 28px rgba(0,0,0,0.18), 0 10px 10px rgba(0,0,0,0.04);
+}
+
+button {
+  background-color: var(--white);
+  color: #dd6666;
+  border: none;
+  margin: 0em;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.urlDisplay {
+	margin: 0.2em 0.5em !important;
+	display: inline-block !important;
+}
+
+.options_panel {
+	padding-top: 2em;
+	padding-bottom: 5em;
+}
+
+.contentCol {
+	padding: 0 20vw 30px 20vw;
+	color: var(--shale);
+}
+
 @font-face {
   font-family: "circular";
   src: url("chrome-extension://__MSG_@@extension_id__/res/circular.ttf");
@@ -14,11 +67,29 @@
   src: url("chrome-extension://__MSG_@@extension_id__/res/circular-light.ttf");
 }
 
-h1 {
+h1, h2, h3 {
 	font-family: "circular" !important;
-	font-weight: 350;
-	font-size: 5.5em;
 	margin-bottom: 0;
+	margin-top: 0;
+}
+
+.bold {
+	font-weight: 700 !important;
+}
+
+h1 {
+	font-weight: 300;
+	font-size: 5.5em;
+}
+
+h2 {
+	font-weight: 200;
+	font-size: 4em;
+}
+
+h3 {
+	font-weight: normal;
+	font-size: 2em;
 }
 
 p {
@@ -81,10 +152,23 @@ input:focus, textarea:focus, select:focus{
 	font-family: "circular-lt"
 }
 
-form {
+#inputForm {
 	position: fixed;
 	left: 12.5vw;
 	top: 50vh;
+}
+
+.subtext {
+	font-size: 1em;
+}
+
+input[type=number] {
+	width: 3em;
+	border-radius: 20px;
+	border: 3px solid var(--shale);
+	padding: 0.5em 2em;
+	cursor: pointer;
+	font-size: 1em;
 }
 
 input[type=text] {
@@ -105,6 +189,12 @@ input[type=submit] {
 	cursor: pointer;
 	font-family: "circular";
 	font-size: 1em;
+}
+
+.urlSubmit {
+	margin-left: 1.5em;
+	padding: 0.5em 1.4em !important;
+	font-size: 1.2em !important;
 }
 
 #top-text {

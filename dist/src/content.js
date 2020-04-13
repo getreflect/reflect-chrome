@@ -42,7 +42,6 @@ function iterWhitelist() {
                 else {
                     // is currently on whitelist
                     const timeDifference = parsedDate.getTime() - currentDate.getTime();
-                    console.log(timeDifference);
                     setTimeout(loadBlockPage, timeDifference);
                 }
             }
@@ -95,8 +94,11 @@ function callBackgroundWithIntent(intent) {
             case "ok":
                 // show success message
                 // optional: transition?
-                displayStatus("got it! 5 minutes starting now.", 3000, REFLECT_INFO);
-                location.reload();
+                chrome.storage.sync.get('whitelistTime', (storage) => {
+                    const WHITELIST_PERIOD = storage.whitelistTime;
+                    displayStatus(`got it! ${WHITELIST_PERIOD} minutes starting now.`, 3000, REFLECT_INFO);
+                    location.reload();
+                });
                 break;
             case "too_short":
                 $('#textbox').effect("shake");
