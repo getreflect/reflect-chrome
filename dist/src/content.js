@@ -34,9 +34,16 @@ function iterWhitelist() {
                 console.log("whitelisted");
                 // check if expired
                 const parsedDate = new Date(m[strippedURL]);
-                if ((new Date) >= parsedDate) {
+                const currentDate = new Date();
+                if (currentDate >= parsedDate) {
                     console.log("expired");
                     loadBlockPage();
+                }
+                else {
+                    // is currently on whitelist
+                    const timeDifference = parsedDate.getTime() - currentDate.getTime();
+                    console.log(timeDifference);
+                    setTimeout(loadBlockPage, timeDifference);
                 }
             }
             else {
