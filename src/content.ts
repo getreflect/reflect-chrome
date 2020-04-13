@@ -71,6 +71,9 @@ function loadBlockPage(): void {
 
 	    addFormListener();
 
+	    // inject show options page
+		$("#linkToOptions").attr("href", chrome.extension.getURL("res/pages/options.html"));
+
 	    // load css
 		const cssPath: string = chrome.runtime.getURL('res/common.css');
 		$("head").append(
