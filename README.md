@@ -1,5 +1,9 @@
 # reflect.
-a mindful website blocker for the productive.
+"a mindful website blocker for the productive."
+
+reflect is a digitally mindful chrome extension that encourages users to reflect on their relationship with technology. 
+
+when you attempt to visit distracting websites, reflect will ask you what your intention in doing so is. if you have a valid reason, you are allowed to enter the website; if not, you are encouraged to reflect further. 
 
 ## Directory
 A brief overview of the file structure in the repository,
@@ -65,3 +69,7 @@ I'm getting errors about `Cannot find namespace/name ___`.
 * Install the JQuery support by doing `npm i @types/jquery` in the directory.
 * Install the JQuery UI Library by doing `npm i @types/jqueryui` in the directory.
 * Install the `@types` library by doing `npm i @types/chrome` in the directory.
+
+My changes aren't being displayed
+* After saving, build the extension using `npm run build`.
+* Reload the extension in the Chrome Extensions menu
