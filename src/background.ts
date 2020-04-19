@@ -77,7 +77,7 @@ chrome.browserAction.onClicked.addListener(() => {
 chrome.contextMenus.onClicked.addListener((info, tab) => {
 	switch (info.menuItemId) {
 		case "baFilterListMenu":
-			chrome.tabs.create({ url: 'res/pages/options.html' });
+			chrome.runtime.openOptionsPage();
 			break;
 		case "baAddSiteToFilterList":
 		case "pgAddSiteToFilterList":

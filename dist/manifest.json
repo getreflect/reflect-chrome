@@ -5,10 +5,6 @@
   "description": "a mindful website blocker for the productive.",
   "version": "1.0.0",
   "options_page": "res/pages/options.html",
-  // "options_ui": {
-  //   "page": "res/pages/options.html",
-  //   "open_in_tab": false
-  // },
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
 
   "background": {
@@ -28,7 +24,7 @@
   },
   "permissions": [
     "storage",
-    "tabs",
+    "activeTab",
     "<all_urls>",
     "contextMenus"
   ],
