@@ -8,39 +8,39 @@ when you attempt to visit distracting websites, reflect will ask you what your i
 ## Directory
 A brief overview of the file structure in the repository,
 ```python
-src # holds the source code for the extension (typescript)
- | - background.ts # handles intent classification, setup, whitelist, etc.
- | - content.ts # injected into every page, actual block page
- | - contextMenus.ts # create chrome right click context menu
- | - nn.ts # tokenizer and classifier class implementation
- | - options.ts # handle site block changes
- | - util.ts # random util functions
-build # stores intermediate js files compiled from ts [GENERATED]
- | - background.js
- | - content.js       # as these are generated, you shouldn't be 
- | - contextMenus.js  # editing these if you need the change
- | - nn.js            # functionality, do it in `src/`
- | - options.js
- | - util.js
-dist # distribution folder, select this when loading as extension
- | - res # resources folder
- |   | - models # stores converted keras models (jackyzha0/reflect-nlp/nlp)
- |   |   | - acc%%.%% # where %%.%% represents accuracy on the test set
- |   |   |   | - group1-shar1of1.bin # binary storage of model weights
- |   |   |   | - model.json # stores architecture of model
- |   |   |   | - tokenizer.json # stores word tokenizer mappings
- |   |   ...
- |   | - pages # html files
- |   |   | - options.html # page to edit website whitelist
- |   |   | - prompt.html # actual block page
- |   | ... # misc. svg files, fonts, css, and images
- | - src # final source code, generated from `npm run build` [GENERATED]
- | - jquery-3.4.1.min.js # jquery source code, used for DOM manipulation
- | - jquery-ui.min.js # jquery ui source code, used for animations
- | - manifest.json # for chrome to figure out what the extension does/needs
- tsconfig.json # config for how typescript compiles to javascript
- README.md # this file
- package.json # tells npm about the project and how to build it
+┏╼╾src # holds the source code for the extension (typescript)
+╏  ┣╼╾background.ts # handles intent classification, setup, whitelist, etc.
+╏  ┣╼╾content.ts # injected into every page, actual block page
+╏  ┣╼╾contextMenus.ts # create chrome right click context menu
+╏  ┣╼╾nn.ts # tokenizer and classifier class implementation
+╏  ┣╼╾options.ts # handle site block changes
+╏  ┣╼╾util.ts # random util functions
+╏  build # stores intermediate js files compiled from ts [GENERATED]
+╏  ┣╼╾background.js
+╏  ┣╼╾content.js       # as these are generated, you shouldn't be 
+╏  ┣╼╾contextMenus.js  # editing these if you need the change
+╏  ┣╼╾nn.js            # functionality, do it in `src/`
+╏  ┣╼╾options.js
+╏  ┣╼╾util.js
+╏  dist # distribution folder, select this when loading as extension
+╏  ┣╼╾res # resources folder
+╏  ╏  ┣╼╾models # stores converted keras models (jackyzha0/reflect-nlp/nlp)
+╏  ╏  ╏  ┣╼╾acc%%.%% # where %%.%% represents accuracy on the test set
+╏  ╏  ╏  ╏  ┣╼╾group1-shar1of1.bin # binary storage of model weights
+╏  ╏  ╏  ╏  ┣╼╾model.json # stores architecture of model
+╏  ╏  ╏  ╏  ┗╼╾tokenizer.json # stores word tokenizer mappings
+╏  ╏  ╏  ┗╼╾...
+╏  ╏  ┣╼╾pages # html files
+╏  ╏  ╏  ┣╼╾options.html # page to edit website whitelist
+╏  ╏  ╏  ┗╼╾prompt.html # actual block page
+╏  ╏  ┗╼╾... # misc. svg files, fonts, css, and images
+╏  ┣╼╾src # final source code, generated from `npm run build` [GENERATED]
+╏  ┣╼╾jquery-3.4.1.min.js # jquery source code, used for DOM manipulation
+╏  ┣╼╾jquery-ui.min.js # jquery ui source code, used for animations
+╏  ┗╼╾manifest.json # for chrome to figure out what the extension does/needs
+┣╼╾tsconfig.json # config for how typescript compiles to javascript
+┣╼╾README.md # this file
+┗╼╾package.json # tells npm about the project and how to build it
 ```
 
 ## Building the project
