@@ -47,6 +47,11 @@ function firstTimeSetup(): void {
 		let blockedSites: string[] = storage.blockedSites;
 		addDefaultFilters();
 	});
+
+	// set default badge background colour
+	chrome.browserAction.setBadgeBackgroundColor({
+		color: "#576ca8"
+	})
 }
 
 // default list of blocked sites
@@ -185,8 +190,66 @@ function addUrlToWhitelistedSites(url: string, minutes: number): void {
 	});
 }
 
+var badgeUpdateCounter = setInterval(badgeCountDown, 1000);
+
+function cleanupBadge(): void {
+	chrome.browserAction.setBadgeText({
+		text: ''
+	})
+}
+
+function badgeCountDown(): void {
+	// get current active tab
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		const urls: string[]= tabs.map(x => x.url);
+		const currentURL: string = urls[0]
+
+		// check if currently on a page
+		if (currentURL != undefined) {
+			// clean url prefix stuff
+			const matched: RegExpMatchArray | null = currentURL.match(/^[\w]+:\/{2}([\w\.:-]+)/)
+			if (matched != null) {
+				// strip url
+				const strippedURL: string = matched[1].replace("www.", "");
+
+				// get whitelisted sites
+				chrome.storage.sync.get('whitelistedSites', (storage) => {
+					const whitelistedSites: {[key: string]: Date} = storage.whitelistedSites;
+
+					if (whitelistedSites.hasOwnProperty(strippedURL)) {
+						const expiry: Date = new Date(whitelistedSites[strippedURL]);
+						const currentDate: Date = new Date();
+
+						const timeDifference: number = expiry.getTime() - currentDate.getTime();
+
+						setBadge(Math.round(timeDifference / 1000));
+					} else {
+						cleanupBadge();
+					}
+				});
+			}
+		} else {
+			cleanupBadge();
+		}
+	});
+}
+
+function setBadge(time: number) {
+	if (time <= 0) {
+		cleanupBadge()
+	} else {
+		chrome.browserAction.setBadgeText({
+			text: (time).toString() + "s"
+		})
+	}
+}
+
 function turnFilteringOff() : void {
 	chrome.storage.sync.set({ 'isEnabled': false }, () => {
+		// stop checking for badge updates
+		clearInterval(badgeUpdateCounter);
+		cleanupBadge()
+
 		chrome.browserAction.setIcon({ path: { "16": 'res/off.png' } });
 		console.log('Filtering disabled');
 	});
@@ -194,6 +257,9 @@ function turnFilteringOff() : void {
 
 function turnFilteringOn() : void {
 	chrome.storage.sync.set({ 'isEnabled': true }, () => {
+		// start badge update counter
+		badgeUpdateCounter = setInterval(badgeCountDown, 1000);
+
 		chrome.browserAction.setIcon({ path: 'res/on.png' }, () => {
 			console.log('Filtering enabled.');
 		});
