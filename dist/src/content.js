@@ -42,6 +42,8 @@ function iterWhitelist() {
                 else {
                     // is currently on whitelist
                     const timeDifference = parsedDate.getTime() - currentDate.getTime();
+                    // load block page as soon as site expires
+                    badgeCountDown(timeDifference / 1000);
                     setTimeout(loadBlockPage, timeDifference);
                 }
             }
@@ -52,6 +54,22 @@ function iterWhitelist() {
         }
         // otherwise do nothing
     });
+}
+function badgeCountDown(timeleft) {
+    if (timeleft == 0) {
+        // clear badge
+        chrome.browserAction.setBadgeText({
+            text: ''
+        });
+    }
+    else {
+        setTimeout(() => {
+            chrome.browserAction.setBadgeText({
+                text: (timeleft).toString()
+            });
+            badgeCountDown(timeleft - 1);
+        }, 1000);
+    }
 }
 function loadBlockPage() {
     // get prompt page content
