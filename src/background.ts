@@ -1,9 +1,38 @@
 import 'babel-polyfill';
 import * as nn from "./nn"
 
-// On install script --> TODO: onboarding flow
-chrome.runtime.onInstalled.addListener(() => {
-	turnFilteringOff();
+// On install script
+chrome.runtime.onInstalled.addListener((details) => {
+	// on first time install
+    if(details.reason == "install") {
+		chrome.tabs.create({
+			// redir to onboarding url
+			url: 'http://getreflect.app/onboarding',
+			active: true
+		});
+
+        firstTimeSetup();
+    }
+
+    // on version update
+    if (details.reason == "update") {
+		chrome.tabs.create({
+			// redir to latest release patch notes
+			url: 'http://getreflect.app/latest',
+			active: true
+		});
+
+        const thisVersion = chrome.runtime.getManifest().version;
+        console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
+    }
+
+    // set uninstall url
+    chrome.runtime.setUninstallURL('http://getreflect.app/uninstall')
+});
+
+function firstTimeSetup(): void {
+	// defualt to on
+	turnFilteringOn();
 
 	// set whitelist
 	const whitelist: {[key: string]: Date} = {};
@@ -16,28 +45,17 @@ chrome.runtime.onInstalled.addListener(() => {
 	    console.log('Default whitelist period set.')
 	});
 
-	// populate blocked sites
+	// populate default blocked sites
 	chrome.storage.sync.get('blockedSites', (storage) => {
 		let blockedSites: string[] = storage.blockedSites;
-
-		// check to see if extension was installed before
-		if (typeof blockedSites != "undefined" && blockedSites != null
-			&& blockedSites.length != null && blockedSites.length > 0) {
-			const defaultListConfirm: boolean = confirm("Welcome back to reflect! \nDo you want to load your old filter list?");
-			if (defaultListConfirm) {
-				console.log("User confirmed keeping a previous filter list");
-			}
-			else {
-				console.log("User cancelled loading a previous filter list.");
-				addDefaultFilters();
-			}
-		}
-		else {
-			console.log("User didn't have any previous filters");
-			addDefaultFilters();
-		}
+		addDefaultFilters();
 	});
-});
+
+	// set default badge background colour
+	chrome.browserAction.setBadgeBackgroundColor({
+		color: "#576ca8"
+	})
+}
 
 // default list of blocked sites
 function addDefaultFilters(): void {
@@ -175,8 +193,74 @@ function addUrlToWhitelistedSites(url: string, minutes: number): void {
 	});
 }
 
+var badgeUpdateCounter = setInterval(badgeCountDown, 1000);
+
+function cleanupBadge(): void {
+	chrome.browserAction.setBadgeText({
+		text: ''
+	})
+}
+
+function badgeCountDown(): void {
+	// get current active tab
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		const urls: string[]= tabs.map(x => x.url);
+		const currentURL: string = urls[0]
+
+		// check if currently on a page
+		if (currentURL != undefined) {
+			// clean url prefix stuff
+			const matched: RegExpMatchArray | null = currentURL.match(/^[\w]+:\/{2}([\w\.:-]+)/)
+			if (matched != null) {
+				// strip url
+				const strippedURL: string = matched[1].replace("www.", "");
+
+				// get whitelisted sites
+				chrome.storage.sync.get('whitelistedSites', (storage) => {
+					const whitelistedSites: {[key: string]: Date} = storage.whitelistedSites;
+
+					if (whitelistedSites.hasOwnProperty(strippedURL)) {
+						const expiry: Date = new Date(whitelistedSites[strippedURL]);
+						const currentDate: Date = new Date();
+
+						const timeDifference: number = expiry.getTime() - currentDate.getTime();
+
+						setBadge(timeDifference);
+					} else {
+						cleanupBadge();
+					}
+				});
+			}
+		} else {
+			cleanupBadge();
+		}
+	});
+}
+
+function setBadge(time: number) {
+	time = Math.round(time / 1000)
+	if (time <= 0) {
+		cleanupBadge()
+	} else {
+		if (time > 60) {
+			const min: number = Math.round(time / 60)
+			chrome.browserAction.setBadgeText({
+				text: (min).toString() + "m"
+			})
+		} else {
+			chrome.browserAction.setBadgeText({
+				text: (time).toString() + "s"
+			})
+		}
+	}
+}
+
 function turnFilteringOff() : void {
 	chrome.storage.sync.set({ 'isEnabled': false }, () => {
+		// stop checking for badge updates
+		clearInterval(badgeUpdateCounter);
+		cleanupBadge()
+
 		chrome.browserAction.setIcon({ path: { "16": 'res/off.png' } });
 		console.log('Filtering disabled');
 	});
@@ -184,6 +268,9 @@ function turnFilteringOff() : void {
 
 function turnFilteringOn() : void {
 	chrome.storage.sync.set({ 'isEnabled': true }, () => {
+		// start badge update counter
+		badgeUpdateCounter = setInterval(badgeCountDown, 1000);
+
 		chrome.browserAction.setIcon({ path: 'res/on.png' }, () => {
 			console.log('Filtering enabled.');
 		});
