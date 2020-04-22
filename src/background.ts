@@ -25,6 +25,9 @@ chrome.runtime.onInstalled.addListener((details) => {
         const thisVersion = chrome.runtime.getManifest().version;
         console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
     }
+
+    // set uninstall url
+    chrome.runtime.setUninstallURL('http://getreflect.app/uninstall')
 });
 
 function firstTimeSetup(): void {
