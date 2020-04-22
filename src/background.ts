@@ -222,7 +222,7 @@ function badgeCountDown(): void {
 
 						const timeDifference: number = expiry.getTime() - currentDate.getTime();
 
-						setBadge(Math.round(timeDifference / 1000));
+						setBadge(timeDifference);
 					} else {
 						cleanupBadge();
 					}
@@ -235,12 +235,20 @@ function badgeCountDown(): void {
 }
 
 function setBadge(time: number) {
+	time = Math.round(time / 1000)
 	if (time <= 0) {
 		cleanupBadge()
 	} else {
-		chrome.browserAction.setBadgeText({
-			text: (time).toString() + "s"
-		})
+		if (time > 60) {
+			const min: number = Math.round(time / 60)
+			chrome.browserAction.setBadgeText({
+				text: (min).toString() + "m"
+			})
+		} else {
+			chrome.browserAction.setBadgeText({
+				text: (time).toString() + "s"
+			})
+		}
 	}
 }
 
