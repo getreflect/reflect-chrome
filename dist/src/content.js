@@ -1,16 +1,14 @@
 const REFLECT_INFO = "#576ca8";
 const REFLECT_ERR = "#ff4a47";
-chrome.storage.sync.get('isEnabled', (storage) => {
+chrome.storage.sync.get(null, (storage) => {
     // check to see if reflect is enabled
     if (storage.isEnabled) {
         // check for is blocked
-        chrome.storage.sync.get('blockedSites', (storage) => {
-            storage.blockedSites.forEach((site) => {
-                // is blocked
-                if (window.location.href.includes(site)) {
-                    iterWhitelist();
-                }
-            });
+        storage.blockedSites.forEach((site) => {
+            // is blocked
+            if (window.location.href.includes(site)) {
+                iterWhitelist();
+            }
         });
     }
 });
@@ -23,7 +21,7 @@ function displayStatus(message, duration = 3000, colour = REFLECT_INFO) {
 }
 function iterWhitelist() {
     // iterate whitelisted sites
-    chrome.storage.sync.get('whitelistedSites', (storage) => {
+    chrome.storage.sync.get(null, (storage) => {
         const activeURL = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/);
         // activeURL exists
         if (activeURL != null) {
@@ -96,7 +94,7 @@ function callBackgroundWithIntent(intent) {
             case "ok":
                 // show success message
                 // optional: transition?
-                chrome.storage.sync.get('whitelistTime', (storage) => {
+                chrome.storage.sync.get(null, (storage) => {
                     const WHITELIST_PERIOD = storage.whitelistTime;
                     displayStatus(`got it! ${WHITELIST_PERIOD} minutes starting now.`, 3000, REFLECT_INFO);
                     location.reload();

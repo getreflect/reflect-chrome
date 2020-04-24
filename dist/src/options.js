@@ -24,7 +24,7 @@ function saveCurrentOptions() {
     });
 }
 function restoreSavedOptions() {
-    chrome.storage.sync.get('whitelistTime', (storage) => {
+    chrome.storage.sync.get(null, (storage) => {
         const WHITELIST_PERIOD = storage.whitelistTime;
         document.getElementById('whitelistTime').value = WHITELIST_PERIOD;
     });
@@ -40,7 +40,7 @@ function updateButtonListeners() {
             // get url
             const url = (_a = document.getElementById(button.id[0] + "site")) === null || _a === void 0 ? void 0 : _a.innerHTML;
             // get blockedSites
-            chrome.storage.sync.get('blockedSites', (storage) => {
+            chrome.storage.sync.get(null, (storage) => {
                 const blockedSites = storage.blockedSites;
                 // remove by ID
                 blockedSites.splice(id, 1);
@@ -62,7 +62,7 @@ function generateWebsiteDiv(id, site) {
         "</tr>";
 }
 function drawFilterListTable() {
-    chrome.storage.sync.get('blockedSites', (storage) => {
+    chrome.storage.sync.get(null, (storage) => {
         const blockedSites = storage.blockedSites;
         const tableDiv = document.getElementById('filterList');
         let table = '<table class="hover shadow styled">';
@@ -101,7 +101,7 @@ function addUrlToFilterList() {
     const urlInput = document.getElementById('urlInput');
     // see if value is non-empty
     if (urlInput.value != "") {
-        chrome.storage.sync.get('blockedSites', (storage) => {
+        chrome.storage.sync.get(null, (storage) => {
             // get current blocked sites
             const blockedSites = storage.blockedSites;
             // add to blocked sites
