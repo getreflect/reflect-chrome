@@ -55,9 +55,9 @@ function loadBlockPage() {
     // get prompt page content
     $.get(chrome.runtime.getURL("res/pages/prompt.html"), (page) => {
         // refresh page with our blocker page
-        $("body").find("*").off();
-        $('body').html(page);
-
+        document.open();
+        document.write(page);
+        document.close();
         addFormListener();
         // inject show options page
         $("#linkToOptions").attr("href", chrome.runtime.getURL('res/pages/options.html'));
