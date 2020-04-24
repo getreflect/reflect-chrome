@@ -31,7 +31,7 @@ function saveCurrentOptions(): void {
 }
 
 function restoreSavedOptions(): void {
-	chrome.storage.sync.get('whitelistTime', (storage) => {
+	chrome.storage.sync.get(null, (storage) => {
 		const WHITELIST_PERIOD: number = storage.whitelistTime;
 		(document.getElementById('whitelistTime') as HTMLFormElement).value = WHITELIST_PERIOD;
 	})
@@ -49,7 +49,7 @@ function updateButtonListeners(): void {
 			const url: string = document.getElementById(button.id[0] + "site")?.innerHTML;
 
 			// get blockedSites
-			chrome.storage.sync.get('blockedSites', (storage) => {
+			chrome.storage.sync.get(null, (storage) => {
 				const blockedSites: string[]  = storage.blockedSites;
 
 				// remove by ID
@@ -73,7 +73,7 @@ function generateWebsiteDiv(id: number, site: string): string {
 }
 
 function drawFilterListTable(): void {
-	chrome.storage.sync.get('blockedSites', (storage) => {
+	chrome.storage.sync.get(null, (storage) => {
 		const blockedSites: string[] = storage.blockedSites;
 		const tableDiv: HTMLElement = document.getElementById('filterList');
 		let table: string = '<table class="hover shadow styled">';
@@ -116,7 +116,7 @@ function addUrlToFilterList(): void {
 
 	// see if value is non-empty
 	if (urlInput.value != "") {
-		chrome.storage.sync.get('blockedSites', (storage) => {
+		chrome.storage.sync.get(null, (storage) => {
 			// get current blocked sites
 			const blockedSites: string[] = storage.blockedSites;
 

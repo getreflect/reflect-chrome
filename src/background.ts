@@ -46,7 +46,7 @@ function firstTimeSetup(): void {
 	});
 
 	// populate default blocked sites
-	chrome.storage.sync.get('blockedSites', (storage) => {
+	chrome.storage.sync.get(null, (storage) => {
 		let blockedSites: string[] = storage.blockedSites;
 		addDefaultFilters();
 	});
@@ -67,7 +67,7 @@ function addDefaultFilters(): void {
 
 // On Chrome startup, setup extension icons
 chrome.runtime.onStartup.addListener(() => {
-	chrome.storage.sync.get('isEnabled', (storage) => {
+	chrome.storage.sync.get(null, (storage) => {
 		let icon: string = 'res/icon.png';
 		if (storage.isEnabled) {
 			icon = 'res/on.png';
@@ -75,13 +75,14 @@ chrome.runtime.onStartup.addListener(() => {
 		else if (!storage.isEnabled) {
 			icon = 'res/off.png';
 		}
+
 		chrome.browserAction.setIcon({ path: { "16": icon } });
 	});
 });
 
 // Toggle filtering
 chrome.browserAction.onClicked.addListener(() => {
-	chrome.storage.sync.get('isEnabled', (storage) => {
+	chrome.storage.sync.get(null, (storage) => {
 		if (storage.isEnabled) {
 			turnFilteringOff();
 		}
@@ -129,7 +130,7 @@ chrome.runtime.onConnect.addListener((port) => {
 		const url: string = msg.url;
 
 		// get whitelist period
-		chrome.storage.sync.get('whitelistTime', async (storage) => {
+		chrome.storage.sync.get(null, async (storage) => {
 		    const WHITELIST_PERIOD: number = storage.whitelistTime;
 
 			// check if too short
@@ -168,7 +169,7 @@ chrome.runtime.onConnect.addListener((port) => {
 
 // push current site to storage
 function addUrlToBlockedSites(url: string | undefined, tab: object | undefined): void {
-	chrome.storage.sync.get('blockedSites', (storage) => {
+	chrome.storage.sync.get(null, (storage) => {
 		storage.blockedSites.push(url); // urls.hostname
 		chrome.storage.sync.set({ 'blockedSites': storage.blockedSites }, () => {
 			console.log(`${url} added to blocked sites`);
@@ -179,7 +180,7 @@ function addUrlToBlockedSites(url: string | undefined, tab: object | undefined):
 
 // push current site to whitelist with time to whitelist
 function addUrlToWhitelistedSites(url: string, minutes: number): void {
-	chrome.storage.sync.get('whitelistedSites', (storage) => {
+	chrome.storage.sync.get(null, (storage) => {
 
 		let whitelistedSites: {[key: string]: string} = storage.whitelistedSites
 
@@ -216,7 +217,7 @@ function badgeCountDown(): void {
 				const strippedURL: string = matched[1].replace("www.", "");
 
 				// get whitelisted sites
-				chrome.storage.sync.get('whitelistedSites', (storage) => {
+				chrome.storage.sync.get(null, (storage) => {
 					const whitelistedSites: {[key: string]: Date} = storage.whitelistedSites;
 
 					if (whitelistedSites.hasOwnProperty(strippedURL)) {
