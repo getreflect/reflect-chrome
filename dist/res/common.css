@@ -19,7 +19,7 @@ th, td {
 }
 
 html {
-	font-size: unset;
+	font-size: initial !important;
 }
 
 .shadow {

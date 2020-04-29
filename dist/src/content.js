@@ -23,6 +23,7 @@ function iterWhitelist() {
     // iterate whitelisted sites
     chrome.storage.sync.get(null, (storage) => {
         const activeURL = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/);
+        console.log(activeURL);
         // activeURL exists
         if (activeURL != null) {
             const strippedURL = activeURL[1].replace("www.", "");
