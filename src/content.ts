@@ -5,10 +5,11 @@ chrome.storage.sync.get(null, (storage) => {
 	// check to see if reflect is enabled
 	if (storage.isEnabled) {
 		// check for is blocked
+		const strippedURL : string = getStrippedUrl();
 		storage.blockedSites.forEach((site: string) => {
 
 			// is blocked
-			if (window.location.href.includes(site)) {
+			if (strippedURL.includes(site)) {
 				iterWhitelist()
 			}
 		});
@@ -24,16 +25,27 @@ function displayStatus(message: string, duration: number = 3000, colour: string 
 	$("#statusContent").show().delay(duration).fadeOut()
 }
 
+function getStrippedUrl(): string {
+	// match url
+	const activeURL : RegExpMatchArray | null = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/)
+	if (activeURL != null) {
+		const strippedURL: string = activeURL[1].replace("www.", "");
+		return strippedURL;
+	}
+
+	// no url?
+	return "";
+}
+
 function iterWhitelist(): void {
 	// iterate whitelisted sites
 	chrome.storage.sync.get(null, (storage) => {
-		const activeURL : RegExpMatchArray | null = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/)
-		console.log(activeURL)
+		const strippedURL : string = getStrippedUrl();
 
 		// activeURL exists
-		if (activeURL != null) {
-			const strippedURL: string = activeURL[1].replace("www.", "");
-
+		if (strippedURL != "") {
+			console.log(strippedURL)
+			
 			// if url in whitelist
 			const m: {[key: string]: Date} = storage.whitelistedSites
 
