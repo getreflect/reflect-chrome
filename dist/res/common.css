@@ -18,6 +18,10 @@ th, td {
 	border: none;
 }
 
+html {
+	all: unset !important;
+}
+
 .shadow {
 	box-shadow: 0 14px 28px rgba(0,0,0,0.06), 0 10px 10px rgba(0,0,0,0.02);
 }
