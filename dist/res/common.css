@@ -19,7 +19,7 @@ th, td {
 }
 
 html {
-	all: unset !important;
+	font-size: unset;
 }
 
 .shadow {
@@ -83,7 +83,7 @@ h1, h2, h3 {
 
 h1 {
 	font-weight: 300;
-	font-size: 5.5em;
+	font-size: 5em;
 }
 
 h2 {
@@ -98,7 +98,7 @@ h3 {
 
 p {
 	font-family: "circular-lt" !important;
-	font-size: 1.5em;
+	font-size: 1.2em;
 	margin-top: 0.2em;
 }
 
@@ -217,7 +217,7 @@ input[type=submit] {
 #top-text {
 	position: fixed;
 	left: 12.5vw;
-	top: 7.5vh;
+	top: 10vh;
 	color: var(--white);
 }
 
