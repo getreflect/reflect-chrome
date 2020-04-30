@@ -57,7 +57,7 @@ function iterWhitelist(): void {
 				const currentDate: Date = new Date()
 				if (currentDate >= parsedDate) {
 					console.log("expired");
-					loadBlockPage()
+					loadBlockPage(strippedURL)
 				} else {
 					// is currently on whitelist
 					const timeDifference: number = parsedDate.getTime() - currentDate.getTime();
@@ -65,21 +65,21 @@ function iterWhitelist(): void {
 				}
 			} else {
 				console.log("blocked");
-				loadBlockPage()
+				loadBlockPage(strippedURL)
 			}
 		}
 		// otherwise do nothing
 	})
 }
 
-function loadBlockPage(): void {
+function loadBlockPage(strippedURL: string): void {
 	// get prompt page content
 	$.get(chrome.runtime.getURL("res/pages/prompt.html"), (page) => {
 		// stop current page and replace with our blocker page
         window.stop();
         $('html').html(page)
 
-	    addFormListener();
+	    addFormListener(strippedURL);
 
 	    // inject show options page
 		$("#linkToOptions").attr("href", chrome.runtime.getURL('res/pages/options.html'));
@@ -98,7 +98,8 @@ function loadBlockPage(): void {
 	});
 }
 
-function addFormListener(): void {
+
+function addFormListener(strippedURL: string): void {
     const form: HTMLFormElement | null = document.forms.namedItem("inputForm");
 
 	// add listener for form submit
@@ -109,9 +110,44 @@ function addFormListener(): void {
 	    // extract entry
 	    const intentForm: HTMLFormElement | null = event.target as HTMLFormElement;
 	    const intent: FormDataEntryValue = new FormData(intentForm).get('intent')
-	    const intentString: string = intent.toString()
+		const intentString: string = intent.toString()
+		const intentDate: Date = new Date;
 
-	    callBackgroundWithIntent(intentString);
+		callBackgroundWithIntent(intentString);
+		addToStorage(intentString, intentDate, strippedURL);
+	});
+}
+
+function addToStorage(intentString: string, intentDate: Date, url: string): void {
+	chrome.storage.sync.get(null, (storage) => {
+		// getting intent list map from storage
+		let intentList: {[key: string]: Object} = storage.intentList;
+
+		// getting oldest date value from intent list map
+		let oldest_date: Date = new Date();
+		for (const rawDate in intentList) {
+			const date: Date = new Date(rawDate);
+			if (date < oldest_date) {
+				oldest_date = date;
+			}
+		}
+
+		// deleting oldest intent to keep intent count under 20
+		if (Object.keys(intentList).length > storage.numIntentEntries) {
+			console.log(`list full, popping ${oldest_date.toJSON()}`);
+			delete intentList[oldest_date.toJSON()]
+		}
+
+		// adding new intent and date to intent list
+		intentList[intentDate.toJSON()] = {
+			"intent": intentString,
+			"url": url,
+		};
+
+		// saving intentList to chrome storage
+		chrome.storage.sync.set({'intentList': intentList}, () => {
+			console.log('the intent "' + intentString + '" has been added');
+		});
 	});
 }
 

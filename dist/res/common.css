@@ -8,6 +8,13 @@ table {
 	width: 75%;
 }
 
+th {
+	text-align: left;
+	padding: 0.5em 0.5em;
+	font-size: 1.5em;
+	font-family: circular;
+}
+
 .styled {
 	margin-top: 3em;
 	border: 1.2px solid var(--blue);
@@ -15,7 +22,7 @@ table {
 }
 
 th, td {
-	border: none;
+	border: none !important;
 }
 
 html {
@@ -27,11 +34,23 @@ html {
 }
 
 .hover {
-	transition: all 1s ease-in;
+	transition: box-shadow 1s ease-in;
 }
 
 .hover:hover {
 	box-shadow: 0 14px 28px rgba(0,0,0,0.18), 0 10px 10px rgba(0,0,0,0.04);
+}
+
+.secondary_button {
+    border: 1px solid var(--shale);
+    color: var(--shale);
+    padding: .5em 1.5em;
+    margin: 1em 0;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1em;
+    border-radius: 5px;
 }
 
 button {
@@ -46,12 +65,12 @@ button {
   cursor: pointer;
 }
 
-.urlDisplay {
+.urlDisplay, .intentDisplay {
 	margin: 0.2em 0.5em !important;
 	display: inline-block !important;
 }
 
-.options_panel {
+.options_panel, .analytics_panel {
 	padding-top: 2em;
 	padding-bottom: 5em;
 }
@@ -241,4 +260,94 @@ input[type=submit] {
 	width: 100vw;
 	height: 100vh;
 	background-color: var(--white);
+}
+
+.popup {
+	color: var(--shale);
+	text-align: center;
+}
+
+.popup h3 {
+	font-size: 3em;
+	margin: 0.25em 0.5em;
+}
+
+.button-con {
+  text-align: center;
+  padding: 0.5em 1em;
+}
+
+.toggle {
+  display: none;
+}
+
+.toggle,
+.toggle:after,
+.toggle:before,
+.toggle *,
+.toggle *:after,
+.toggle *:before,
+.toggle + .toggle-button {
+  box-sizing: border-box;
+}
+
+.toggle::selection,
+.toggle:after::selection,
+.toggle:before::selection,
+.toggle *::selection,
+.toggle *:after::selection,
+.toggle *:before::selection,
+.toggle + .toggle-button::selection {
+  background: none;
+}
+
+.toggle + .toggle-button {
+  outline: 0;
+  display: inline-block;
+  width: 4em;
+  height: 2em;
+  position: relative;
+  cursor: pointer;
+  border: 2px solid var(--shale);
+  user-select: none;
+}
+
+.toggle + .toggle-button:after,
+.toggle + .toggle-button:before {
+  position: relative;
+  display: block;
+  content: "";
+  width: 50%;
+  height: 100%;
+}
+
+.toggle + .toggle-button:after {
+  left: 0;
+}
+
+.toggle + .toggle-button:before {
+  display: none;
+}
+
+.toggle:checked + .toggle-button:after {
+  left: 50%;
+  background-color: var(--white);
+}
+
+.toggle:checked + .toggle-button {
+  background-color: var(--shale);
+}
+
+.toggle + .toggle-button {
+  padding: 2px;
+  transition: all 0.2s ease;
+  border: 2px solid var(--shale);
+  border-radius: 10px;
+}
+
+.toggle + .toggle-button:after {
+  transition: all 0.2s ease;
+  background: var(--shale);
+  content: "";
+  border-radius: 10px;
 }
