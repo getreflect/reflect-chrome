@@ -65,18 +65,10 @@ function iterWhitelist() {
 function loadBlockPage(strippedURL) {
     // get prompt page content
     $.get(chrome.runtime.getURL("res/pages/prompt.html"), (page) => {
-<<<<<<< HEAD
-        // refresh page with our blocker page
-        document.open();
-        document.write(page);
-        document.close();
-        addFormListener(strippedURL);
-=======
         // stop current page and replace with our blocker page
         window.stop();
         $('html').html(page);
-        addFormListener();
->>>>>>> master
+        addFormListener(strippedURL);
         // inject show options page
         $("#linkToOptions").attr("href", chrome.runtime.getURL('res/pages/options.html'));
         // load css

@@ -18,6 +18,11 @@ chrome.runtime.onInstalled.addListener((details) => {
     if (details.reason == "update") {
     	turnFilteringOn();
 
+    	// TODO: remove in next update
+		chrome.storage.sync.set({'numIntentEntries': 20}, () => {
+			console.log('Default number of intent entries set.')
+		});
+
 		chrome.tabs.create({
 			// redir to latest release patch notes
 			url: 'http://getreflect.app/latest',
@@ -55,7 +60,7 @@ function firstTimeSetup(): void {
 
 	// set default number of intent entries
 	chrome.storage.sync.set({'numIntentEntries': 20}, () => {
-			console.log('Default number of intent entries set.')
+		console.log('Default number of intent entries set.')
 	});
 
 	// populate default blocked sites
@@ -93,17 +98,17 @@ chrome.runtime.onStartup.addListener(() => {
 	});
 });
 
-// // Toggle filtering
-// chrome.browserAction.onClicked.addListener(() => {
-// 	chrome.storage.sync.get(null, (storage) => {
-// 		if (storage.isEnabled) {
-// 			turnFilteringOff();
-// 		}
-// 		else {
-// 			turnFilteringOn();
-// 		}
-// 	});
-// });
+// Toggle filtering
+chrome.browserAction.onClicked.addListener(() => {
+	chrome.storage.sync.get(null, (storage) => {
+		if (storage.isEnabled) {
+			turnFilteringOff();
+		}
+		else {
+			turnFilteringOn();
+		}
+	});
+});
 
 // Catch menu clicks (page context and browser action context)
 chrome.contextMenus.onClicked.addListener((info, tab) => {
