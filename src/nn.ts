@@ -5,6 +5,16 @@ export class Tokenizer {
 	json_url: string;
 	max_len: number;
 	wordMap: Map<string, string>;
+	readonly stop_words: string[] = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now', 'd', 'll', 'm', 'o', 're', 've', 'y', 'ain', 'aren', 'couldn', 'didn', 'doesn', 'hadn', 'hasn', 'haven', 'isn', 'ma', 'mightn', 'mustn', 'needn', 'shan', 'shouldn', 'wasn', 'weren', 'won', 'wouldn'];
+	readonly contractions: Record<string, string> = {
+		"im": "i am",
+		"ill": "i will",
+		"dont": "do not",
+		"havent": "have not",
+		"doesnt": "does not",
+		"he'll": "he will",
+		"she'll": "she will"	
+	}
 
 	constructor(modelName: string, max_len: number) {
 		this.max_len = max_len;
@@ -19,19 +29,45 @@ export class Tokenizer {
 		    .then((wordMappingString) => {this.wordMap = JSON.parse(wordMappingString)});
 	}
 
-	cleanStr(inputIntent: string): string {
+	private cleanStopWords(inputIntent: string): string {
+		let split: string[] = inputIntent.split(" ");
+
+		split.filter((word) => {
+			return this.stop_words.includes(word);
+		});
+
+		return split.join(" ");
+	}
+
+	private expandContractions(inputIntent: string): string {
+		let split: string[] = inputIntent.split(" ");
+
+		split.map((word) => {
+			if (this.contractions.hasOwnProperty(word)) {
+				return this.contractions[word];
+			} else {
+				return word;
+			}
+		})
+
+		return split.join(" ");
+	}
+
+	private cleanStr(inputIntent: string): string {
 		// strip punctuation
-		const noPunc = inputIntent.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
+		const noPunc: string = inputIntent.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
 
 		// strip capitalization
-		const lower = noPunc.toLowerCase()
+		const lower: string = noPunc.toLowerCase();
 
-		// remove personal prefix
-		const noPrefix = lower.replace("im ", "")
-							  .replace("i ", "")
+		// expand contractions
+		const expanded: string = this.expandContractions(lower);
+
+		// clean stop words
+		const clean: string = this.cleanStopWords(expanded);
 
 		// cleanup leftover spaces (2+ spaces to 1)
-		return noPrefix.replace(/\s{2,}/g, " ");
+		return clean.replace(/\s{2,}/g, " ");
 	}
 
 	lookup(key: string): number {
