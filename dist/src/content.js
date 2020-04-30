@@ -4,9 +4,10 @@ chrome.storage.sync.get(null, (storage) => {
     // check to see if reflect is enabled
     if (storage.isEnabled) {
         // check for is blocked
+        const strippedURL = getStrippedUrl();
         storage.blockedSites.forEach((site) => {
             // is blocked
-            if (window.location.href.includes(site)) {
+            if (strippedURL.includes(site)) {
                 iterWhitelist();
             }
         });
@@ -19,13 +20,23 @@ function displayStatus(message, duration = 3000, colour = REFLECT_INFO) {
     // show, wait, then hide
     $("#statusContent").show().delay(duration).fadeOut();
 }
+function getStrippedUrl() {
+    // match url
+    const activeURL = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/);
+    if (activeURL != null) {
+        const strippedURL = activeURL[1].replace("www.", "");
+        return strippedURL;
+    }
+    // no url?
+    return "";
+}
 function iterWhitelist() {
     // iterate whitelisted sites
     chrome.storage.sync.get(null, (storage) => {
-        const activeURL = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/);
+        const strippedURL = getStrippedUrl();
         // activeURL exists
-        if (activeURL != null) {
-            const strippedURL = activeURL[1].replace("www.", "");
+        if (strippedURL != "") {
+            console.log(strippedURL);
             // if url in whitelist
             const m = storage.whitelistedSites;
             if (m.hasOwnProperty(strippedURL)) {
@@ -54,10 +65,9 @@ function iterWhitelist() {
 function loadBlockPage() {
     // get prompt page content
     $.get(chrome.runtime.getURL("res/pages/prompt.html"), (page) => {
-        // refresh page with our blocker page
-        document.open();
-        document.write(page);
-        document.close();
+        // stop current page and replace with our blocker page
+        window.stop();
+        $('html').html(page);
         addFormListener();
         // inject show options page
         $("#linkToOptions").attr("href", chrome.runtime.getURL('res/pages/options.html'));
