@@ -12,7 +12,7 @@
     "typescript": "^3.7.5"
   },
   "scripts": {
-    "copy": "cp build/content.js dist/src/ && cp build/contextMenus.js dist/src/ && cp build/options.js dist/src/ && cp build/util.js dist/src/",
+    "copy": "cp build/content.js dist/src/ && cp build/contextMenus.js dist/src/ && cp build/options.js dist/src/ && cp build/util.js dist/src/ && cp build/popup.js dist/src/",
     "parcel": "parcel build build/background.js -d dist/src/ -o background && parcel build build/nn.js -d dist/src/ -o nn",
     "build": "tsc && npm run parcel && npm run copy"
   },

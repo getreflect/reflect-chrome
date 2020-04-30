@@ -140,49 +140,65 @@ const model: nn.IntentClassifier = new nn.IntentClassifier("acc85.95");
 // Listen for new runtime connections
 chrome.runtime.onConnect.addListener((port) => {
 	// check comm channel
-	console.assert(port.name === "intentStatus");
+	switch (port.name) {
 
-	port.onMessage.addListener(async (msg) => {
-		// extract intent and url from message
-		const intent: string = msg.intent;
-		const url: string = msg.url;
+		// listens for messages from content scripts
+		case "intentStatus": {
+			port.onMessage.addListener(async (msg) => {
+				// extract intent and url from message
+				const intent: string = msg.intent;
+				const url: string = msg.url;
 
-		// get whitelist period
-		chrome.storage.sync.get(null, async (storage) => {
-		    const WHITELIST_PERIOD: number = storage.whitelistTime;
+				// get whitelist period
+				chrome.storage.sync.get(null, async (storage) => {
+				    const WHITELIST_PERIOD: number = storage.whitelistTime;
 
-			// check if too short
-			const words: string[] = intent.split(" ");
+					// check if too short
+					const words: string[] = intent.split(" ");
 
-			if (words.length <= 3) {
+					if (words.length <= 3) {
 
-				// send status to tab
-				port.postMessage({status: "too_short"});
+						// send status to tab
+						port.postMessage({status: "too_short"});
 
-			} else {
+					} else {
 
-				// send to nlp model for prediction
-				const valid: boolean = await model.predict(intent);
+						// send to nlp model for prediction
+						const valid: boolean = await model.predict(intent);
 
-				if (valid) {
-					// add whitelist period for site
-					chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-						const urls: string[] = tabs.map(x => x.url);
-						const domain: string = cleanDomain(urls)
-						addUrlToWhitelistedSites(domain, WHITELIST_PERIOD);
-					});
+						if (valid) {
+							// add whitelist period for site
+							chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+								const urls: string[] = tabs.map(x => x.url);
+								const domain: string = cleanDomain(urls)
+								addUrlToWhitelistedSites(domain, WHITELIST_PERIOD);
+							});
 
-					// send status to tab
-					port.postMessage({status: "ok"});
-					console.log(`Success! Redirecting`);
+							// send status to tab
+							port.postMessage({status: "ok"});
+							console.log(`Success! Redirecting`);
+						} else {
+							// send status to tab
+							port.postMessage({status: "invalid"});
+							console.log("Failed. Remaining on page.");
+						}
+					}
+				});
+			});
+		}
+
+		// listens for messages from popup
+		case "toggleState": {
+			port.onMessage.addListener(async (msg) => {
+				const on: boolean = msg.state;
+				if (on) {
+					turnFilteringOn();
 				} else {
-					// send status to tab
-					port.postMessage({status: "invalid"});
-					console.log("Failed. Remaining on page.");
+					turnFilteringOff();
 				}
-			}
-		});
-	});
+			})
+		}
+	}
 });
 
 // push current site to storage
