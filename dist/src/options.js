@@ -2,6 +2,7 @@ const ENTER_KEY_CODE = 13;
 // On page load, draw table and add button listener
 document.addEventListener('DOMContentLoaded', function renderFilterListTable() {
     drawFilterListTable();
+    drawIntentListTable();
     setAddButtonListener();
     restoreSavedOptions();
     // options listeners
@@ -14,19 +15,23 @@ function saveCurrentOptions() {
     // get all form values
     const whitelistTimeElement = document.getElementById('whitelistTime');
     const whitelistTime = whitelistTimeElement.value;
-    chrome.storage.sync.set({ 'whitelistTime': whitelistTime }, () => {
-        // Update status to let user know options were saved.
-        const status = document.getElementById('statusContent');
-        status.textContent = 'options saved.';
-        setTimeout(() => {
-            status.textContent = '';
-        }, 1500);
+    const numIntentEntriesElement = document.getElementById('numIntentEntries');
+    const numIntentEntries = numIntentEntriesElement.value;
+    chrome.storage.sync.set({ 'numIntentEntries': numIntentEntries }, () => {
+        chrome.storage.sync.set({ 'whitelistTime': whitelistTime }, () => {
+            // Update status to let user know options were saved.
+            const status = document.getElementById('statusContent');
+            status.textContent = 'options saved.';
+            setTimeout(() => {
+                status.textContent = '';
+            }, 1500);
+        });
     });
 }
 function restoreSavedOptions() {
     chrome.storage.sync.get(null, (storage) => {
-        const WHITELIST_PERIOD = storage.whitelistTime;
-        document.getElementById('whitelistTime').value = WHITELIST_PERIOD;
+        document.getElementById('whitelistTime').value = storage.whitelistTime;
+        document.getElementById('numIntentEntries').value = storage.numIntentEntries;
     });
 }
 function updateButtonListeners() {
@@ -61,22 +66,74 @@ function generateWebsiteDiv(id, site) {
         `<td style="width: 5%"><button id=${id}>&times;</button></td>` +
         "</tr>";
 }
+function generateIntentDiv(id, intent, date, url) {
+    // reformatting date to only include month, date, and 12 hour time
+    const formattedDate = date.toLocaleDateString('default', { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
+    // creating display table for intents and dates
+    return "<tr>" +
+        `<td style="width: 40%"><p class="intentDisplay" id=${id}>${url}</p></td>` +
+        `<td style="width: 40%"><p class="intentDisplay" id=${id}>${intent}</p></td>` +
+        `<td style="width: 20%"><p class="intentDisplay" id=${id}>${formattedDate}</p></td>` +
+        "</tr>";
+}
 function drawFilterListTable() {
+    // accessing chrome storage for blocked sites
     chrome.storage.sync.get(null, (storage) => {
+        //fetch blocked sites
         const blockedSites = storage.blockedSites;
-        const tableDiv = document.getElementById('filterList');
+        // generating table
         let table = '<table class="hover shadow styled">';
         let cur_id = 0;
+        // appending row for each addiitonal blocked site
         blockedSites.forEach((site) => {
             table += generateWebsiteDiv(cur_id, site);
             cur_id++;
         });
+        // generates new line in table for new intent
         table += "</table>";
+        // adds table to html
         const filterList = document.getElementById('filterList');
         if (filterList != null) {
             filterList.innerHTML = table;
         }
+        // adding listener to "x"
         updateButtonListeners();
+    });
+}
+;
+function drawIntentListTable() {
+    // accessing chrome storage for intents
+    chrome.storage.sync.get(null, (storage) => {
+        // fetch intent list
+        const intentList = storage.intentList;
+        // generate table element
+        let table = '<table class="hover shadow styled">' +
+            "<tr>" +
+            '<th style="width: 40%">url</th>' +
+            '<th style="width: 40%">intent</th>' +
+            '<th style="width: 20%">date</th>' +
+            "</tr>";
+        let cur_id = 0;
+        // iter dates in intentList
+        for (const rawDate in intentList) {
+            // if number of entries is less than max
+            if (cur_id < storage.numIntentEntries) {
+                // parse fields from intentlist[rawDate]
+                const date = new Date(rawDate);
+                const intent = intentList[rawDate]['intent'];
+                const url = intentList[rawDate]['url'];
+                // append table row with this info
+                table += generateIntentDiv(cur_id, intent, date, url);
+                cur_id++;
+            }
+        }
+        // generates new line in table for new intent
+        table += "</table>";
+        // insert table into html
+        const previousIntents = document.getElementById('previousIntents');
+        if (previousIntents != null) {
+            previousIntents.innerHTML = table;
+        }
     });
 }
 ;

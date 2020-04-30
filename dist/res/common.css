@@ -8,6 +8,13 @@ table {
 	width: 75%;
 }
 
+th {
+	text-align: left;
+	padding: 0.5em 0.5em;
+	font-size: 1.5em;
+	font-family: circular;
+}
+
 .styled {
 	margin-top: 3em;
 	border: 1.2px solid var(--blue);
@@ -15,7 +22,7 @@ table {
 }
 
 th, td {
-	border: none;
+	border: none !important;
 }
 
 .shadow {
@@ -42,12 +49,12 @@ button {
   cursor: pointer;
 }
 
-.urlDisplay {
+.urlDisplay, .intentDisplay {
 	margin: 0.2em 0.5em !important;
 	display: inline-block !important;
 }
 
-.options_panel {
+.options_panel, .analytics_panel {
 	padding-top: 2em;
 	padding-bottom: 5em;
 }

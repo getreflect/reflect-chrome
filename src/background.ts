@@ -40,9 +40,20 @@ function firstTimeSetup(): void {
 		console.log('Default whitelist sites have been set.');
 	});
 
+	// create empty intent list
+	const intentList: {[key: string]: Object} = {};
+	chrome.storage.sync.set({'intentList': intentList}, () => {
+		console.log('Intent map has been created.');
+	});
+
 	// set default block value
 	chrome.storage.sync.set({'whitelistTime': 5}, () => {
 	    console.log('Default whitelist period set.')
+	});
+
+	// set default number of intent entries
+	chrome.storage.sync.set({'numIntentEntries': 20}, () => {
+			console.log('Default number of intent entries set.')
 	});
 
 	// populate default blocked sites
