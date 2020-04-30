@@ -16,6 +16,8 @@ chrome.runtime.onInstalled.addListener((details) => {
 
     // on version update
     if (details.reason == "update") {
+    	turnFilteringOn();
+
 		chrome.tabs.create({
 			// redir to latest release patch notes
 			url: 'http://getreflect.app/latest',
@@ -91,17 +93,17 @@ chrome.runtime.onStartup.addListener(() => {
 	});
 });
 
-// Toggle filtering
-chrome.browserAction.onClicked.addListener(() => {
-	chrome.storage.sync.get(null, (storage) => {
-		if (storage.isEnabled) {
-			turnFilteringOff();
-		}
-		else {
-			turnFilteringOn();
-		}
-	});
-});
+// // Toggle filtering
+// chrome.browserAction.onClicked.addListener(() => {
+// 	chrome.storage.sync.get(null, (storage) => {
+// 		if (storage.isEnabled) {
+// 			turnFilteringOff();
+// 		}
+// 		else {
+// 			turnFilteringOn();
+// 		}
+// 	});
+// });
 
 // Catch menu clicks (page context and browser action context)
 chrome.contextMenus.onClicked.addListener((info, tab) => {
@@ -128,7 +130,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 // Load ML model stuff
-const model: nn.IntentClassifier = new nn.IntentClassifier("acc82.03");
+const model: nn.IntentClassifier = new nn.IntentClassifier("acc85.95");
 
 // Listen for new runtime connections
 chrome.runtime.onConnect.addListener((port) => {

@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "reflect. - a mindful website blocker",
   "description": "a website blocker that asks users to reflect on their usage.",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "options_page": "res/pages/options.html",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "background": {
@@ -16,9 +16,8 @@
   },
   "browser_action": {
     "default_icon": "res/icon.png",
-    "icons": {
-      "16": "res/icon.png"
-    }
+    "default_popup": "res/pages/popup.html",
+    "default_title": "open reflect. options"
   },
   "permissions": [
     "storage",
