@@ -16,9 +16,8 @@
   },
   "browser_action": {
     "default_icon": "res/icon.png",
-    "icons": {
-      "16": "res/icon.png"
-    }
+    "default_popup": "res/pages/popup.html",
+    "default_title": "open reflect. options"
   },
   "permissions": [
     "storage",
