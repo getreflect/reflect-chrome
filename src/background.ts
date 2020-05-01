@@ -98,18 +98,6 @@ chrome.runtime.onStartup.addListener(() => {
 	});
 });
 
-// Toggle filtering
-chrome.browserAction.onClicked.addListener(() => {
-	chrome.storage.sync.get(null, (storage) => {
-		if (storage.isEnabled) {
-			turnFilteringOff();
-		}
-		else {
-			turnFilteringOn();
-		}
-	});
-});
-
 // Catch menu clicks (page context and browser action context)
 chrome.contextMenus.onClicked.addListener((info, tab) => {
 	switch (info.menuItemId) {
@@ -193,7 +181,7 @@ chrome.runtime.onConnect.addListener((port) => {
 				const on: boolean = msg.state;
 				if (on) {
 					turnFilteringOn();
-				} else {
+				} else if (on == false) {
 					turnFilteringOff();
 				}
 			})
