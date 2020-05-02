@@ -12,12 +12,12 @@
     "typescript": "^3.7.5"
   },
   "scripts": {
-    "copy": "cp build/content.js dist/src/ && cp build/contextMenus.js dist/src/ && cp build/options.js dist/src/ && cp build/util.js dist/src/ && cp build/popup.js dist/src/",
+    "copy": "cp build/*.js dist/src/",
     "parcel": "parcel build build/background.js -d dist/src/ -o background && parcel build build/nn.js -d dist/src/ -o nn",
-    "build": "tsc && npm run parcel && npm run copy",
-    "ff-build": "cp -r dist/src ff-dist/src && cp -r dist/res ff-dist/res",
-    "ff-run": "web-ext run -s ff-dist",
-    "ff-pkg": "web-ext build -s ff-dist --overwrite-dest"
+    "build": "tsc && npm run copy && npm run parcel",
+    "ff-build": "npm run build && cp -r dist/src ff-dist/",
+    "ff-run": "npm run ff-build && web-ext run -s ff-dist",
+    "ff-pkg": "npm run ff-build && web-ext build -s ff-dist --overwrite-dest"
   },
   "devDependencies": {
     "babel-plugin-transform-runtime": "^6.23.0",

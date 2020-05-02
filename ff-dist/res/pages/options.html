@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="/res/common.css">
+		<script src="/src/options.js"></script>
+	</head>
+	<body id="reflectMain" class="optionsPage">
+		<div class="contentCol">
+			<div class="options_panel">
+				<h1>options.</h1>
+				<p>buttons and knobs to customize your reflect experience.</p>
+
+				<table>
+					<tr>
+						<td style="width:90%">
+							<h3 class="setting">whitelist time.</h3>
+							<p class="subtext">time allowed on a website after successful intent (minutes).</p>
+						</td>
+						<td style="width:10%">
+							<input id="whitelistTime" type="number" min="0">
+						</td>
+					</tr>
+					<tr>
+						<td style="width:90%">
+							<h3 class="setting">number of intent entries.</h3>
+							<p class="subtext">number of most recent intents shown in the analytics panel.</p>
+						</td>
+						<td style="width:10%">
+							<input id="numIntentEntries" type="number" min="0">
+						</td>
+					</tr>
+				</table>
+			  	<p id="statusMessage">
+				  	<span>&nbsp;</span>
+				  	<span id="statusContent"></span>
+				</p>
+				<input id="save" type="submit" value="save">
+			</div>
+
+			<div class="sites_panel">
+				<h2>sites.</h2>
+				<p>a list of sites you would like to be more mindful of. sites added here will have the reflect prompt shown to you.</p>
+					<div id="addSite">
+						<input type="text" id="urlInput" />
+						<input class="urlSubmit" type="submit" id="add" value="add site">
+					</div>
+				<div id="filterList"></div>
+			</div>
+
+			<div class="analytics_panel">
+				<br>
+				<h2>analytics.</h2>
+				<p>a list showing your most recent entries.</p>
+				<div class='previousIntents' id="previousIntents"></div>
+			</div>
+		</div>
+	</body>
+</html>

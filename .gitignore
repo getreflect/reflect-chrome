@@ -3,5 +3,3 @@
 build
 node_modules
 web-ext-artifacts
-ff-dist
-dist
