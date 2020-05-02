@@ -198,7 +198,8 @@ chrome.runtime.onConnect.addListener((port) => {
 						removeUrlFromblockedSites(url);
 					} else if (!unblock) {
 						addUrlToBlockedSites(url);
-					}	
+					}
+					reloadActive();
 				}
 			})
 		}
@@ -317,8 +318,10 @@ function turnFilteringOff() : void {
 		clearInterval(badgeUpdateCounter);
 		cleanupBadge()
 
-		chrome.browserAction.setIcon({ path: { "16": 'res/off.png' } });
-		console.log('Filtering disabled');
+		chrome.browserAction.setIcon({ path: 'res/off.png' }, () => {
+			console.log('Filtering disabled');
+		});
+		reloadActive();
 	});
 }
 
@@ -330,5 +333,12 @@ function turnFilteringOn() : void {
 		chrome.browserAction.setIcon({ path: 'res/on.png' }, () => {
 			console.log('Filtering enabled.');
 		});
+		reloadActive();
 	});
 };
+
+function reloadActive(): void {
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		chrome.tabs.reload(tabs[0].id);
+	});
+}
