@@ -108,7 +108,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 		case "pgAddSiteToFilterList":
 			chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 				const urls: string[]= tabs.map(x => x.url);
-				addUrlToBlockedSites(urls[0], tab);
+				addUrlToBlockedSites(urls[0]);
 			});
 			break;
 		case "baAddDomainToFilterList":
@@ -116,7 +116,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 			chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 				const urls: string[] = tabs.map(x => x.url);
 				const domain: string= cleanDomain(urls)
-				addUrlToBlockedSites(domain, tab);
+				addUrlToBlockedSites(domain);
 			});
 			break;
 	}
@@ -177,7 +177,7 @@ chrome.runtime.onConnect.addListener((port) => {
 
 		// listens for messages from popup
 		case "toggleState": {
-			port.onMessage.addListener(async (msg) => {
+			port.onMessage.addListener((msg) => {
 				const on: boolean = msg.state;
 				if (on) {
 					turnFilteringOn();
@@ -186,19 +186,53 @@ chrome.runtime.onConnect.addListener((port) => {
 				}
 			})
 		}
+
+		// listens for block from popup
+		case "blockFromPopup": {
+			port.onMessage.addListener((msg) => {
+				const url: string = msg.siteURL;
+				const unblock: boolean = msg.unblock;
+				console.log(url, unblock);
+				if (url != undefined && url != "" && unblock != undefined) {
+					if (unblock) {
+						removeUrlFromblockedSites(url);
+					} else if (!unblock) {
+						addUrlToBlockedSites(url);
+					}
+					reloadActive();
+				}
+			})
+		}
 	}
 });
 
 // push current site to storage
-function addUrlToBlockedSites(url: string | undefined, tab: object | undefined): void {
+function addUrlToBlockedSites(url: string): void {
 	chrome.storage.sync.get(null, (storage) => {
-		storage.blockedSites.push(url); // urls.hostname
-		chrome.storage.sync.set({ 'blockedSites': storage.blockedSites }, () => {
-			console.log(`${url} added to blocked sites`);
-		});
+		// only add if not in list
+		if (!storage.blockedSites.includes(url)) {
+			storage.blockedSites.push(url); // urls.hostname
+			chrome.storage.sync.set({ 'blockedSites': storage.blockedSites }, () => {
+				console.log(`${url} added to blocked sites`);
+			});
+		}
 	});
 }
 
+function removeUrlFromblockedSites(url: string): void {
+	console.log(`trying to remove ${url}`);
+	chrome.storage.sync.get(null, (storage) => {
+		let blockedSites: string[] = storage.blockedSites;
+
+		// remove url from blockedSites
+		blockedSites = blockedSites.filter(e => e !== url);
+
+		// sync with chrome storage
+		chrome.storage.sync.set({ 'blockedSites': blockedSites }, () => {
+			console.log(`removed ${url} from blocked sites`);
+		});
+	});
+}
 
 // push current site to whitelist with time to whitelist
 function addUrlToWhitelistedSites(url: string, minutes: number): void {
@@ -284,8 +318,10 @@ function turnFilteringOff() : void {
 		clearInterval(badgeUpdateCounter);
 		cleanupBadge()
 
-		chrome.browserAction.setIcon({ path: { "16": 'res/off.png' } });
-		console.log('Filtering disabled');
+		chrome.browserAction.setIcon({ path: 'res/off.png' }, () => {
+			console.log('Filtering disabled');
+		});
+		reloadActive();
 	});
 }
 
@@ -297,5 +333,12 @@ function turnFilteringOn() : void {
 		chrome.browserAction.setIcon({ path: 'res/on.png' }, () => {
 			console.log('Filtering enabled.');
 		});
+		reloadActive();
 	});
 };
+
+function reloadActive(): void {
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		chrome.tabs.reload(tabs[0].id);
+	});
+}
