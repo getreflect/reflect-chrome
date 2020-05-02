@@ -191,8 +191,14 @@ chrome.runtime.onConnect.addListener((port) => {
 		case "blockFromPopup": {
 			port.onMessage.addListener((msg) => {
 				const url: string = msg.siteURL;
-				if (url != undefined && url != "") {
-					addUrlToBlockedSites(url);
+				const unblock: boolean = msg.unblock;
+				console.log(url, unblock);
+				if (url != undefined && url != "" && unblock != undefined) {
+					if (unblock) {
+						removeUrlFromblockedSites(url);
+					} else if (!unblock) {
+						addUrlToBlockedSites(url);
+					}	
 				}
 			})
 		}
@@ -212,6 +218,20 @@ function addUrlToBlockedSites(url: string): void {
 	});
 }
 
+function removeUrlFromblockedSites(url: string): void {
+	console.log(`trying to remove ${url}`);
+	chrome.storage.sync.get(null, (storage) => {
+		let blockedSites: string[] = storage.blockedSites;
+
+		// remove url from blockedSites
+		blockedSites = blockedSites.filter(e => e !== url);
+
+		// sync with chrome storage
+		chrome.storage.sync.set({ 'blockedSites': blockedSites }, () => {
+			console.log(`removed ${url} from blocked sites`);
+		});
+	});
+}
 
 // push current site to whitelist with time to whitelist
 function addUrlToWhitelistedSites(url: string, minutes: number): void {

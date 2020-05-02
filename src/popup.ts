@@ -54,13 +54,14 @@ function setupBlockListener(blockedSites) {
 					document.getElementById("block").addEventListener("click", (event) => {
 						// send url to be blocked by background script
 						const port = chrome.runtime.connect({ name: "blockFromPopup" });
-						port.postMessage({ siteURL: url });
 
-						// toggle button text
+						// toggle state text
 						const buttonText = document.getElementById("block").innerHTML;
 						if (buttonText == "block page.") {
+							port.postMessage({ unblock: false, siteURL: url });
 							document.getElementById("block").innerHTML = "unblock page."
 						} else {
+							port.postMessage({ unblock: true, siteURL: url });
 							document.getElementById("block").innerHTML = "block page."
 						}
 					});
