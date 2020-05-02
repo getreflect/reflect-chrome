@@ -7,10 +7,18 @@
 	<body id="reflectMain" class="popup">
 		<h3>reflect.</h3>
 		<div class="button-con">
-		  <input class='toggle' id='reflect-toggle' type='checkbox'>
-		  <label class='toggle-button' for='reflect-toggle'></label>
+			<label class="llabel" for='reflect-toggle'><p>off.</p></label>
+			<input class='toggle' id='reflect-toggle' type='checkbox'>
+			<label class='toggle-button' for='reflect-toggle'></label>
+			<label class="llabel" for='reflect-toggle'><p>on.</p></label>
 		</div>
 
-		<a class="secondary_button shadow hover" href="options.html" target="_blank">options.</a>
+		<div class="curPage">
+			<p>current page</p>
+			<p id="curDomain"></p>
+		</div>
+
+		<a class="popup_button ripple primary_button shadow" id="block">block page.</a>
+		<a class="popup_button secondary_button shadow hover" href="options.html" target="_blank">options.</a>
 	</body>
 </html>

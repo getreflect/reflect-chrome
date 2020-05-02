@@ -108,7 +108,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 		case "pgAddSiteToFilterList":
 			chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 				const urls: string[]= tabs.map(x => x.url);
-				addUrlToBlockedSites(urls[0], tab);
+				addUrlToBlockedSites(urls[0]);
 			});
 			break;
 		case "baAddDomainToFilterList":
@@ -116,7 +116,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 			chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 				const urls: string[] = tabs.map(x => x.url);
 				const domain: string= cleanDomain(urls)
-				addUrlToBlockedSites(domain, tab);
+				addUrlToBlockedSites(domain);
 			});
 			break;
 	}
@@ -177,7 +177,7 @@ chrome.runtime.onConnect.addListener((port) => {
 
 		// listens for messages from popup
 		case "toggleState": {
-			port.onMessage.addListener(async (msg) => {
+			port.onMessage.addListener((msg) => {
 				const on: boolean = msg.state;
 				if (on) {
 					turnFilteringOn();
@@ -186,16 +186,29 @@ chrome.runtime.onConnect.addListener((port) => {
 				}
 			})
 		}
+
+		// listens for block from popup
+		case "blockFromPopup": {
+			port.onMessage.addListener((msg) => {
+				const url: string = msg.siteURL;
+				if (url != undefined && url != "") {
+					addUrlToBlockedSites(url);
+				}
+			})
+		}
 	}
 });
 
 // push current site to storage
-function addUrlToBlockedSites(url: string | undefined, tab: object | undefined): void {
+function addUrlToBlockedSites(url: string): void {
 	chrome.storage.sync.get(null, (storage) => {
-		storage.blockedSites.push(url); // urls.hostname
-		chrome.storage.sync.set({ 'blockedSites': storage.blockedSites }, () => {
-			console.log(`${url} added to blocked sites`);
-		});
+		// only add if not in list
+		if (!storage.blockedSites.includes(url)) {
+			storage.blockedSites.push(url); // urls.hostname
+			chrome.storage.sync.set({ 'blockedSites': storage.blockedSites }, () => {
+				console.log(`${url} added to blocked sites`);
+			});
+		}
 	});
 }
 
