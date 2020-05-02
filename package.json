@@ -1,6 +1,6 @@
 {
   "name": "reflect",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "",
   "main": "blocker/background.js",
   "dependencies": {
@@ -14,7 +14,10 @@
   "scripts": {
     "copy": "cp build/content.js dist/src/ && cp build/contextMenus.js dist/src/ && cp build/options.js dist/src/ && cp build/util.js dist/src/ && cp build/popup.js dist/src/",
     "parcel": "parcel build build/background.js -d dist/src/ -o background && parcel build build/nn.js -d dist/src/ -o nn",
-    "build": "tsc && npm run parcel && npm run copy"
+    "build": "tsc && npm run parcel && npm run copy",
+    "ff-build": "cp -r dist/src ff-dist/src && cp -r dist/res ff-dist/res",
+    "ff-run": "web-ext run -s ff-dist",
+    "ff-pkg": "web-ext build -s ff-dist --overwrite-dest"
   },
   "devDependencies": {
     "babel-plugin-transform-runtime": "^6.23.0",
