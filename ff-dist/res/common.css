@@ -46,17 +46,35 @@ html {
 	box-shadow: 0 14px 28px rgba(0,0,0,0.18), 0 10px 10px rgba(0,0,0,0.04);
 }
 
+.primary_button {
+	font-family: circular-lt;
+	background: var(--shale);
+    color: var(--white);
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+    margin: 0 0;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    font-size: 1em;
+	border-radius: 5px;
+	margin-top: 2em;
+	cursor: pointer;
+}
+
 .secondary_button {
-	font-family: "circular";
+	font-family: circular-lt;
     border: 1px solid var(--shale);
-    color: var(--shale);
-    padding: .5em 1.5em;
+	color: var(--shale);
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
     margin: 1em 0;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
+    display: block;
     font-size: 1em;
-    border-radius: 5px;
+	border-radius: 5px;
+	cursor: pointer;
 }
 
 button {
@@ -271,16 +289,63 @@ input[type=submit] {
 .popup {
 	color: var(--shale);
 	text-align: center;
+	padding: 0 0.5em;
+	padding-bottom: 0.5em;
 }
 
 .popup h3 {
 	font-size: 3em;
 	margin: 0.25em 0.5em;
+	padding: 0 0.5em;
 }
 
 .button-con {
   text-align: center;
   padding: 0.5em 1em;
+  margin-bottom: 1em;
+}
+
+.curPage {
+	width: 100%;
+	text-align: left;
+}
+
+.curPage * {
+	width: 100%;
+	margin-bottom: 0;
+}
+
+#curDomain {
+	text-align: center;
+	font-size: 1em;
+	background-color: #efefef;
+	padding: 0.5em 0;
+	border-radius: 4px;
+}
+
+.ripple {
+  background-position: center;
+  transition: background 0.8s;
+}
+
+.ripple:hover {
+  background: var(--shale) radial-gradient(circle, transparent 1%, var(--shale) 1%) center/15000%;
+}
+
+.ripple:active {
+  background-color: var(--blue);
+  background-size: 100%;
+  transition: background 0s;
+}
+
+.popup_button {
+	width: 100%;
+}
+
+.llabel p {
+	display: inline-block;
+	transform: translateY(-0.4em);
+	margin: 0 0.4em;
 }
 
 .toggle {
