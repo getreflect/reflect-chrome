@@ -45,25 +45,21 @@ A brief overview of the file structure in the repository,
 ┗╼╾package.json # tells npm about the project and how to build it
 ```
 
-## Building the project
+## Building the project (Chrome)
 
 1. Ensure you have [TypeScript](https://www.typescriptlang.org/) installed.
 2. Then, install the `node` package dependencies by doing `npm i`.
 3. Finally, `npm run build`.
 
-## Git Workflow
+## Building the project (Firefox)
 
-1. Get an up to date version of the remote by doing `git pull`
-2. Create a new branch BEFORE you start working by doing `git checkout -b ###-NAME-OF-BRANCH` where `NAME-OF-BRANCH` describes the new thing you're working on and `###` is the ticket number. e.g. `git checkout -b 001-add-feature`
-3. Then, make your changes
-4. Add files for staging by doing `git add .`
-5. Commit these changes by doing `git commit -m "describe changes here"`
-6. Push these changes to the remote repository by doing `git push origin ###-NAME-OF-BRANCH` where the branch name is the same as above. You can always do `git branch` to see which branch you are on.
-7. Make a pull-request on Github!
+1. Follow steps 1 and 2 of `Building the project (Chrome)`
+2. To build, run `npm run ff-build`
+3. To see your changes in Firefox, run `npm run ff-run`
+4. Finally, to package the extension for distribution, run `ff-pkg`
 
 ### Using different intent classifiers
-
-Just drop them into `dist/res/models/` and call it in `src/background.ts`:
+You can find the latest models on our NLP repository here [https://github.com/jackyzha0/reflect-nlp](https://github.com/jackyzha0/reflect-nlp) inside the `nlp` folder. To convert a model, just run `./convert_to_js.sh <model_name>` and drop the result into `dist/res/models/` and call it in `src/background.ts`:
 
 ```typescript
 // Load ML model stuff

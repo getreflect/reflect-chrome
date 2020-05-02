@@ -1,9 +1,4 @@
 chrome.contextMenus.create({
-    id: "baFilterListMenu",
-    title: "Show filter list",
-    contexts: ["browser_action"]
-});
-chrome.contextMenus.create({
     id: "baAddToFilterList",
     title: "Block this:",
     contexts: ["browser_action"]
