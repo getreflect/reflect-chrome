@@ -11,6 +11,45 @@ document.addEventListener('DOMContentLoaded', function renderFilterListTable() {
 function setupOptionsListener() {
     document.getElementById('save').addEventListener('click', saveCurrentOptions);
 }
+// taken from https://www.w3schools.com/howto/howto_js_sort_table.asp
+function sortTable() {
+    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+    table = document.getElementById("intentList");
+    switching = true;
+    dir = "asc";
+    while (switching) {
+        switching = false;
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i].getElementsByTagName("td")[0].childNodes[0];
+            y = rows[i + 1].getElementsByTagName("td")[0].childNodes[0];
+            if (dir == "asc") {
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+            else if (dir == "desc") {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount++;
+        }
+        else {
+            if (switchcount == 0 && dir == "asc") {
+                dir = "desc";
+                switching = true;
+            }
+        }
+    }
+}
 function saveCurrentOptions() {
     // get all form values
     const whitelistTimeElement = document.getElementById('whitelistTime');
@@ -107,9 +146,9 @@ function drawIntentListTable() {
         // fetch intent list
         const intentList = storage.intentList;
         // generate table element
-        let table = '<table class="hover shadow styled">' +
+        let table = '<table id="intentList" class="hover shadow styled">' +
             "<tr>" +
-            '<th style="width: 40%">url</th>' +
+            '<th id="urlHeader" style="width: 40%">url</th>' +
             '<th style="width: 40%">intent</th>' +
             '<th style="width: 20%">date</th>' +
             "</tr>";
@@ -134,6 +173,8 @@ function drawIntentListTable() {
         if (previousIntents != null) {
             previousIntents.innerHTML = table;
         }
+        // setup table sort events
+        document.getElementById('urlHeader').addEventListener('click', sortTable);
     });
 }
 ;
