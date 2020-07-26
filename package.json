@@ -36,12 +36,12 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/jackyzha0/reflect-chrome.git"
+        "url": "git+https://github.com/getreflect/reflect-chrome.git"
     },
     "author": "",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/jackyzha0/reflect-chrome/issues"
+        "url": "https://github.com/getreflect/reflect-chrome/issues"
     },
-    "homepage": "https://github.com/jackyzha0/reflect-chrome#readme"
+    "homepage": "https://github.com/getreflect/reflect-chrome#readme"
 }
