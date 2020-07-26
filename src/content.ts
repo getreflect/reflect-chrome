@@ -1,14 +1,17 @@
-const REFLECT_INFO = '#576ca8'
-const REFLECT_ERR = '#ff4a47'
+const REFLECT_INFO: string = '#576ca8'
+const REFLECT_ERR: string = '#ff4a47'
+
+const WHITELISTED_WRAPPERS: string[] = ['facebook.com/flx', 'l.facebook.com']
 
 chrome.storage.sync.get(null, (storage) => {
     // check to see if reflect is enabled
     if (storage.isEnabled) {
         // check for is blocked
+
         const strippedURL: string = getStrippedUrl()
         storage.blockedSites.forEach((site: string) => {
-            // is blocked
-            if (strippedURL.includes(site)) {
+            // is blocked and not a whitelisted wrapper
+            if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
                 iterWhitelist()
             }
         })
@@ -26,6 +29,11 @@ function displayStatus(
 
     // show, wait, then hide
     $('#statusContent').show().delay(duration).fadeOut()
+}
+
+function isWhitelistedWrapper(): boolean {
+    // check if any wrapper urls are present in current url
+    return WHITELISTED_WRAPPERS.some((wrapper) => window.location.href.includes(wrapper))
 }
 
 function getStrippedUrl(): string {
