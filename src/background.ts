@@ -4,7 +4,7 @@ import * as nn from "./nn";
 // On install script
 chrome.runtime.onInstalled.addListener((details) => {
   // on first time install
-  if (details.reason == "install") {
+  if (details.reason === "install") {
     chrome.tabs.create({
       // redir to onboarding url
       url: "http://getreflect.app/onboarding",
@@ -15,7 +15,7 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
 
   // on version update
-  if (details.reason == "update") {
+  if (details.reason === "update") {
     turnFilteringOn();
 
     chrome.tabs.create({
@@ -24,10 +24,8 @@ chrome.runtime.onInstalled.addListener((details) => {
       active: true,
     });
 
-    const thisVersion = chrome.runtime.getManifest().version;
-    console.log(
-      "Updated from " + details.previousVersion + " to " + thisVersion + "!"
-    );
+    const thisVersion: string = chrome.runtime.getManifest().version;
+    console.log(`Updated from ${details.previousVersion} to ${thisVersion}!`);
   }
 
   // set uninstall url
@@ -135,7 +133,6 @@ chrome.runtime.onConnect.addListener((port) => {
       port.onMessage.addListener(async (msg) => {
         // extract intent and url from message
         const intent: string = msg.intent;
-        const url: string = msg.url;
 
         // get whitelist period
         chrome.storage.sync.get(null, async (storage) => {
@@ -181,7 +178,7 @@ chrome.runtime.onConnect.addListener((port) => {
         const on: boolean = msg.state;
         if (on) {
           turnFilteringOn();
-        } else if (on == false) {
+        } else if (on === false) {
           turnFilteringOff();
         }
       });
@@ -192,8 +189,7 @@ chrome.runtime.onConnect.addListener((port) => {
       port.onMessage.addListener((msg) => {
         const url: string = msg.siteURL;
         const unblock: boolean = msg.unblock;
-        console.log(url, unblock);
-        if (url != undefined && url != "" && unblock != undefined) {
+        if (url !== undefined && url !== "" && unblock !== undefined) {
           if (unblock) {
             removeUrlFromblockedSites(url);
           } else if (!unblock) {
@@ -249,7 +245,7 @@ function addUrlToWhitelistedSites(url: string, minutes: number): void {
   });
 }
 
-var badgeUpdateCounter = setInterval(badgeCountDown, 1000);
+var badgeUpdateCounter: number = window.setInterval(badgeCountDown, 1000);
 
 function cleanupBadge(): void {
   chrome.browserAction.setBadgeText({
@@ -318,7 +314,7 @@ function setBadge(time: number) {
 function turnFilteringOff(): void {
   chrome.storage.sync.set({ isEnabled: false }, () => {
     // stop checking for badge updates
-    clearInterval(badgeUpdateCounter);
+    window.clearInterval(badgeUpdateCounter);
     cleanupBadge();
 
     chrome.browserAction.setIcon({ path: "res/off.png" }, () => {
@@ -331,7 +327,7 @@ function turnFilteringOff(): void {
 function turnFilteringOn(): void {
   chrome.storage.sync.set({ isEnabled: true }, () => {
     // start badge update counter
-    badgeUpdateCounter = setInterval(badgeCountDown, 1000);
+    badgeUpdateCounter = window.setInterval(badgeCountDown, 1000);
 
     chrome.browserAction.setIcon({ path: "res/on.png" }, () => {
       console.log("Filtering enabled.");
