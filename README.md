@@ -9,6 +9,7 @@ when you attempt to visit distracting websites, reflect will ask you what your i
 ## Directory
 
 A brief overview of the file structure in the repository,
+
 ```python
 ┏╼╾src # holds the source code for the extension (typescript)
 ╏  ┣╼╾background.ts # handles intent classification, setup, whitelist, etc.
@@ -59,22 +60,21 @@ A brief overview of the file structure in the repository,
 4. Finally, to package the extension for distribution, run `ff-pkg`
 
 ### Using different intent classifiers
+
 You can find the latest models on our NLP repository here [https://github.com/jackyzha0/reflect-nlp](https://github.com/jackyzha0/reflect-nlp) inside the `nlp` folder. To convert a model, just run `./convert_to_js.sh <model_name>` and drop the result into `dist/res/models/` and call it in `src/background.ts`:
 
 ```typescript
 // Load ML model stuff
-const model: IntentClassifier = new IntentClassifier("acc84.78");
+const model: IntentClassifier = new IntentClassifier('acc84.78')
 ```
 
 ## FAQ
 
 ### I'm getting errors about `Cannot find namespace/name ___`
 
-* Install the JQuery support by doing `npm i @types/jquery` in the directory.
-* Install the JQuery UI Library by doing `npm i @types/jqueryui` in the directory.
-* Install the `@types` library by doing `npm i @types/chrome` in the directory.
+-   Install all the required libraries by doing `npm i` in the directory.
 
 ### My changes aren't being displayed
 
-* After saving, build the extension using `npm run build`.
-* Reload the extension in the Chrome Extensions menu
+-   After saving, build the extension using `npm run build`.
+-   Reload the extension in the Chrome Extensions menu

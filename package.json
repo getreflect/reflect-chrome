@@ -1,45 +1,47 @@
 {
-  "name": "reflect",
-  "version": "1.2.0",
-  "description": "",
-  "main": "blocker/background.js",
-  "dependencies": {
-    "@tensorflow/tfjs": "^1.7.2",
-    "@tensorflow/tfjs-node": "^1.7.2",
-    "@types/chrome": "0.0.92",
-    "@types/jquery": "^3.3.31",
-    "@types/jqueryui": "^1.12.10",
-    "typescript": "^3.7.5"
-  },
-  "scripts": {
-    "copy": "cp build/*.js dist/src/",
-    "parcel": "parcel build build/background.js -d dist/src/ -o background && parcel build build/nn.js -d dist/src/ -o nn",
-    "build": "tsc && npm run copy && npm run parcel",
-    "ff-build": "npm run build && cp -r dist/src ff-dist/",
-    "ff-run": "npm run ff-build && web-ext run -s ff-dist",
-    "ff-pkg": "npm run ff-build && web-ext build -s ff-dist --overwrite-dest"
-  },
-  "devDependencies": {
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "clang-format": "^1.2.3",
-    "husky": "^4.2.5",
-    "parcel-bundler": "^1.7.1"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jackyzha0/reflect-chrome.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/jackyzha0/reflect-chrome/issues"
-  },
-  "homepage": "https://github.com/jackyzha0/reflect-chrome#readme"
+    "name": "reflect",
+    "version": "1.2.0",
+    "description": "",
+    "main": "blocker/background.js",
+    "dependencies": {
+        "@tensorflow/tfjs": "^1.7.2",
+        "@tensorflow/tfjs-node": "^1.7.2",
+        "@types/chrome": "0.0.92",
+        "@types/jquery": "^3.3.31",
+        "@types/jqueryui": "^1.12.10",
+        "typescript": "^3.7.5"
+    },
+    "scripts": {
+        "copy": "cp build/*.js dist/src/",
+        "parcel": "parcel build build/background.js -d dist/src/ -o background && parcel build build/nn.js -d dist/src/ -o nn",
+        "build": "tsc && npm run copy && npm run parcel",
+        "ff-build": "npm run build && cp -r dist/src ff-dist/",
+        "ff-run": "npm run ff-build && web-ext run -s ff-dist",
+        "ff-pkg": "npm run ff-build && web-ext build -s ff-dist --overwrite-dest"
+    },
+    "devDependencies": {
+        "babel-plugin-transform-runtime": "^6.23.0",
+        "babel-polyfill": "^6.26.0",
+        "babel-preset-env": "^1.6.1",
+        "clang-format": "^1.2.3",
+        "husky": "^4.2.5",
+        "parcel-bundler": "^1.7.1",
+        "prettier": "^2.0.5",
+        "pretty-quick": "^2.0.1"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "pretty-quick --staged --pattern '**/*.ts'"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/getreflect/reflect-chrome.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/getreflect/reflect-chrome/issues"
+    },
+    "homepage": "https://github.com/getreflect/reflect-chrome#readme"
 }
