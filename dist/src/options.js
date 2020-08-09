@@ -1,10 +1,11 @@
 const ENTER_KEY_CODE = 13;
 // On page load, draw table and add button listener
-document.addEventListener('DOMContentLoaded', function renderFilterListTable() {
+document.addEventListener('DOMContentLoaded', () => {
     drawFilterListTable();
     drawIntentListTable();
     setAddButtonListener();
     restoreSavedOptions();
+    drawWeeklyStatsGraph();
     // options listeners
     setupOptionsListener();
 });
@@ -107,7 +108,7 @@ function drawIntentListTable() {
         // fetch intent list
         const intentList = storage.intentList;
         // generate table element
-        let table = '<table class="hover shadow styled">' +
+        let table = '<table class="hover styled">' +
             "<tr>" +
             '<th style="width: 40%">url</th>' +
             '<th style="width: 40%">intent</th>' +
@@ -173,5 +174,57 @@ function addUrlToFilterList() {
             });
         });
     }
+}
+;
+class PercentageStats {
+    constructor(DayStats) {
+        this.totalStats = (DayStats.visited + DayStats.blocked + DayStats.passed) / 100;
+        this.visitedPercent = DayStats.visited / this.totalStats;
+        this.blockedPercent = DayStats.blocked / this.totalStats;
+        this.passedPercent = DayStats.passed / this.totalStats;
+        this.dateString = DayStats.dateString;
+    }
+    getDateString() {
+        return ((this.dateString).toLowerCase()) + '.';
+    }
+}
+function generateBarGraphBar(p) {
+    if (isNaN(p.visitedPercent)) {
+        return "";
+    }
+    return `<div class="bar" style="height:${p.totalStats * 100 * 4}px">` +
+        `<div class="visited" style="flex-basis:${p.visitedPercent}%"></div>` +
+        `<div class="passed" style="flex-basis:${p.passedPercent}%"></div>` +
+        `<div class="blocked" style="flex-basis:${p.blockedPercent}%"></div>` +
+        `</div>`;
+}
+function generateBarGraphDate(p) {
+    if (isNaN(p.visitedPercent)) {
+        return "";
+    }
+    return `<div class="date">` +
+        `<p class="day"> ${p.getDateString()} </p>` +
+        `</div>`;
+}
+function drawWeeklyStatsGraph() {
+    // accessing chrome storage for blocked sites
+    chrome.storage.sync.get(null, (storage) => {
+        //fetch weekly stats
+        const weeklyStats = storage.pastSevenDays;
+        let barDiv = '<div id="graph" class="barGraphComponent">';
+        let labelDiv = '<div id="label" class="barGraphComponent">';
+        weeklyStats.dayStats.forEach((DayStats) => {
+            const dailyPercents = new PercentageStats(DayStats);
+            barDiv += generateBarGraphBar(dailyPercents);
+            labelDiv += generateBarGraphDate(dailyPercents);
+        });
+        barDiv += "</div>";
+        labelDiv += "</div>";
+        console.log(`This is the barDiv: ${barDiv}`);
+        console.log(`This is the labelDiv: ${labelDiv}`);
+        // adds additional div to html
+        const graphBar = document.getElementById("weeklyGraph");
+        graphBar.innerHTML += barDiv + labelDiv;
+    });
 }
 ;

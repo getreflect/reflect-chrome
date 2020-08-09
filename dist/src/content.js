@@ -1,8 +1,82 @@
 const REFLECT_INFO = "#576ca8";
 const REFLECT_ERR = "#ff4a47";
+class WeekStats {
+    constructor(obj) {
+        // cast object obj to this (type WeekStats)
+        Object.assign(this, obj);
+        // map dayStats from obj to DayStats
+        this.dayStats = this.dayStats.map((dayStatObj) => DayStats.fromData(dayStatObj));
+        this.updateCurrentDay();
+    }
+    // update current day
+    updateCurrentDay() {
+        this.currentDay = this.dayStats[0];
+    }
+    // get current day
+    getCurrentDay() {
+        return this.currentDay;
+    }
+    // check to see if the current day is not actually today
+    // returns true if current day != today's actual date
+    currentDayExpired() {
+        return this.currentDay.getDate() != (new Date()).getDay();
+    }
+    pushbackDates() {
+        let tempDayStats = this.dayStats;
+        // take current dayStats and pop off the last element
+        tempDayStats.pop();
+        // concatenate a new DayStats object to the front of it
+        tempDayStats.unshift(new DayStats());
+        // replace dayStats with tempDayStats
+        this.dayStats = tempDayStats;
+        this.updateCurrentDay();
+    }
+    incrementDayStats(type) {
+        // check to see if currentDay is expired
+        if (this.currentDayExpired()) {
+            // if it is expired, push dates back and create new date
+            this.pushbackDates();
+        }
+        // modify currentDay based off of the type of visit
+        console.log(`${type} count has been incremented`);
+        switch (type) {
+            case "visited":
+                this.currentDay.visited++;
+                break;
+            case "blocked":
+                this.currentDay.blocked++;
+                break;
+            case "passed":
+                this.currentDay.passed++;
+                break;
+        }
+    }
+}
+class DayStats {
+    constructor() {
+        this.visited = 0;
+        this.blocked = 0;
+        this.passed = 0;
+        this.date = (new Date()).getDay();
+        this.dateString = (new Date()).toLocaleDateString('default', { month: 'long', day: 'numeric' });
+    }
+    static fromData(obj) {
+        let newDayStats = new DayStats();
+        Object.assign(newDayStats, obj);
+        return newDayStats;
+    }
+    getDate() {
+        return this.date;
+    }
+    getDateString() {
+        return this.dateString;
+    }
+}
 chrome.storage.sync.get(null, (storage) => {
     // check to see if reflect is enabled
     if (storage.isEnabled) {
+        // increment number of times visited
+        incrementDayStats('visited');
         // check for is blocked
         const strippedURL = getStrippedUrl();
         storage.blockedSites.forEach((site) => {
@@ -36,7 +110,6 @@ function iterWhitelist() {
         const strippedURL = getStrippedUrl();
         // activeURL exists
         if (strippedURL != "") {
-            console.log(strippedURL);
             // if url in whitelist
             const m = storage.whitelistedSites;
             if (m.hasOwnProperty(strippedURL)) {
@@ -63,6 +136,8 @@ function iterWhitelist() {
     });
 }
 function loadBlockPage(strippedURL) {
+    // increment number of times blocked
+    incrementDayStats('blocked');
     // get prompt page content
     $.get(chrome.runtime.getURL("res/pages/prompt.html"), (page) => {
         // stop current page and replace with our blocker page
@@ -132,8 +207,8 @@ function callBackgroundWithIntent(intent) {
     port.onMessage.addListener((msg) => {
         switch (msg.status) {
             case "ok":
-                // show success message
-                // optional: transition?
+                // increment number of times passed
+                incrementDayStats('passed');
                 chrome.storage.sync.get(null, (storage) => {
                     const WHITELIST_PERIOD = storage.whitelistTime;
                     displayStatus(`got it! ${WHITELIST_PERIOD} minutes starting now.`, 3000, REFLECT_INFO);
@@ -156,5 +231,16 @@ function callBackgroundWithIntent(intent) {
         }
         // close connection
         port.disconnect();
+    });
+}
+function incrementDayStats(type) {
+    chrome.storage.sync.get(null, (storage) => {
+        // getting dayStats array from storage
+        let pastSevenDays = new WeekStats(storage.pastSevenDays);
+        pastSevenDays.incrementDayStats(type);
+        chrome.storage.sync.set({ 'pastSevenDays': pastSevenDays }, () => {
+            console.log(pastSevenDays);
+            console.log('synced statistics');
+        });
     });
 }

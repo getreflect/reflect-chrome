@@ -1,6 +1,44 @@
 import 'babel-polyfill';
 import * as nn from "./nn"
 
+class DayStats {
+	visited: number;
+	blocked: number;
+	passed: number;
+	readonly date: number;
+	dateString: string;
+
+	constructor() {
+		this.visited = 0;
+		this.blocked = 0;
+		this.passed = 0;
+		this.date = (new Date()).getDay();
+		this.dateString = "";
+	}
+
+	getDate(): number {
+		return this.date
+	}
+
+	getDateString(): string {
+		return this.dateString
+	}
+}
+
+class WeekStats {
+	dayStats: DayStats[]
+	currentDay: DayStats
+	dateString: string;
+
+	constructor() {
+		this.dayStats = new Array(7);
+		this.currentDay = this.dayStats[0];
+		this.currentDay = new DayStats();
+		this.currentDay.dateString = (new Date()).toLocaleDateString('default', { month: 'long', day: 'numeric' });
+	}
+
+}
+
 // On install script
 chrome.runtime.onInstalled.addListener((details) => {
 	// on first time install
@@ -53,6 +91,12 @@ function firstTimeSetup(): void {
 		console.log('Intent map has been created.');
 	});
 
+	// create empty pass/fail list
+	const pastSevenDays: WeekStats = new WeekStats();
+	chrome.storage.sync.set({'pastSevenDays': pastSevenDays}, () => {
+		console.log('Pass fail map has been created.');
+	});
+	
 	// set default block value
 	chrome.storage.sync.set({'whitelistTime': 5}, () => {
 	    console.log('Default whitelist period set.')
@@ -145,7 +189,6 @@ chrome.runtime.onConnect.addListener((port) => {
 					const words: string[] = intent.split(" ");
 
 					if (words.length <= 3) {
-
 						// send status to tab
 						port.postMessage({status: "too_short"});
 

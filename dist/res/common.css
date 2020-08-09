@@ -414,3 +414,41 @@ input[type=submit] {
   content: "";
   border-radius: 10px;
 }
+
+/* 7 day stack graph for pass fail ratio */
+#weeklyGraph {
+	height: auto;
+	width: 75%;
+	border: 1.2px solid var(--blue);
+	border-radius: 5px;
+}
+
+.barGraphComponent {
+	margin: 0.2em 0.5em !important;
+	display: flex;
+	flex-direction: row;
+	font-size: 0.75em;
+	height: auto;
+	align-content: flex-end;
+}
+
+.bar, .date {
+	margin: 0 auto;
+	width: 5em;
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	align-self: flex-end;
+}
+
+.visited{
+	background-color: #8B9AC0;
+}
+
+.blocked {
+	background: #193174;
+}
+
+.passed{
+	background-color: #576CA8;
+}
