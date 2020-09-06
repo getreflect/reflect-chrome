@@ -7,7 +7,7 @@
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "background": {
     "scripts": ["src/background.js", "src/contextMenus.js", "src/util.js"],
-  	"persistent": true
+  	"persistent": false
   },
   "icons": {
     "16": "res/icon.png",
