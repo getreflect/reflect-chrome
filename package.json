@@ -17,7 +17,8 @@
         "build": "tsc && npm run copy && npm run parcel",
         "ff-build": "npm run build && cp -r dist/src ff-dist/",
         "ff-run": "npm run ff-build && web-ext run -s ff-dist",
-        "ff-pkg": "npm run ff-build && web-ext build -s ff-dist --overwrite-dest"
+        "ff-pkg": "npm run ff-build && web-ext build -s ff-dist --overwrite-dest",
+        "watch": "nodemon -e ts -x \"npm run build\""
     },
     "devDependencies": {
         "babel-plugin-transform-runtime": "^6.23.0",
@@ -25,6 +26,7 @@
         "babel-preset-env": "^1.6.1",
         "clang-format": "^1.2.3",
         "husky": "^4.2.5",
+        "nodemon": "^2.0.4",
         "parcel-bundler": "^1.7.1",
         "prettier": "^2.0.5",
         "pretty-quick": "^2.0.1"
