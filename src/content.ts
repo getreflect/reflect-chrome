@@ -243,8 +243,6 @@ class BlobElement {
     originalY: number
     element: SVGCircleElement
 
-    static COLOURS: string[] = ['#6474AC', '#8B9AC0', '#A6B1CE']
-
     constructor(maxX: number, maxY: number, minR: number, maxR: number) {
         this.x = this.originalX = Math.random() * maxX
         this.y = this.originalY = Math.random() * maxY
