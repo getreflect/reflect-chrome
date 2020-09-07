@@ -150,28 +150,16 @@ input:focus, textarea:focus, select:focus {
 	outline: none;
 }
 
-#top-left-blob {
-	width: 75em;
-	left: -30em;
-	top: -15em;
-}
-
-#bottom-right-blob {
-	width: 75em;
-	left: 40vw;
-	top: 70vh;
-}
-
-#small-blob1 {
-	width: 20em;
-	left: 70em;
-	top: -8em;
-}
-
-#small-blob2 {
-	width: 16em;
-	left: 55em;
-	top: 25em;
+#svg {
+	filter: url(#blobFilter);
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	margin: 0;
+	padding: 0;
+	z-index: -1;
 }
 
 #textbox {
@@ -234,13 +222,7 @@ input[type=submit] {
 }
 
 #linkToOptions {
-	/* border-radius: 20px;
-	background-color: var(--white); */
 	color: var(--shale);
-	/* text-decoration: none;
-	border: 1.5px solid var(--shale);
-	margin-left: 1em;
-	padding: calc(0.5em - 1.5px) calc(1.5em - 1.5px); */
 	cursor: pointer;
 	font-family: "circular";
 	font-size: 1em;
@@ -255,7 +237,12 @@ input[type=submit] {
 	position: fixed;
 	left: 12.5vw;
 	top: 10vh;
-	color: var(--white);
+	color: var(--shale);
+}
+
+.blend {
+	mix-blend-mode: exclusion;
+	color: white;
 }
 
 #statusMessage {
@@ -270,7 +257,6 @@ input[type=submit] {
 	left: 0;
 	width: 100vw;
 	height: 100vh;
-	background-color: var(--white);
 }
 
 .popup {
