@@ -192,7 +192,7 @@ function callBackgroundWithIntent(intent: string): void {
                 break
 
             case 'too_short':
-                $('#textbox').effect('shake')
+                $('#inputFields').effect('shake', { times: 3, distance: 5 })
 
                 // display message
                 displayStatus(
@@ -204,7 +204,7 @@ function callBackgroundWithIntent(intent: string): void {
                 break
 
             case 'invalid':
-                $('#textbox').effect('shake')
+                $('#inputFields').effect('shake', { times: 3, distance: 5 })
 
                 // display message
                 displayStatus(

@@ -155,13 +155,13 @@ function callBackgroundWithIntent(intent) {
                 });
                 break;
             case 'too_short':
-                $('#textbox').effect('shake');
+                $('#inputFields').effect('shake', { times: 3, distance: 5 });
                 // display message
                 displayStatus('your response is a little short. be more specific!', 3000, REFLECT_ERR);
                 $('#textbox').val('');
                 break;
             case 'invalid':
-                $('#textbox').effect('shake');
+                $('#inputFields').effect('shake', { times: 3, distance: 5 });
                 // display message
                 displayStatus("that doesn't seem to be productive. try being more specific.", 3000, REFLECT_ERR);
                 // clear input
@@ -238,7 +238,7 @@ class BlobAnimation {
         return min + Math.random() * (max - min);
     }
     randomRange(targ, range) {
-        return targ + ((Math.random() * 2) - 1) * range;
+        return targ + (Math.random() * 2 - 1) * range;
     }
     initElements() {
         // create group div with namespace
@@ -253,7 +253,7 @@ class BlobAnimation {
             this.elements.push(e);
         }
         // add children to seeds
-        this.elements.forEach(e => {
+        this.elements.forEach((e) => {
             for (let j = 0; j < this.config.childrenPerSeed; j++) {
                 const child = new BlobElement(this.randomRange(e.x, this.config.childrenDistanceRange), this.randomRange(e.y, this.config.childrenDistanceRange), this.random(this.config.circleMinRadius, this.config.circleMaxRadius));
                 child.update(this.mouseX, this.mouseY, this.config.repulsion, this.config.attraction);
