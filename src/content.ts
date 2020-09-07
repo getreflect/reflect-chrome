@@ -227,7 +227,9 @@ interface BlobConfig {
     blur: number
     alphaMult: number
     alphaAdd: number
-    numElements: number
+    numSeeds: number
+    childrenPerSeed: number
+    childrenDistanceRange: number
     circleMinRadius: number
     circleMaxRadius: number
     attraction: number
@@ -243,10 +245,10 @@ class BlobElement {
     originalY: number
     element: SVGCircleElement
 
-    constructor(maxX: number, maxY: number, minR: number, maxR: number) {
-        this.x = this.originalX = Math.random() * maxX
-        this.y = this.originalY = Math.random() * maxY
-        this.r = minR + Math.random() * (maxR - minR)
+    constructor(x: number, y: number, r: number) {
+        this.x = this.originalX = x
+        this.y = this.originalY = y
+        this.r = r || 10
         this.element = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
 
         // set styling
@@ -286,12 +288,14 @@ class BlobAnimation {
     mouseY: number
 
     config: BlobConfig = {
-        blur: 14,
+        blur: 8,
         alphaMult: 30,
         alphaAdd: -10,
-        numElements: 30,
+        numSeeds: 8,
+        childrenPerSeed: 3,
+        childrenDistanceRange: 100,
         circleMinRadius: 15,
-        circleMaxRadius: 60,
+        circleMaxRadius: 75,
         attraction: 0.1,
         repulsion: 1000,
     }
@@ -324,24 +328,52 @@ class BlobAnimation {
         )
     }
 
+    private random(min: number, max: number): number {
+        return min + Math.random() * (max - min)
+    }
+
+    private randomRange(targ: number, range: number): number {
+        return targ + (Math.random() * 2 - 1) * range
+    }
+
     private initElements(): void {
         // create group div with namespace
         this.elements = []
         const group: SVGElement = document.createElementNS('http://www.w3.org/2000/svg', 'g')
         this.svg.appendChild(group)
 
-        for (let i = 0; i < this.config.numElements; i++) {
+        // create seeds
+        for (let i = 0; i < this.config.numSeeds; i++) {
             const e: BlobElement = new BlobElement(
-                this.width,
-                this.height,
-                this.config.circleMinRadius,
-                this.config.circleMaxRadius
+                this.randomRange(this.centerX, this.width * 0.4),
+                this.randomRange(this.centerY, this.height * 0.4),
+                this.random(this.config.circleMinRadius, this.config.circleMaxRadius)
             )
 
             e.update(this.mouseX, this.mouseY, this.config.repulsion, this.config.attraction)
             group.appendChild(e.element)
             this.elements.push(e)
         }
+
+        // add children to seeds
+        this.elements.forEach((e) => {
+            for (let j = 0; j < this.config.childrenPerSeed; j++) {
+                const child: BlobElement = new BlobElement(
+                    this.randomRange(e.x, this.config.childrenDistanceRange),
+                    this.randomRange(e.y, this.config.childrenDistanceRange),
+                    this.random(this.config.circleMinRadius, this.config.circleMaxRadius)
+                )
+
+                child.update(
+                    this.mouseX,
+                    this.mouseY,
+                    this.config.repulsion,
+                    this.config.attraction
+                )
+                group.appendChild(child.element)
+                this.elements.push(child)
+            }
+        })
     }
 
     // set mouse cords back to bottom centre screen

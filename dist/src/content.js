@@ -173,15 +173,15 @@ function callBackgroundWithIntent(intent) {
     });
 }
 class BlobElement {
-    constructor(maxX, maxY, minR, maxR) {
-        this.fill = "#A6B1CE";
-        this.x = this.originalX = Math.random() * maxX;
-        this.y = this.originalY = Math.random() * maxY;
-        this.r = minR + (Math.random() * (maxR - minR));
-        this.element = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    constructor(x, y, r) {
+        this.fill = '#A6B1CE';
+        this.x = this.originalX = x;
+        this.y = this.originalY = y;
+        this.r = r || 10;
+        this.element = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         // set styling
-        this.element.setAttribute("r", this.r.toString());
-        this.element.setAttribute("style", `fill: ${this.fill};`);
+        this.element.setAttribute('r', this.r.toString());
+        this.element.setAttribute('style', `fill: ${this.fill};`);
     }
     // update element
     update(mouseX, mouseY, repulsion, attraction) {
@@ -193,57 +193,74 @@ class BlobElement {
         this.y += Math.sin(angle) * dist;
         this.x += (this.originalX - this.x) * attraction;
         this.y += (this.originalY - this.y) * attraction;
-        this.element.setAttribute("cx", this.x.toString());
-        this.element.setAttribute("cy", this.y.toString());
+        this.element.setAttribute('cx', this.x.toString());
+        this.element.setAttribute('cy', this.y.toString());
     }
 }
-BlobElement.COLOURS = ["#6474AC", "#8B9AC0", "#A6B1CE"];
 class BlobAnimation {
     constructor() {
         this.config = {
-            blur: 14,
+            blur: 8,
             alphaMult: 30,
             alphaAdd: -10,
-            numElements: 30,
+            numSeeds: 8,
+            childrenPerSeed: 3,
+            childrenDistanceRange: 100,
             circleMinRadius: 15,
-            circleMaxRadius: 60,
+            circleMaxRadius: 75,
             attraction: 0.1,
-            repulsion: 1000
+            repulsion: 1000,
         };
         this.animate = () => {
             requestAnimationFrame(this.animate);
-            this.elements.forEach(e => {
+            this.elements.forEach((e) => {
                 e.update(this.mouseX, this.mouseY, this.config.repulsion, this.config.attraction);
             });
         };
         // grab dom elements
-        this.svg = document.getElementById("svg");
-        this.colorMatrixF = document.getElementById("colorMatrixF");
+        this.svg = document.getElementById('svg');
+        this.colorMatrixF = document.getElementById('colorMatrixF');
         // bind event listeners
-        const body = document.getElementById("reflect-main");
-        window.addEventListener("resize", this.onResize, false);
-        body.addEventListener("mousemove", (e) => {
+        const body = document.getElementById('reflect-main');
+        window.addEventListener('resize', this.onResize, false);
+        body.addEventListener('mousemove', (e) => {
             this.mouseX = e.clientX;
             this.mouseY = e.clientY;
         }, false);
-        body.addEventListener("mouseleave", this.resetMouse, false);
+        body.addEventListener('mouseleave', this.resetMouse, false);
         // create initial svg g elements
         this.onResize();
         this.resetMouse();
         this.initElements();
-        this.colorMatrixF.setAttribute("values", `1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 ${this.config.alphaMult} ${this.config.alphaAdd}`);
+        this.colorMatrixF.setAttribute('values', `1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 ${this.config.alphaMult} ${this.config.alphaAdd}`);
+    }
+    random(min, max) {
+        return min + Math.random() * (max - min);
+    }
+    randomRange(targ, range) {
+        return targ + ((Math.random() * 2) - 1) * range;
     }
     initElements() {
         // create group div with namespace
         this.elements = [];
-        const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         this.svg.appendChild(group);
-        for (let i = 0; i < this.config.numElements; i++) {
-            const e = new BlobElement(this.width, this.height, this.config.circleMinRadius, this.config.circleMaxRadius);
+        // create seeds
+        for (let i = 0; i < this.config.numSeeds; i++) {
+            const e = new BlobElement(this.randomRange(this.centerX, this.width * 0.4), this.randomRange(this.centerY, this.height * 0.4), this.random(this.config.circleMinRadius, this.config.circleMaxRadius));
             e.update(this.mouseX, this.mouseY, this.config.repulsion, this.config.attraction);
             group.appendChild(e.element);
             this.elements.push(e);
         }
+        // add children to seeds
+        this.elements.forEach(e => {
+            for (let j = 0; j < this.config.childrenPerSeed; j++) {
+                const child = new BlobElement(this.randomRange(e.x, this.config.childrenDistanceRange), this.randomRange(e.y, this.config.childrenDistanceRange), this.random(this.config.circleMinRadius, this.config.circleMaxRadius));
+                child.update(this.mouseX, this.mouseY, this.config.repulsion, this.config.attraction);
+                group.appendChild(child.element);
+                this.elements.push(child);
+            }
+        });
     }
     // set mouse cords back to bottom centre screen
     resetMouse() {
@@ -258,111 +275,3 @@ class BlobAnimation {
         this.centerY = this.height / 2;
     }
 }
-// function anim(): void {
-//     let width = 0,
-//         height = 0,
-//         cx = 0,
-//         cy = 0;
-//     let svg, group, colorMatrixF;
-//     let conf = {
-//         blur: 14,
-//         redMult: 1,
-//         greenMult: 1,
-//         blueMult: 1,
-//         alphaMult: 30,
-//         alphaAdd: -10,
-//         randomColors: false,
-//         numElements: 30,
-//         circleMinRadius: 15,
-//         circleMaxRadius: 60,
-//         attraction: 0.1,
-//         repulsion: 1000
-//     };
-//     let elements = [];
-//     let mouseX = 0,
-//         mouseY = 0;
-//     function init() {
-//         svg = document.getElementById("svg");
-//         const body = document.getElementById("reflect-main");
-//         colorMatrixF = document.getElementById("colorMatrixF");
-//         onResize();
-//         initElements();
-//         updateColorMatrixF();
-//         resetMouse();
-//         window.addEventListener("resize", onResize, false);
-//         body.addEventListener("mousemove", onMouseMove, false);
-//         body.addEventListener("mouseleave", resetMouse, false);
-//         animate();
-//     }
-//     function initElements() {
-//         elements = [];
-//         if (group) {
-//             svg.removeChild(group);
-//         }
-//         group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-//         svg.appendChild(group);
-//         let fill = REFLECT_INFO;
-//         let x, y, r;
-//         for (let i = 0; i < conf.numElements; i++) {
-//             x = rnd(width);
-//             y = rnd(height);
-//             r = conf.circleMinRadius + rnd(conf.circleMaxRadius - conf.circleMinRadius);
-//             let e: any = { x, y, ox: x, oy: y, r, fill };
-//             e.elt = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-//             updateElement(e);
-//             group.appendChild(e.elt);
-//             elements.push(e);
-//         }
-//     }
-//     function resetMouse() {
-//         mouseX = cx;
-//         mouseY = 5 * cy;
-//     }
-//     function animate() {
-//         requestAnimationFrame(animate);
-//         let dx, dy, dist, angle, x, y;
-//         elements.forEach((e, i) => {
-//             dx = e.x - mouseX;
-//             dy = e.y - mouseY;
-//             angle = Math.atan2(dy, dx);
-//             dist = conf.repulsion / Math.sqrt(dx * dx + dy * dy);
-//             e.x += Math.cos(angle) * dist;
-//             e.y += Math.sin(angle) * dist;
-//             e.x += (e.ox - e.x) * conf.attraction;
-//             e.y += (e.oy - e.y) * conf.attraction;
-//             updateElementPos(e);
-//         });
-//     }
-//     function updateElement(e) {
-//         updateElementPos(e);
-//         e.elt.setAttribute("r", e.r);
-//         e.elt.setAttribute("style", estyle(e));
-//     }
-//     function updateElementPos(e) {
-//         e.elt.setAttribute("cx", e.x);
-//         e.elt.setAttribute("cy", e.y);
-//     }
-//     function estyle(e) {
-//         return `fill: ${e.fill};`;
-//     }
-//     function updateColorMatrixF() {
-//         colorMatrixF.setAttribute("values", colorMatrixValues());
-//     }
-//     function onResize() {
-//         width = window.innerWidth;
-//         height = window.innerHeight;
-//         cx = width / 2;
-//         cy = height / 2;
-//     }
-//     function onMouseMove(e) {
-//         mouseX = e.clientX;
-//         mouseY = e.clientY;
-//     }
-//     function colorMatrixValues() {
-//         return `${conf.redMult} 0 0 0 0 0 ${conf.greenMult} 0 0 0 0 0 ${conf.blueMult} 0 0 0 0 0 ${conf.alphaMult} ${conf.alphaAdd}`;
-//     }
-//     function rnd(max, negative = false) {
-//         return negative ? Math.random() * 2 * max - max : Math.random() * max;
-//     }
-//     init();
-// }

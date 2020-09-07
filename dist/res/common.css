@@ -153,10 +153,10 @@ input:focus, textarea:focus, select:focus {
 #svg {
 	filter: url(#blobFilter);
 	position: fixed;
-	width: 100%;
-	height: 100%;
-	left: 0;
-	top: 0;
+	width: calc(100% + 2em);
+	height: calc(100% + 2em);
+	left: -1em;
+	top: -1em;
 	margin: 0;
 	padding: 0;
 	z-index: -1;
@@ -174,16 +174,6 @@ input:focus, textarea:focus, select:focus {
 
 .maintext::placeholder {
 	font-family: "circular-lt"
-}
-
-#inputForm {
-	position: fixed;
-	left: 12.5vw;
-	top: 50vh;
-}
-
-#inputForm input {
-	display: inline-block;
 }
 
 .subtext {
@@ -233,10 +223,18 @@ input[type=submit] {
 	font-size: 1.2em !important;
 }
 
+#inputForm {
+	margin-top: 6em;
+}
+
+#inputForm input {
+	display: inline-block;
+}
+
 #top-text {
 	position: fixed;
 	left: 12.5vw;
-	top: 10vh;
+	top: 30vh;
 	color: var(--shale);
 }
 
