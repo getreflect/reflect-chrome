@@ -1,30 +1,46 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>hey! reflect.</title>
-	</head>
-	<body>
+
+<head>
+	<title>hey! reflect.</title>
+</head>
+
+<body>
+	<div class="blend">
 		<div id="reflect-main">
-			<img id="top-left-blob" class="blob">
-			<img id="bottom-right-blob" class="blob">
-			<img id="small-blob1" class="blob">
-			<img id="small-blob2" class="blob">
 			<div id="top-text">
 				<h1>reflect.</h1>
 				<p>hey! what are you here for?</p>
-			</div>
-			<form id="inputForm">
-				<input class="shadow" type="text" id="textbox" name="intent" placeholder="i'm trying to..." class="maintext" autocomplete="off" required autofocus>
-			  	<p id="statusMessage">
-				  	<span>&nbsp;</span>
-				  	<span id="statusContent"></span>
-				</p>
-				<input class="shadow" type="submit" value="enter.">
+				<form id="inputForm">
+					<div id="inputFields">
+						<input class="shadow maintext" type="text" id="textbox" name="intent" placeholder="i'm trying to..."
+							autocomplete="off" required autofocus>
+						<input class="shadow ripple" type="submit" value="enter.">
+					</div>
+					<p id="statusMessage">
+						<span>&nbsp;</span>
+						<span id="statusContent"></span>
+					</p>
+				</form>
 				<a class="shadow" id="linkToOptions" target="_blank">options.</a>
-			</form> 
-			<div id="bottom-right-logo-text">
-				<h1>r.</h1>
 			</div>
 		</div>
-	</body>
+	
+		<svg id="svg">
+			<defs>
+				<filter id="blobFilter">
+					<feTurbulence type="turbulence" baseFrequency="0.01" numOctaves="1" seed="0" result="turbulence">
+						<animate attributeName="baseFrequency" values="0.01;0.02;0.01;" dur="120s" begin="0"
+							repeatCount="indefinite" />
+					</feTurbulence>
+					<feDisplacementMap in="SourceGraphic" in2="turbulence" scale="20" xChannelSelector="R"
+						yChannelSelector="G" result="displacement" />
+					<feGaussianBlur in="displacement" stdDeviation="10" result="blur" id="blurF" />
+					<feColorMatrix in="blur" mode="matrix" id="colorMatrixF" />
+				</filter>
+			</defs>
+		</svg>
+	</div>
+</body>
+
 </html>

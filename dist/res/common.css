@@ -4,10 +4,6 @@
 	--blue: #8b9ac0;
 }
 
-table {
-	width: 75%;
-}
-
 th {
 	text-align: left;
 	padding: 0.5em 0.5em;
@@ -30,7 +26,7 @@ html {
 }
 
 .shadow {
-	box-shadow: 0 14px 28px rgba(0,0,0,0.06), 0 10px 10px rgba(0,0,0,0.02);
+	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.06), 0 10px 10px rgba(0, 0, 0, 0.02);
 }
 
 .hover {
@@ -38,48 +34,48 @@ html {
 }
 
 .hover:hover {
-	box-shadow: 0 14px 28px rgba(0,0,0,0.18), 0 10px 10px rgba(0,0,0,0.04);
+	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18), 0 10px 10px rgba(0, 0, 0, 0.04);
 }
 
 .primary_button {
 	background: var(--shale);
-    color: var(--white);
+	color: var(--white);
 	padding-top: 0.5em;
 	padding-bottom: 0.5em;
-    margin: 0 0;
-    text-align: center;
-    text-decoration: none;
-    display: block;
-    font-size: 1em;
+	margin: 0 0;
+	text-align: center;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
 	border-radius: 5px;
 	margin-top: 2em;
 	cursor: pointer;
 }
 
 .secondary_button {
-    border: 1px solid var(--shale);
+	border: 1px solid var(--shale);
 	color: var(--shale);
 	padding-top: 0.5em;
 	padding-bottom: 0.5em;
-    margin: 1em 0;
-    text-align: center;
-    text-decoration: none;
-    display: block;
-    font-size: 1em;
+	margin: 1em 0;
+	text-align: center;
+	text-decoration: none;
+	display: block;
+	font-size: 1em;
 	border-radius: 5px;
 	cursor: pointer;
 }
 
 button {
-  background-color: var(--white);
-  color: #dd6666;
-  border: none;
-  margin: 0em;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  cursor: pointer;
+	background-color: var(--white);
+	color: #dd6666;
+	border: none;
+	margin: 0em;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	cursor: pointer;
 }
 
 .urlDisplay, .intentDisplay {
@@ -98,13 +94,13 @@ button {
 }
 
 @font-face {
-  font-family: "circular";
-  src: url("chrome-extension://__MSG_@@extension_id__/res/circular.ttf");
+	font-family: "circular";
+	src: url("chrome-extension://__MSG_@@extension_id__/res/circular.ttf");
 }
 
 @font-face {
-  font-family: "circular-lt";
-  src: url("chrome-extension://__MSG_@@extension_id__/res/circular-light.ttf");
+	font-family: "circular-lt";
+	src: url("chrome-extension://__MSG_@@extension_id__/res/circular-light.ttf");
 }
 
 h1, h2, h3 {
@@ -150,32 +146,20 @@ p {
 	color: var(--shale);
 }
 
-input:focus, textarea:focus, select:focus{
-    outline: none;
+input:focus, textarea:focus, select:focus {
+	outline: none;
 }
 
-#top-left-blob {
-	width: 75em;
-	left: -28em;
-	top: -15em;
-}
-
-#bottom-right-blob {
-	width: 75em;
-	left: 35em;
-	bottom: -30em;
-}
-
-#small-blob1 {
-	width: 20em;
-	left:70em;
-	top: -8em;
-}
-
-#small-blob2 {
-	width: 16em;
-	left:55em;
-	top: 25em;
+#svg {
+	filter: url(#blobFilter);
+	position: fixed;
+	width: calc(100% + 2em);
+	height: calc(100% + 2em);
+	left: -1em;
+	top: -1em;
+	margin: 0;
+	padding: 0;
+	z-index: -1;
 }
 
 #textbox {
@@ -192,12 +176,6 @@ input:focus, textarea:focus, select:focus{
 	font-family: "circular-lt"
 }
 
-#inputForm {
-	position: fixed;
-	left: 12.5vw;
-	top: 50vh;
-}
-
 .subtext {
 	font-size: 1em;
 }
@@ -205,17 +183,19 @@ input:focus, textarea:focus, select:focus{
 input[type=number] {
 	width: 3em;
 	border-radius: 20px;
-	border: 3px solid var(--shale);
+	border: 1.5px solid var(--shale);
 	padding: 0.5em 2em;
 	cursor: pointer;
 	font-size: 1em;
 }
 
 input[type=text] {
-	width: 25em;
+	width: 22.5em;
+	margin-right: 1em;
 	border-radius: 20px;
-	border: 3px solid var(--shale);
-	padding: 0.5em 2em;
+	border: 1.5px solid var(--shale);
+	padding: 0.5em 1.5em;
+	font-family: "circular-lt";
 	cursor: pointer;
 	font-size: 1em;
 }
@@ -225,43 +205,42 @@ input[type=submit] {
 	background-color: var(--shale);
 	color: var(--white);
 	border: 0px;
-	padding: 0.5em 2em;
+	padding: calc(0.5em + 1.5px) 2em;
 	cursor: pointer;
-	font-family: "circular";
+	font-family: "circular-lt";
 	font-size: 1em;
 }
 
 #linkToOptions {
-	border-radius: 20px;
-	background-color: var(--white);
 	color: var(--shale);
-	text-decoration: none;
-	border: 3px solid var(--shale);
-	margin-left: 1em;
-	padding: calc(0.5em - 3px) calc(1.5em - 3px);
 	cursor: pointer;
 	font-family: "circular";
 	font-size: 1em;
 }
 
 .urlSubmit {
-	margin-left: 1.5em;
 	padding: 0.5em 1.4em !important;
 	font-size: 1.2em !important;
+}
+
+#inputForm {
+	margin-top: 6em;
+}
+
+#inputForm input {
+	display: inline-block;
 }
 
 #top-text {
 	position: fixed;
 	left: 12.5vw;
-	top: 10vh;
-	color: var(--white);
+	top: 30vh;
+	color: var(--shale);
 }
 
-#bottom-right-logo-text {
-	position: fixed;
-	color: var(--white);
-	bottom: 3em;
-	right: 3em;
+.blend {
+	mix-blend-mode: exclusion;
+	color: white;
 }
 
 #statusMessage {
@@ -276,7 +255,6 @@ input[type=submit] {
 	left: 0;
 	width: 100vw;
 	height: 100vh;
-	background-color: var(--white);
 }
 
 .popup {
@@ -292,9 +270,9 @@ input[type=submit] {
 }
 
 .button-con {
-  text-align: center;
-  padding: 0.5em 1em;
-  margin-bottom: 2em;
+	text-align: center;
+	padding: 0.5em 1em;
+	margin-bottom: 2em;
 }
 
 .curPage {
@@ -316,18 +294,19 @@ input[type=submit] {
 }
 
 .ripple {
-  background-position: center;
-  transition: background 0.8s;
+	background-position: center;
+	background-color: var(--blue);
+	transition: background 0.8s;
 }
 
 .ripple:hover {
-  background: var(--shale) radial-gradient(circle, transparent 1%, var(--shale) 1%) center/15000%;
+	background: var(--shale) radial-gradient(circle, transparent 1%, var(--shale) 1%) center/15000%;
 }
 
 .ripple:active {
-  background-color: var(--blue);
-  background-size: 100%;
-  transition: background 0s;
+	background-color: var(--blue);
+	background-size: 100%;
+	transition: background 0s;
 }
 
 .popup_button {
@@ -341,76 +320,63 @@ input[type=submit] {
 }
 
 .toggle {
-  display: none;
+	display: none;
 }
 
-.toggle,
-.toggle:after,
-.toggle:before,
-.toggle *,
-.toggle *:after,
-.toggle *:before,
-.toggle + .toggle-button {
-  box-sizing: border-box;
+.toggle, .toggle:after, .toggle:before, .toggle *, .toggle *:after, .toggle *:before, .toggle+.toggle-button {
+	box-sizing: border-box;
 }
 
-.toggle::selection,
-.toggle:after::selection,
-.toggle:before::selection,
-.toggle *::selection,
-.toggle *:after::selection,
-.toggle *:before::selection,
-.toggle + .toggle-button::selection {
-  background: none;
+.toggle::selection, .toggle:after::selection, .toggle:before::selection, .toggle *::selection, .toggle *:after::selection, .toggle *:before::selection, .toggle+.toggle-button::selection {
+	background: none;
 }
 
-.toggle + .toggle-button {
-  outline: 0;
-  display: inline-block;
-  width: 4em;
-  height: 2em;
-  position: relative;
-  cursor: pointer;
-  border: 2px solid var(--shale);
-  user-select: none;
+.toggle+.toggle-button {
+	outline: 0;
+	display: inline-block;
+	width: 4em;
+	height: 2em;
+	position: relative;
+	cursor: pointer;
+	border: 2px solid var(--shale);
+	user-select: none;
 }
 
-.toggle + .toggle-button:after,
-.toggle + .toggle-button:before {
-  position: relative;
-  display: block;
-  content: "";
-  width: 50%;
-  height: 100%;
+.toggle+.toggle-button:after, .toggle+.toggle-button:before {
+	position: relative;
+	display: block;
+	content: "";
+	width: 50%;
+	height: 100%;
 }
 
-.toggle + .toggle-button:after {
-  left: 0;
+.toggle+.toggle-button:after {
+	left: 0;
 }
 
-.toggle + .toggle-button:before {
-  display: none;
+.toggle+.toggle-button:before {
+	display: none;
 }
 
-.toggle:checked + .toggle-button:after {
-  left: 50%;
-  background-color: var(--white);
+.toggle:checked+.toggle-button:after {
+	left: 50%;
+	background-color: var(--white);
 }
 
-.toggle:checked + .toggle-button {
-  background-color: var(--shale);
+.toggle:checked+.toggle-button {
+	background-color: var(--shale);
 }
 
-.toggle + .toggle-button {
-  padding: 2px;
-  transition: all 0.2s ease;
-  border: 2px solid var(--shale);
-  border-radius: 10px;
+.toggle+.toggle-button {
+	padding: 2px;
+	transition: all 0.2s ease;
+	border: 2px solid var(--shale);
+	border-radius: 10px;
 }
 
-.toggle + .toggle-button:after {
-  transition: all 0.2s ease;
-  background: var(--shale);
-  content: "";
-  border-radius: 10px;
+.toggle+.toggle-button:after {
+	transition: all 0.2s ease;
+	background: var(--shale);
+	content: "";
+	border-radius: 10px;
 }
