@@ -1,22 +1,27 @@
 const REFLECT_INFO = '#576ca8';
 const REFLECT_ERR = '#ff4a47';
-const WHITELISTED_WRAPPERS = [
-    'facebook.com/flx',
-    'l.facebook.com',
-];
-chrome.storage.sync.get(null, (storage) => {
-    // check to see if reflect is enabled
-    if (storage.isEnabled) {
-        // check for is blocked
-        const strippedURL = getStrippedUrl();
-        storage.blockedSites.forEach((site) => {
-            // is blocked and not a whitelisted wrapper
-            if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
-                iterWhitelist();
+const WHITELISTED_WRAPPERS = ['facebook.com/flx', 'l.facebook.com'];
+checkIfBlocked();
+// re-check page everytime this page gets focus again
+window.addEventListener('focus', checkIfBlocked);
+function checkIfBlocked() {
+    // check if already blocked
+    if (!!document.getElementById('reflectMain') === false) {
+        chrome.storage.sync.get(null, (storage) => {
+            // check to see if reflect is enabled
+            if (storage.isEnabled) {
+                // check for is blocked
+                const strippedURL = getStrippedUrl();
+                storage.blockedSites.forEach((site) => {
+                    // is blocked and not a whitelisted wrapper
+                    if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
+                        iterWhitelist();
+                    }
+                });
             }
         });
     }
-});
+}
 function displayStatus(message, duration = 3000, colour = REFLECT_INFO) {
     // set content
     $('#statusContent').css('color', colour);
