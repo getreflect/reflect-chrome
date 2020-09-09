@@ -29,10 +29,6 @@
 		<svg id="svg">
 			<defs>
 				<filter id="blobFilter">
-					<feTurbulence type="turbulence" baseFrequency="0.01" numOctaves="1" seed="0" result="turbulence">
-						<animate attributeName="baseFrequency" values="0.01;0.02;0.01;" dur="120s" begin="0"
-							repeatCount="indefinite" />
-					</feTurbulence>
 					<feDisplacementMap in="SourceGraphic" in2="turbulence" scale="20" xChannelSelector="R"
 						yChannelSelector="G" result="displacement" />
 					<feGaussianBlur in="displacement" stdDeviation="10" result="blur" id="blurF" />

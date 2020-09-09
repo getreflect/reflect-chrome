@@ -6,7 +6,7 @@
     --r-blue: #8b9ac0;
 }
 
-body {
+#_r {
     background: var(--white) !important;
     background-color: var(--white) !important;
 }

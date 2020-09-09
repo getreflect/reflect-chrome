@@ -10,7 +10,7 @@ window.addEventListener('focus', checkIfBlocked)
 
 function checkIfBlocked() {
     // check if already blocked
-    if (!!document.getElementById('reflectMain') === false) {
+    if (!!document.getElementById('reflect-main') === false) {
         chrome.storage.sync.get(null, (storage) => {
             // check to see if reflect is enabled
             if (storage.isEnabled) {

@@ -77,7 +77,8 @@ function restoreSavedOptions() {
         var _a;
         ;
         document.getElementById('whitelistTime').value = storage.whitelistTime;
-        document.getElementById('numIntentEntries').value = storage.numIntentEntries;
+        document.getElementById('numIntentEntries').value =
+            storage.numIntentEntries;
         document.getElementById('enable-blobs').checked = (_a = storage.enableBlobs, (_a !== null && _a !== void 0 ? _a : true));
     });
 }
