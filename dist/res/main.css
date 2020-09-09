@@ -1,0 +1,123 @@
+/* optimized injection package for block page */
+
+#_r {
+    --r-white: #fff;
+    --r-shale: #576ca8;
+    --r-blue: #8b9ac0;
+}
+
+body {
+    background: var(--white) !important;
+    background-color: var(--white) !important;
+}
+
+#_r #inputForm {
+    margin-top: 6em;
+}
+
+#_r #inputForm input {
+    display: inline-block;
+}
+
+#_r #linkToOptions {
+    color: var(--r-shale);
+    cursor: pointer;
+    font-family: "circular";
+    font-size: 1em;
+}
+
+#_r input[type=text] {
+    width: 22.5em;
+    margin-right: 1em;
+    border-radius: 20px;
+    border: 1.5px solid var(--r-shale);
+    padding: 0.5em 1.5em;
+    font-family: "circular-lt";
+    cursor: pointer;
+    font-size: 1em;
+}
+
+#_r input[type=submit] {
+    border-radius: 20px;
+    background-color: var(--r-shale);
+    color: var(--r-white);
+    border: 0px;
+    padding: calc(0.5em + 1.5px) 2em;
+    cursor: pointer;
+    font-family: "circular-lt";
+    font-size: 1em;
+}
+
+#_r #top-text {
+    position: fixed;
+    left: 12.5vw;
+    top: 30vh;
+    color: var(--r-shale);
+}
+
+#_r .blend {
+    mix-blend-mode: exclusion;
+    color: white;
+}
+
+#_r #statusMessage {
+    font-family: "circular-lt";
+    font-size: 1em;
+    margin: 1em 0.5em 1.5em 0em;
+}
+
+#_r #reflect-main {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+#_r #svg {
+    filter: url(#blobFilter);
+    position: fixed;
+    width: calc(100% + 2em);
+    height: calc(100% + 2em);
+    left: -1em;
+    top: -1em;
+    margin: 0;
+    padding: 0;
+    z-index: -1;
+}
+
+#_r #textbox {
+    position: relative;
+    display: block;
+}
+
+#_r .blob {
+    position: fixed;
+    z-index: -9999;
+}
+
+#_r .maintext::placeholder {
+    font-family: "circular-lt"
+}
+
+#_r input:focus {
+    outline: none;
+}
+
+#_r h1 {
+    font-family: "circular" !important;
+    margin-bottom: 0;
+    margin-top: 0;
+    font-weight: 300;
+    font-size: 5em;
+}
+
+#_r p {
+    font-family: "circular-lt" !important;
+    font-size: 1.2em;
+    margin-top: 0.2em;
+}
+
+#_r .shadow {
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.06), 0 10px 10px rgba(0, 0, 0, 0.02);
+}

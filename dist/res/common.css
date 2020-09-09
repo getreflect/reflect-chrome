@@ -93,16 +93,6 @@ button {
 	color: var(--shale);
 }
 
-@font-face {
-	font-family: "circular";
-	src: url("chrome-extension://__MSG_@@extension_id__/res/circular.ttf");
-}
-
-@font-face {
-	font-family: "circular-lt";
-	src: url("chrome-extension://__MSG_@@extension_id__/res/circular-light.ttf");
-}
-
 h1, h2, h3 {
 	font-family: "circular" !important;
 	margin-bottom: 0;
@@ -150,32 +140,6 @@ input:focus, textarea:focus, select:focus {
 	outline: none;
 }
 
-#svg {
-	filter: url(#blobFilter);
-	position: fixed;
-	width: calc(100% + 2em);
-	height: calc(100% + 2em);
-	left: -1em;
-	top: -1em;
-	margin: 0;
-	padding: 0;
-	z-index: -1;
-}
-
-#textbox {
-	position: relative;
-	display: block;
-}
-
-.blob {
-	position: fixed;
-	z-index: -9999;
-}
-
-.maintext::placeholder {
-	font-family: "circular-lt"
-}
-
 .subtext {
 	font-size: 1em;
 }
@@ -211,50 +175,9 @@ input[type=submit] {
 	font-size: 1em;
 }
 
-#linkToOptions {
-	color: var(--shale);
-	cursor: pointer;
-	font-family: "circular";
-	font-size: 1em;
-}
-
 .urlSubmit {
 	padding: 0.5em 1.4em !important;
 	font-size: 1.2em !important;
-}
-
-#inputForm {
-	margin-top: 6em;
-}
-
-#inputForm input {
-	display: inline-block;
-}
-
-#top-text {
-	position: fixed;
-	left: 12.5vw;
-	top: 30vh;
-	color: var(--shale);
-}
-
-.blend {
-	mix-blend-mode: exclusion;
-	color: white;
-}
-
-#statusMessage {
-	font-family: "circular-lt";
-	font-size: 1em;
-	margin: 1em 0.5em 1.5em 0em;
-}
-
-#reflect-main {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
 }
 
 .popup {

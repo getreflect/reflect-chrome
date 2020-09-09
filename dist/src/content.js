@@ -84,10 +84,6 @@ function loadBlockPage(strippedURL) {
         addFormListener(strippedURL);
         // inject show options page
         $('#linkToOptions').attr('href', chrome.runtime.getURL('res/pages/options.html'));
-        // load css
-        const cssPath = chrome.runtime.getURL('res/common.css');
-        const cssLink = `<link rel="stylesheet" type="text/css" href="${cssPath}">`;
-        document.head.innerHTML += cssLink;
         // animate background
         const anim = new BlobAnimation();
         anim.animate();

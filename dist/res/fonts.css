@@ -1,0 +1,9 @@
+@font-face {
+    font-family: "circular";
+    src: url("chrome-extension://__MSG_@@extension_id__/res/circular.ttf");
+}
+
+@font-face {
+    font-family: "circular-lt";
+    src: url("chrome-extension://__MSG_@@extension_id__/res/circular-light.ttf");
+}
