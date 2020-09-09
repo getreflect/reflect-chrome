@@ -75,16 +75,26 @@ function saveCurrentOptions(): void {
     ) as HTMLFormElement
     const numIntentEntries: number = numIntentEntriesElement.value
 
-    chrome.storage.sync.set({ numIntentEntries: numIntentEntries }, () => {
-        chrome.storage.sync.set({ whitelistTime: whitelistTime }, () => {
+    const enableBlobsElement: HTMLFormElement = document.getElementById(
+        'enable-blobs'
+    ) as HTMLFormElement
+    const enableBlobs: boolean = enableBlobsElement.checked
+
+    chrome.storage.sync.set(
+        {
+            numIntentEntries: numIntentEntries,
+            whitelistTime: whitelistTime,
+            enableBlobs: enableBlobs,
+        },
+        () => {
             // Update status to let user know options were saved.
             const status = document.getElementById('statusContent')
             status.textContent = 'options saved.'
             setTimeout(() => {
                 status.textContent = ''
             }, 1500)
-        })
-    })
+        }
+    )
 }
 
 function restoreSavedOptions(): void {
@@ -92,6 +102,8 @@ function restoreSavedOptions(): void {
         ;(document.getElementById('whitelistTime') as HTMLFormElement).value = storage.whitelistTime
         ;(document.getElementById('numIntentEntries') as HTMLFormElement).value =
             storage.numIntentEntries
+        ;(document.getElementById('enable-blobs') as HTMLFormElement).checked =
+            storage.enableBlobs ?? true
     })
 }
 

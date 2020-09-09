@@ -78,7 +78,7 @@ function iterWhitelist(): void {
                 const currentDate: Date = new Date()
                 if (currentDate >= parsedDate) {
                     console.log('expired')
-                    loadBlockPage(strippedURL)
+                    loadBlockPage(strippedURL, storage.enableBlobs ?? true)
                 } else {
                     // is currently on whitelist
                     const timeDifference: number = parsedDate.getTime() - currentDate.getTime()
@@ -86,14 +86,14 @@ function iterWhitelist(): void {
                 }
             } else {
                 console.log('blocked')
-                loadBlockPage(strippedURL)
+                loadBlockPage(strippedURL, storage.enableBlobs ?? true)
             }
         }
         // otherwise do nothing
     })
 }
 
-function loadBlockPage(strippedURL: string): void {
+function loadBlockPage(strippedURL: string, showBlobs: boolean): void {
     // get prompt page content
     $.get(chrome.runtime.getURL('res/pages/prompt.html'), (page) => {
         // stop current page and replace with our blocker page
@@ -106,8 +106,10 @@ function loadBlockPage(strippedURL: string): void {
         $('#linkToOptions').attr('href', chrome.runtime.getURL('res/pages/options.html'))
 
         // animate background
-        const anim = new BlobAnimation()
-        anim.animate()
+        if (showBlobs) {
+            const anim = new BlobAnimation()
+            anim.animate()
+        }
     })
 }
 

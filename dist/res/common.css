@@ -4,6 +4,14 @@
 	--blue: #8b9ac0;
 }
 
+table {
+	width: 90%;
+}
+
+.options_panel tr > td:nth-child(2) {
+	text-align: center;
+}
+
 th {
 	text-align: left;
 	padding: 0.5em 0.5em;

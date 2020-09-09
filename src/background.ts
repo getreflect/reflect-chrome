@@ -38,31 +38,21 @@ function firstTimeSetup(): void {
 
     // set whitelist
     const whitelist: { [key: string]: Date } = {}
-    chrome.storage.sync.set({ whitelistedSites: whitelist }, () => {
-        console.log('Default whitelist sites have been set.')
-    })
-
-    // create empty intent list
     const intentList: { [key: string]: Object } = {}
-    chrome.storage.sync.set({ intentList: intentList }, () => {
-        console.log('Intent map has been created.')
-    })
+    chrome.storage.sync.set(
+        {
+            whitelistedSites: whitelist,
+            intentList: intentList,
+            whitelistTime: 5,
+            numIntentEntries: 20,
+            enableBlobs: true,
+        },
+        () => {
+            console.log('Default values have been set.')
+        }
+    )
 
-    // set default block value
-    chrome.storage.sync.set({ whitelistTime: 5 }, () => {
-        console.log('Default whitelist period set.')
-    })
-
-    // set default number of intent entries
-    chrome.storage.sync.set({ numIntentEntries: 20 }, () => {
-        console.log('Default number of intent entries set.')
-    })
-
-    // populate default blocked sites
-    chrome.storage.sync.get(null, (storage) => {
-        let blockedSites: string[] = storage.blockedSites
-        addDefaultFilters()
-    })
+    addDefaultFilters()
 
     // set default badge background colour
     chrome.browserAction.setBadgeBackgroundColor({
