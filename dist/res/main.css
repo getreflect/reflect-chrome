@@ -1,6 +1,6 @@
 /* optimized injection package for block page */
  
-html[style] {
+html[style] > #_r {
     /* if style is defined at root-level, override */
     font-size: 15px !important;
 }
