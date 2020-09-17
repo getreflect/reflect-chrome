@@ -6,7 +6,7 @@
   "options_page": "res/pages/options.html",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "background": {
-    "scripts": ["src/background.js", "src/contextMenus.js", "src/util.js"],
+    "scripts": ["src/background.js", "src/util.js"],
   	"persistent": false
   },
   "icons": {

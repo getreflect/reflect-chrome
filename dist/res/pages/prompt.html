@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-	<title>hey! reflect.</title>
+<title>hey! reflect.</title>
 </head>
 
 <body id="_r">
@@ -29,8 +28,6 @@
 		<svg id="svg">
 			<defs>
 				<filter id="blobFilter">
-					<feDisplacementMap in="SourceGraphic" in2="turbulence" scale="20" xChannelSelector="R"
-						yChannelSelector="G" result="displacement" />
 					<feGaussianBlur in="displacement" stdDeviation="10" result="blur" id="blurF" />
 					<feColorMatrix in="blur" mode="matrix" id="colorMatrixF" />
 				</filter>
