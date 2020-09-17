@@ -1,6 +1,7 @@
 /* optimized injection package for block page */
  
-:root {
+html[style] {
+    /* if style is defined at root-level, override */
     font-size: 15px !important;
 }
 
