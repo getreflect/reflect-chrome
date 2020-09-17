@@ -6,7 +6,7 @@ checkIfBlocked();
 window.addEventListener('focus', checkIfBlocked);
 function checkIfBlocked() {
     // check if already blocked
-    if (!!document.getElementById('reflectMain') === false) {
+    if (!!document.getElementById('reflect-main') === false) {
         chrome.storage.sync.get(null, (storage) => {
             // check to see if reflect is enabled
             if (storage.isEnabled) {
@@ -46,6 +46,7 @@ function getStrippedUrl() {
 function iterWhitelist() {
     // iterate whitelisted sites
     chrome.storage.sync.get(null, (storage) => {
+        var _a, _b;
         const strippedURL = getStrippedUrl();
         // activeURL exists
         if (strippedURL != '') {
@@ -59,7 +60,7 @@ function iterWhitelist() {
                 const currentDate = new Date();
                 if (currentDate >= parsedDate) {
                     console.log('expired');
-                    loadBlockPage(strippedURL);
+                    loadBlockPage(strippedURL, (_a = storage.enableBlobs, (_a !== null && _a !== void 0 ? _a : true)));
                 }
                 else {
                     // is currently on whitelist
@@ -69,13 +70,13 @@ function iterWhitelist() {
             }
             else {
                 console.log('blocked');
-                loadBlockPage(strippedURL);
+                loadBlockPage(strippedURL, (_b = storage.enableBlobs, (_b !== null && _b !== void 0 ? _b : true)));
             }
         }
         // otherwise do nothing
     });
 }
-function loadBlockPage(strippedURL) {
+function loadBlockPage(strippedURL, showBlobs) {
     // get prompt page content
     $.get(chrome.runtime.getURL('res/pages/prompt.html'), (page) => {
         // stop current page and replace with our blocker page
@@ -84,13 +85,11 @@ function loadBlockPage(strippedURL) {
         addFormListener(strippedURL);
         // inject show options page
         $('#linkToOptions').attr('href', chrome.runtime.getURL('res/pages/options.html'));
-        // load css
-        const cssPath = chrome.runtime.getURL('res/common.css');
-        const cssLink = `<link rel="stylesheet" type="text/css" href="${cssPath}">`;
-        document.head.innerHTML += cssLink;
         // animate background
-        const anim = new BlobAnimation();
-        anim.animate();
+        if (showBlobs) {
+            const anim = new BlobAnimation();
+            anim.animate();
+        }
     });
 }
 function addFormListener(strippedURL) {

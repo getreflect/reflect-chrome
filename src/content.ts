@@ -10,7 +10,7 @@ window.addEventListener('focus', checkIfBlocked)
 
 function checkIfBlocked() {
     // check if already blocked
-    if (!!document.getElementById('reflectMain') === false) {
+    if (!!document.getElementById('reflect-main') === false) {
         chrome.storage.sync.get(null, (storage) => {
             // check to see if reflect is enabled
             if (storage.isEnabled) {
@@ -78,7 +78,7 @@ function iterWhitelist(): void {
                 const currentDate: Date = new Date()
                 if (currentDate >= parsedDate) {
                     console.log('expired')
-                    loadBlockPage(strippedURL)
+                    loadBlockPage(strippedURL, storage.enableBlobs ?? true)
                 } else {
                     // is currently on whitelist
                     const timeDifference: number = parsedDate.getTime() - currentDate.getTime()
@@ -86,14 +86,14 @@ function iterWhitelist(): void {
                 }
             } else {
                 console.log('blocked')
-                loadBlockPage(strippedURL)
+                loadBlockPage(strippedURL, storage.enableBlobs ?? true)
             }
         }
         // otherwise do nothing
     })
 }
 
-function loadBlockPage(strippedURL: string): void {
+function loadBlockPage(strippedURL: string, showBlobs: boolean): void {
     // get prompt page content
     $.get(chrome.runtime.getURL('res/pages/prompt.html'), (page) => {
         // stop current page and replace with our blocker page
@@ -105,15 +105,11 @@ function loadBlockPage(strippedURL: string): void {
         // inject show options page
         $('#linkToOptions').attr('href', chrome.runtime.getURL('res/pages/options.html'))
 
-        // load css
-        const cssPath: string = chrome.runtime.getURL('res/common.css')
-        const cssLink: string = `<link rel="stylesheet" type="text/css" href="${cssPath}">`
-
-        document.head.innerHTML += cssLink
-
         // animate background
-        const anim = new BlobAnimation()
-        anim.animate()
+        if (showBlobs) {
+            const anim = new BlobAnimation()
+            anim.animate()
+        }
     })
 }
 

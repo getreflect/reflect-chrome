@@ -1,6 +1,14 @@
-# reflect.
-
-"a mindful website blocker for the productive."
+<p align="center">
+    <h1 align="center" >reflect.</h1>
+    <p align="center">
+        "a mindful website blocker for the productive."
+    </p>
+    <div align="center">
+        <a href="https://getreflect.app/">Learn More</a> | <a href="https://chrome.google.com/webstore/detail/reflect-a-mindful-website/bicebchdpeichdlmoaflplakefkjkade">Install for Chrome</a> | <a href="https://addons.mozilla.org/en-US/firefox/addon/reflect-app/">Install for Firefox</a>
+    </div>
+    <br />
+    <img src="assets/video_demo.gif" alt="Video Demo">
+</p>
 
 reflect is a digitally mindful chrome extension that encourages users to reflect on their relationship with technology.
 

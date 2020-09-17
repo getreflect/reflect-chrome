@@ -57,23 +57,29 @@ function saveCurrentOptions() {
     const whitelistTime = whitelistTimeElement.value;
     const numIntentEntriesElement = document.getElementById('numIntentEntries');
     const numIntentEntries = numIntentEntriesElement.value;
-    chrome.storage.sync.set({ numIntentEntries: numIntentEntries }, () => {
-        chrome.storage.sync.set({ whitelistTime: whitelistTime }, () => {
-            // Update status to let user know options were saved.
-            const status = document.getElementById('statusContent');
-            status.textContent = 'options saved.';
-            setTimeout(() => {
-                status.textContent = '';
-            }, 1500);
-        });
+    const enableBlobsElement = document.getElementById('enable-blobs');
+    const enableBlobs = enableBlobsElement.checked;
+    chrome.storage.sync.set({
+        numIntentEntries: numIntentEntries,
+        whitelistTime: whitelistTime,
+        enableBlobs: enableBlobs,
+    }, () => {
+        // Update status to let user know options were saved.
+        const status = document.getElementById('statusContent');
+        status.textContent = 'options saved.';
+        setTimeout(() => {
+            status.textContent = '';
+        }, 1500);
     });
 }
 function restoreSavedOptions() {
     chrome.storage.sync.get(null, (storage) => {
+        var _a;
         ;
         document.getElementById('whitelistTime').value = storage.whitelistTime;
         document.getElementById('numIntentEntries').value =
             storage.numIntentEntries;
+        document.getElementById('enable-blobs').checked = (_a = storage.enableBlobs, (_a !== null && _a !== void 0 ? _a : true));
     });
 }
 function updateButtonListeners() {

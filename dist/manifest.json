@@ -2,11 +2,11 @@
   "manifest_version": 2,
   "name": "reflect. - a mindful website blocker",
   "description": "a website blocker that asks users to reflect on their usage.",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "options_page": "res/pages/options.html",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "background": {
-    "scripts": ["src/background.js", "src/contextMenus.js", "src/util.js"],
+    "scripts": ["src/background.js", "src/util.js"],
   	"persistent": false
   },
   "icons": {
@@ -28,6 +28,7 @@
     {
       "matches": [ "*://*/*" ],
       "js": ["jquery-3.4.1.min.js","jquery-ui.min.js", "src/content.js"],
+      "css": ["res/fonts.css", "res/main.css"],
       "run_at": "document_start"
     }
   ],
