@@ -46,11 +46,12 @@ function getStrippedUrl() {
 function iterWhitelist() {
     // iterate whitelisted sites
     chrome.storage.sync.get(null, (storage) => {
-        var _a, _b;
+        var _a;
         const strippedURL = getStrippedUrl();
         // activeURL exists
         if (strippedURL != '') {
             console.log(strippedURL);
+            const enableBlobs = (_a = storage.enableBlobs, (_a !== null && _a !== void 0 ? _a : true));
             // if url in whitelist
             const m = storage.whitelistedSites;
             if (m.hasOwnProperty(strippedURL)) {
@@ -60,17 +61,17 @@ function iterWhitelist() {
                 const currentDate = new Date();
                 if (currentDate >= parsedDate) {
                     console.log('expired');
-                    loadBlockPage(strippedURL, (_a = storage.enableBlobs, (_a !== null && _a !== void 0 ? _a : true)));
+                    loadBlockPage(strippedURL, enableBlobs);
                 }
                 else {
                     // is currently on whitelist
                     const timeDifference = parsedDate.getTime() - currentDate.getTime();
-                    setTimeout(loadBlockPage, timeDifference);
+                    setTimeout(() => { loadBlockPage(strippedURL, enableBlobs); }, timeDifference);
                 }
             }
             else {
                 console.log('blocked');
-                loadBlockPage(strippedURL, (_b = storage.enableBlobs, (_b !== null && _b !== void 0 ? _b : true)));
+                loadBlockPage(strippedURL, enableBlobs);
             }
         }
         // otherwise do nothing
@@ -85,6 +86,7 @@ function loadBlockPage(strippedURL, showBlobs) {
         addFormListener(strippedURL);
         // inject show options page
         $('#linkToOptions').attr('href', chrome.runtime.getURL('res/pages/options.html'));
+        console.log(showBlobs);
         // animate background
         if (showBlobs) {
             const anim = new BlobAnimation();

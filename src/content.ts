@@ -66,6 +66,7 @@ function iterWhitelist(): void {
         // activeURL exists
         if (strippedURL != '') {
             console.log(strippedURL)
+            const enableBlobs = storage.enableBlobs ?? true
 
             // if url in whitelist
             const m: { [key: string]: Date } = storage.whitelistedSites
@@ -78,15 +79,17 @@ function iterWhitelist(): void {
                 const currentDate: Date = new Date()
                 if (currentDate >= parsedDate) {
                     console.log('expired')
-                    loadBlockPage(strippedURL, storage.enableBlobs ?? true)
+                    loadBlockPage(strippedURL, enableBlobs)
                 } else {
                     // is currently on whitelist
                     const timeDifference: number = parsedDate.getTime() - currentDate.getTime()
-                    setTimeout(loadBlockPage, timeDifference)
+                    setTimeout(() => {
+                        loadBlockPage(strippedURL, enableBlobs)
+                    }, timeDifference)
                 }
             } else {
                 console.log('blocked')
-                loadBlockPage(strippedURL, storage.enableBlobs ?? true)
+                loadBlockPage(strippedURL, enableBlobs)
             }
         }
         // otherwise do nothing
