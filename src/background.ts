@@ -1,7 +1,7 @@
 import * as nn from './nn'
-import { addMinutes, cleanDomain } from './util'
-import { getStorage, setStorage } from './storage'
-import setupContextMenu from './context_menus'
+import { cleanDomain } from './util'
+import { getStorage, setStorage, addToBlocked, addToWhitelist, removeFromBlocked } from './storage'
+import setupContextMenus from './context_menus'
 import { Intent } from './types'
 
 // On install script
@@ -18,7 +18,9 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
 
   // on version update
-  if (details.reason === 'update') {
+  const prevVersion: string = details.previousVersion
+  const thisVersion: string = chrome.runtime.getManifest().version
+  if (details.reason === 'update' && prevVersion != thisVersion) {
     turnFilteringOn()
 
     chrome.tabs.create({
@@ -27,8 +29,7 @@ chrome.runtime.onInstalled.addListener((details) => {
       active: true,
     })
 
-    const thisVersion: string = chrome.runtime.getManifest().version
-    console.log(`Updated from ${details.previousVersion} to ${thisVersion}!`)
+    console.log(`Updated from ${prevVersion} to ${thisVersion}!`)
   }
 
   // set uninstall url
@@ -40,8 +41,9 @@ function firstTimeSetup(): void {
   turnFilteringOn()
 
   // set whitelist
-  const whitelist: { [key: string]: Date } = {}
+  const whitelist: { [key: string]: string } = {}
   const intentList: { [key: string]: Intent } = {}
+  const blockedSites: string[] = ['facebook.com', 'twitter.com', 'instagram.com', 'youtube.com']
 
   setStorage({
     whitelistedSites: whitelist,
@@ -49,11 +51,10 @@ function firstTimeSetup(): void {
     whitelistTime: 5,
     numIntentEntries: 20,
     enableBlobs: true,
+    blockedSites: blockedSites,
   }).then(() => {
     console.log('Default values have been set.')
   })
-
-  addDefaultFilters()
 
   // set default badge background colour
   chrome.browserAction.setBadgeBackgroundColor({
@@ -61,17 +62,9 @@ function firstTimeSetup(): void {
   })
 }
 
-// default list of blocked sites
-function addDefaultFilters(): void {
-  const blockedSites: string[] = ['facebook.com', 'twitter.com', 'instagram.com', 'youtube.com']
-  chrome.storage.sync.set({ blockedSites: blockedSites }, () => {
-    console.log('Default blocked sites have been loaded.')
-  })
-}
-
 // On Chrome startup, setup extension icons
 chrome.runtime.onStartup.addListener(() => {
-  chrome.storage.sync.get(null, (storage) => {
+  getStorage().then((storage) => {
     let icon: string = 'res/icon.png'
     if (storage.isEnabled) {
       icon = 'res/on.png'
@@ -93,7 +86,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     case 'pgAddSiteToFilterList':
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const urls: string[] = tabs.map((x) => x.url)
-        addUrlToBlockedSites(urls[0])
+        addToBlocked(urls[0])
       })
       break
     case 'baAddDomainToFilterList':
@@ -101,16 +94,16 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const urls: string[] = tabs.map((x) => x.url)
         const domain: string = cleanDomain(urls)
-        addUrlToBlockedSites(domain)
+        addToBlocked(domain)
       })
       break
   }
 })
 
 // load context menus
-setupContextMenu()
+setupContextMenus()
 
-// Load ML model stuff
+// Load ML model
 const model: nn.IntentClassifier = new nn.IntentClassifier('acc85.95')
 
 // Listen for new runtime connections
@@ -142,7 +135,7 @@ chrome.runtime.onConnect.addListener((port) => {
               chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                 const urls: string[] = tabs.map((x) => x.url)
                 const domain: string = cleanDomain(urls)
-                addUrlToWhitelistedSites(domain, WHITELIST_PERIOD)
+                addToWhitelist(domain, WHITELIST_PERIOD)
               })
 
               // send status to tab
@@ -177,9 +170,9 @@ chrome.runtime.onConnect.addListener((port) => {
         const unblock: boolean = msg.unblock
         if (url !== undefined && url !== '' && unblock !== undefined) {
           if (unblock) {
-            removeUrlFromblockedSites(url)
+            removeFromBlocked(url)
           } else if (!unblock) {
-            addUrlToBlockedSites(url)
+            addToBlocked(url)
           }
           reloadActive()
         }
@@ -187,49 +180,6 @@ chrome.runtime.onConnect.addListener((port) => {
     }
   }
 })
-
-// push current site to storage
-function addUrlToBlockedSites(url: string): void {
-  chrome.storage.sync.get(null, (storage) => {
-    // only add if not in list
-    if (!storage.blockedSites.includes(url)) {
-      storage.blockedSites.push(url) // urls.hostname
-      chrome.storage.sync.set({ blockedSites: storage.blockedSites }, () => {
-        console.log(`${url} added to blocked sites`)
-      })
-    }
-  })
-}
-
-function removeUrlFromblockedSites(url: string): void {
-  console.log(`trying to remove ${url}`)
-  chrome.storage.sync.get(null, (storage) => {
-    let blockedSites: string[] = storage.blockedSites
-
-    // remove url from blockedSites
-    blockedSites = blockedSites.filter((e) => e !== url)
-
-    // sync with chrome storage
-    chrome.storage.sync.set({ blockedSites: blockedSites }, () => {
-      console.log(`removed ${url} from blocked sites`)
-    })
-  })
-}
-
-// push current site to whitelist with time to whitelist
-function addUrlToWhitelistedSites(url: string, minutes: number): void {
-  chrome.storage.sync.get(null, (storage) => {
-    let whitelistedSites: { [key: string]: string } = storage.whitelistedSites
-
-    let expiry: Date = addMinutes(new Date(), minutes)
-
-    whitelistedSites[url] = expiry.toJSON()
-
-    chrome.storage.sync.set({ whitelistedSites: whitelistedSites }, () => {
-      console.log(`${url} added to whitelisted sites`)
-    })
-  })
-}
 
 var badgeUpdateCounter: number = window.setInterval(badgeCountDown, 1000)
 

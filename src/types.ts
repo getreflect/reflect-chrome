@@ -11,7 +11,7 @@ export interface Storage {
   // lists
   blockedSites?: string[]
   intentList?: { [key: string]: Intent }
-  whitelistedSites?: { [key: string]: Date }
+  whitelistedSites?: { [key: string]: string }
 
   // misc config
   numIntentEntries?: number
