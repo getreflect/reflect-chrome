@@ -99,8 +99,8 @@
   function getStorage() {
     return new Promise((resolve, reject) => {
       chrome.storage.sync.get(null, (storage2) => {
-        if (storage2 === void 0) {
-          reject(`Failed to fetch storage, storage was undefined`);
+        if (chrome.runtime.lastError !== void 0) {
+          reject(chrome.runtime.lastError);
         } else {
           resolve(storage2);
         }

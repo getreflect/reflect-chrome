@@ -23669,6 +23669,19 @@
     }
   }
 
+  // build/storage.js
+  function setStorage(key) {
+    return new Promise((resolve, reject) => {
+      chrome.storage.sync.set(key, () => {
+        if (chrome.runtime.lastError !== void 0) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
   // build/context_menus.js
   var context_menus_default = () => {
     var setupBefore = false;
@@ -23767,13 +23780,13 @@
     turnFilteringOn();
     const whitelist = {};
     const intentList = {};
-    chrome.storage.sync.set({
+    setStorage({
       whitelistedSites: whitelist,
       intentList,
       whitelistTime: 5,
       numIntentEntries: 20,
       enableBlobs: true
-    }, () => {
+    }).then(() => {
       console.log("Default values have been set.");
     });
     addDefaultFilters();
@@ -23788,11 +23801,11 @@
     });
   }
   chrome.runtime.onStartup.addListener(() => {
-    chrome.storage.sync.get(null, (storage) => {
+    chrome.storage.sync.get(null, (storage2) => {
       let icon = "res/icon.png";
-      if (storage.isEnabled) {
+      if (storage2.isEnabled) {
         icon = "res/on.png";
-      } else if (!storage.isEnabled) {
+      } else if (!storage2.isEnabled) {
         icon = "res/off.png";
       }
       chrome.browserAction.setIcon({path: {"16": icon}});
@@ -23827,8 +23840,8 @@
       case "intentStatus": {
         port.onMessage.addListener((msg) => __awaiter5(void 0, void 0, void 0, function* () {
           const intent = msg.intent;
-          chrome.storage.sync.get(null, (storage) => __awaiter5(void 0, void 0, void 0, function* () {
-            const WHITELIST_PERIOD = storage.whitelistTime;
+          chrome.storage.sync.get(null, (storage2) => __awaiter5(void 0, void 0, void 0, function* () {
+            const WHITELIST_PERIOD = storage2.whitelistTime;
             const words = intent.split(" ");
             if (words.length <= 3) {
               port.postMessage({status: "too_short"});
@@ -23877,10 +23890,10 @@
     }
   });
   function addUrlToBlockedSites(url) {
-    chrome.storage.sync.get(null, (storage) => {
-      if (!storage.blockedSites.includes(url)) {
-        storage.blockedSites.push(url);
-        chrome.storage.sync.set({blockedSites: storage.blockedSites}, () => {
+    chrome.storage.sync.get(null, (storage2) => {
+      if (!storage2.blockedSites.includes(url)) {
+        storage2.blockedSites.push(url);
+        chrome.storage.sync.set({blockedSites: storage2.blockedSites}, () => {
           console.log(`${url} added to blocked sites`);
         });
       }
@@ -23888,8 +23901,8 @@
   }
   function removeUrlFromblockedSites(url) {
     console.log(`trying to remove ${url}`);
-    chrome.storage.sync.get(null, (storage) => {
-      let blockedSites = storage.blockedSites;
+    chrome.storage.sync.get(null, (storage2) => {
+      let blockedSites = storage2.blockedSites;
       blockedSites = blockedSites.filter((e2) => e2 !== url);
       chrome.storage.sync.set({blockedSites}, () => {
         console.log(`removed ${url} from blocked sites`);
@@ -23897,8 +23910,8 @@
     });
   }
   function addUrlToWhitelistedSites(url, minutes) {
-    chrome.storage.sync.get(null, (storage) => {
-      let whitelistedSites = storage.whitelistedSites;
+    chrome.storage.sync.get(null, (storage2) => {
+      let whitelistedSites = storage2.whitelistedSites;
       let expiry = addMinutes(new Date(), minutes);
       whitelistedSites[url] = expiry.toJSON();
       chrome.storage.sync.set({whitelistedSites}, () => {
@@ -23920,8 +23933,8 @@
         const matched = currentURL.match(/^[\w]+:\/{2}([\w\.:-]+)/);
         if (matched != null) {
           const strippedURL = matched[1].replace("www.", "");
-          chrome.storage.sync.get(null, (storage) => {
-            const whitelistedSites = storage.whitelistedSites;
+          chrome.storage.sync.get(null, (storage2) => {
+            const whitelistedSites = storage2.whitelistedSites;
             if (whitelistedSites.hasOwnProperty(strippedURL)) {
               const expiry = new Date(whitelistedSites[strippedURL]);
               const currentDate = new Date();

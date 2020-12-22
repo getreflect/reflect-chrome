@@ -1,7 +1,8 @@
 import * as nn from './nn'
 import { addMinutes, cleanDomain } from './util'
-import { getStorage } from './storage'
+import { getStorage, setStorage } from './storage'
 import setupContextMenu from './context_menus'
+import { Intent } from './types'
 
 // On install script
 chrome.runtime.onInstalled.addListener((details) => {
@@ -40,19 +41,17 @@ function firstTimeSetup(): void {
 
   // set whitelist
   const whitelist: { [key: string]: Date } = {}
-  const intentList: { [key: string]: Object } = {}
-  chrome.storage.sync.set(
-    {
-      whitelistedSites: whitelist,
-      intentList: intentList,
-      whitelistTime: 5,
-      numIntentEntries: 20,
-      enableBlobs: true,
-    },
-    () => {
-      console.log('Default values have been set.')
-    }
-  )
+  const intentList: { [key: string]: Intent } = {}
+
+  setStorage({
+    whitelistedSites: whitelist,
+    intentList: intentList,
+    whitelistTime: 5,
+    numIntentEntries: 20,
+    enableBlobs: true,
+  }).then(() => {
+    console.log('Default values have been set.')
+  })
 
   addDefaultFilters()
 
