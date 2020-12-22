@@ -1,4 +1,3 @@
-import 'babel-polyfill'
 import * as nn from './nn'
 
 // On install script

@@ -15,10 +15,9 @@
     "scripts": {
         "copy": "cp build/*.js dist/src/",
         "build": "tsc --incremental && npm run copy && npm run esbuild",
-        "esbuild": "npm run esbuild-bg & npm run esbuild-nn",
-        "esbuild-bg": "esbuild build/background.js --bundle --outfile=dist/src/background.js",
-        "esbuild-nn": "esbuild build/nn.js --bundle --outfile=dist/src/nn.js",
-        "watch": "nodemon -e ts -x \"npm run build\""
+        "esbuild": "esbuild build/background.js --bundle --outfile=dist/src/background.js",
+        "watch": "nodemon -e ts -x \"npm run build\"",
+        "clean": "rm dist/src/*"
     },
     "devDependencies": {
         "babel-plugin-transform-runtime": "^6.23.0",
