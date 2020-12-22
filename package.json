@@ -14,8 +14,10 @@
     },
     "scripts": {
         "copy": "cp build/*.js dist/src/",
-        "parcel": "parcel build build/background.js -d dist/src/ -o background && parcel build build/nn.js -d dist/src/ -o nn",
-        "build": "tsc && npm run copy && npm run parcel",
+        "build": "tsc --incremental && npm run copy && npm run esbuild",
+        "esbuild": "npm run esbuild-bg & npm run esbuild-nn",
+        "esbuild-bg": "esbuild build/background.js --bundle --outfile=dist/src/background.js",
+        "esbuild-nn": "esbuild build/nn.js --bundle --outfile=dist/src/nn.js",
         "watch": "nodemon -e ts -x \"npm run build\""
     },
     "devDependencies": {

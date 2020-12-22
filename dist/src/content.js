@@ -66,7 +66,9 @@ function iterWhitelist() {
                 else {
                     // is currently on whitelist
                     const timeDifference = parsedDate.getTime() - currentDate.getTime();
-                    setTimeout(() => { loadBlockPage(strippedURL, enableBlobs); }, timeDifference);
+                    setTimeout(() => {
+                        loadBlockPage(strippedURL, enableBlobs);
+                    }, timeDifference);
                 }
             }
             else {
@@ -86,7 +88,6 @@ function loadBlockPage(strippedURL, showBlobs) {
         addFormListener(strippedURL);
         // inject show options page
         $('#linkToOptions').attr('href', chrome.runtime.getURL('res/pages/options.html'));
-        console.log(showBlobs);
         // animate background
         if (showBlobs) {
             const anim = new BlobAnimation();
