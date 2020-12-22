@@ -4,15 +4,9 @@
 // getStorage(null).then(storage => {
 //     ...
 // })
-//
-// or
-//
-// getStorage(['some_key']).then(some_key_value => {
-//     ...
-// })
-function getStorage(key: Object = null): Promise<any> {
+export function getStorage(): Promise<any> {
   return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(key, (storage) => {
+    chrome.storage.sync.get(null, (storage) => {
       if (storage === undefined) {
         reject(`Failed to fetch storage, storage was undefined`)
       } else {

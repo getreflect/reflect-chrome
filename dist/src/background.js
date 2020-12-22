@@ -23652,6 +23652,70 @@
     }
   };
 
+  // build/util.js
+  function addMinutes(date, minutes) {
+    return new Date(date.getTime() + minutes * 6e4);
+  }
+  function cleanDomain(urls) {
+    if (urls[0] === void 0) {
+      return "";
+    } else {
+      const activeURL = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/);
+      if (activeURL == null) {
+        return "";
+      } else {
+        return activeURL[1].replace("www.", "");
+      }
+    }
+  }
+
+  // build/context_menus.js
+  var context_menus_default = () => {
+    var setupBefore = false;
+    return () => {
+      if (!setupBefore) {
+        setupBefore = true;
+        createContextMenus();
+      }
+    };
+  };
+  function createContextMenus() {
+    chrome.contextMenus.create({
+      id: "baAddToFilterList",
+      title: "Block this:",
+      contexts: ["browser_action"]
+    });
+    chrome.contextMenus.create({
+      parentId: "baAddToFilterList",
+      id: "baAddSiteToFilterList",
+      title: "Page",
+      contexts: ["browser_action"]
+    });
+    chrome.contextMenus.create({
+      parentId: "baAddToFilterList",
+      id: "baAddDomainToFilterList",
+      title: "Domain",
+      contexts: ["browser_action"]
+    });
+    chrome.contextMenus.create({
+      id: "pgAddToFilterList",
+      title: "Block this:",
+      contexts: ["page"]
+    });
+    chrome.contextMenus.create({
+      parentId: "pgAddToFilterList",
+      id: "pgAddSiteToFilterList",
+      title: "Page",
+      contexts: ["page"]
+    });
+    chrome.contextMenus.create({
+      parentId: "pgAddToFilterList",
+      id: "pgAddDomainToFilterList",
+      title: "Domain",
+      contexts: ["page"]
+    });
+  }
+
   // build/background.js
   var __awaiter5 = function(thisArg, _arguments, P2, generator) {
     function adopt(value) {
@@ -23756,6 +23820,7 @@
         break;
     }
   });
+  context_menus_default();
   var model = new IntentClassifier("acc85.95");
   chrome.runtime.onConnect.addListener((port) => {
     switch (port.name) {
@@ -23913,39 +23978,5 @@
       chrome.tabs.reload(tabs[0].id);
     });
   }
-  chrome.contextMenus.create({
-    id: "baAddToFilterList",
-    title: "Block this:",
-    contexts: ["browser_action"]
-  });
-  chrome.contextMenus.create({
-    parentId: "baAddToFilterList",
-    id: "baAddSiteToFilterList",
-    title: "Page",
-    contexts: ["browser_action"]
-  });
-  chrome.contextMenus.create({
-    parentId: "baAddToFilterList",
-    id: "baAddDomainToFilterList",
-    title: "Domain",
-    contexts: ["browser_action"]
-  });
-  chrome.contextMenus.create({
-    id: "pgAddToFilterList",
-    title: "Block this:",
-    contexts: ["page"]
-  });
-  chrome.contextMenus.create({
-    parentId: "pgAddToFilterList",
-    id: "pgAddSiteToFilterList",
-    title: "Page",
-    contexts: ["page"]
-  });
-  chrome.contextMenus.create({
-    parentId: "pgAddToFilterList",
-    id: "pgAddDomainToFilterList",
-    title: "Domain",
-    contexts: ["page"]
-  });
 })();
 //# sourceMappingURL=background.js.map

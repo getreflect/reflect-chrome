@@ -1,7 +1,7 @@
-function addMinutes(date, minutes) {
+export function addMinutes(date, minutes) {
     return new Date(date.getTime() + minutes * 60000);
 }
-function cleanDomain(urls) {
+export function cleanDomain(urls) {
     // check to see if urls exist
     if (urls[0] === undefined) {
         // return empty if not

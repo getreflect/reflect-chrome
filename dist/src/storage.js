@@ -1,6 +1,12 @@
-function getStorage(key = null) {
+// helper function to retrive chrome storage object
+// usage:
+//
+// getStorage(null).then(storage => {
+//     ...
+// })
+export function getStorage() {
     return new Promise((resolve, reject) => {
-        chrome.storage.sync.get(key, storage => {
+        chrome.storage.sync.get(null, (storage) => {
             if (storage === undefined) {
                 reject(`Failed to fetch storage, storage was undefined`);
             }

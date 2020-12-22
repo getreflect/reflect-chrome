@@ -1,4 +1,7 @@
 import * as nn from './nn'
+import { addMinutes, cleanDomain } from './util'
+import { getStorage } from './storage'
+import setupContextMenu from './context_menus'
 
 // On install script
 chrome.runtime.onInstalled.addListener((details) => {
@@ -104,6 +107,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       break
   }
 })
+
+// load context menus
+setupContextMenu()
 
 // Load ML model stuff
 const model: nn.IntentClassifier = new nn.IntentClassifier('acc85.95')
@@ -318,44 +324,3 @@ function reloadActive(): void {
     chrome.tabs.reload(tabs[0].id)
   })
 }
-
-// browser actions
-chrome.contextMenus.create({
-  id: 'baAddToFilterList',
-  title: 'Block this:',
-  contexts: ['browser_action'],
-})
-
-chrome.contextMenus.create({
-  parentId: 'baAddToFilterList',
-  id: 'baAddSiteToFilterList',
-  title: 'Page',
-  contexts: ['browser_action'],
-})
-
-chrome.contextMenus.create({
-  parentId: 'baAddToFilterList',
-  id: 'baAddDomainToFilterList',
-  title: 'Domain',
-  contexts: ['browser_action'],
-})
-
-chrome.contextMenus.create({
-  id: 'pgAddToFilterList',
-  title: 'Block this:',
-  contexts: ['page'],
-})
-
-chrome.contextMenus.create({
-  parentId: 'pgAddToFilterList',
-  id: 'pgAddSiteToFilterList',
-  title: 'Page',
-  contexts: ['page'],
-})
-
-chrome.contextMenus.create({
-  parentId: 'pgAddToFilterList',
-  id: 'pgAddDomainToFilterList',
-  title: 'Domain',
-  contexts: ['page'],
-})
