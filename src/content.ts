@@ -1,25 +1,25 @@
+// some colour definitions
 const REFLECT_INFO: string = '#576ca8'
 const REFLECT_ERR: string = '#ff4a47'
 
-const WHITELISTED_WRAPPERS: string[] = ['facebook.com/flx', 'l.facebook.com']
-
+// as soon as page loads, check if we need to block it
 checkIfBlocked()
 
 // re-check page everytime this page gets focus again
 window.addEventListener('focus', checkIfBlocked)
 
+// check to see if the current website needs to be blocked
 function checkIfBlocked() {
-  // check if already blocked
+  // if already on reflect page, don't need to re-block
   if (!!document.getElementById('reflect-main') === false) {
     getStorage(null).then((storage) => {
-      // check to see if reflect is enabled
       if (storage.isEnabled) {
-        // check for is blocked
-
         const strippedURL: string = getStrippedUrl()
+
+        // match current url against stored blocklist
         storage.blockedSites.forEach((site: string) => {
-          // is blocked and not a whitelisted wrapper
           if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
+            // found a match, check if currently on whitelist
             iterWhitelist()
           }
         })
@@ -28,54 +28,56 @@ function checkIfBlocked() {
   }
 }
 
+// display a message under intent entry field
 function displayStatus(
   message: string,
   duration: number = 3000,
   colour: string = REFLECT_INFO
 ): void {
-  // set content
   $('#statusContent').css('color', colour)
   $('#statusContent').text(message)
-
-  // show, wait, then hide
   $('#statusContent').show().delay(duration).fadeOut()
 }
 
+// check to see if domain is whitelisted
 function isWhitelistedWrapper(): boolean {
+  const WHITELISTED_WRAPPERS: string[] = ['facebook.com/flx', 'l.facebook.com']
+
   // check if any wrapper urls are present in current url
   return WHITELISTED_WRAPPERS.some((wrapper) => window.location.href.includes(wrapper))
 }
 
+// return clean version of current window URL
 function getStrippedUrl(): string {
   // match url
   const activeURL: RegExpMatchArray | null = window.location.href.match(/^[\w]+:\/{2}([\w\.:-]+)/)
-  if (activeURL != null) {
-    const strippedURL: string = activeURL[1].replace('www.', '')
-    return strippedURL
+
+  if (activeURL == null) {
+    // no url?
+    return ''
   }
 
-  // no url?
-  return ''
+  // remove leading www.
+  const strippedURL: string = activeURL[1].replace('www.', '')
+  return strippedURL
 }
 
 function iterWhitelist(): void {
   // iterate whitelisted sites
-  chrome.storage.sync.get(null, (storage) => {
+  getStorage(null).then((storage) => {
     const strippedURL: string = getStrippedUrl()
-
-    // activeURL exists
     if (strippedURL != '') {
-      console.log(strippedURL)
       const enableBlobs = storage.enableBlobs ?? true
 
-      // if url in whitelist
-      const m: { [key: string]: Date } = storage.whitelistedSites
+      // get dictionary of whitelisted sites
+      const whitelist: { [key: string]: Date } = storage.whitelistedSites
 
-      if (m.hasOwnProperty(strippedURL)) {
+      // is current url whitelisted?
+      if (whitelist.hasOwnProperty(strippedURL)) {
         console.log('whitelisted')
 
         // check if expired
-        const parsedDate: Date = new Date(m[strippedURL])
+        const parsedDate: Date = new Date(whitelist[strippedURL])
         const currentDate: Date = new Date()
         if (currentDate >= parsedDate) {
           console.log('expired')
