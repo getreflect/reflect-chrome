@@ -67,54 +67,51 @@ function iterWhitelist(): void {
   getStorage(null).then((storage) => {
     const strippedURL: string = getStrippedUrl()
     if (strippedURL != '') {
-      const enableBlobs = storage.enableBlobs ?? true
-
       // get dictionary of whitelisted sites
       const whitelist: { [key: string]: Date } = storage.whitelistedSites
 
       // is current url whitelisted?
       if (whitelist.hasOwnProperty(strippedURL)) {
-        console.log('whitelisted')
-
-        // check if expired
+        // check whitelist period is expired
         const parsedDate: Date = new Date(whitelist[strippedURL])
         const currentDate: Date = new Date()
-        if (currentDate >= parsedDate) {
-          console.log('expired')
-          loadBlockPage(strippedURL, enableBlobs)
+        const expired: boolean = currentDate >= parsedDate
+        if (expired) {
+          loadBlockPage(strippedURL)
         } else {
-          // is currently on whitelist
           const timeDifference: number = parsedDate.getTime() - currentDate.getTime()
+
+          // set timer to re-block page after whitelist period expires
           setTimeout(() => {
-            loadBlockPage(strippedURL, enableBlobs)
+            loadBlockPage(strippedURL)
           }, timeDifference)
         }
       } else {
-        console.log('blocked')
-        loadBlockPage(strippedURL, enableBlobs)
+        loadBlockPage(strippedURL)
       }
     }
-    // otherwise do nothing
   })
 }
 
-function loadBlockPage(strippedURL: string, showBlobs: boolean): void {
-  // get prompt page content
-  $.get(chrome.runtime.getURL('res/pages/prompt.html'), (page) => {
-    // stop current page and replace with our blocker page
-    window.stop()
-    $('html').html(page)
+// replace current page with reflect block page
+function loadBlockPage(strippedURL: string): void {
+  const prompt_page_url: string = chrome.runtime.getURL('res/pages/prompt.html')
+  const options_page_url: string = chrome.runtime.getURL('res/pages/options.html')
 
-    addFormListener(strippedURL)
+  getStorage(['enableBlobs']).then((enableBlobs) => {
+    // get prompt page content
+    $.get(prompt_page_url, (page) => {
+      // stop current page and replace with our blocker page
+      window.stop()
+      $('html').html(page)
 
-    // inject show options page
-    $('#linkToOptions').attr('href', chrome.runtime.getURL('res/pages/options.html'))
-
-    // animate background
-    if (showBlobs) {
-      const anim = new BlobAnimation()
-      anim.animate()
-    }
+      addFormListener(strippedURL)
+      $('#linkToOptions').attr('href', options_page_url)
+      if (enableBlobs ?? true) {
+        const anim = new BlobAnimation()
+        anim.animate()
+      }
+    })
   })
 }
 
