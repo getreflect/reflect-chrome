@@ -9,13 +9,18 @@
         "@types/chrome": "0.0.92",
         "@types/jquery": "^3.3.31",
         "@types/jqueryui": "^1.12.10",
+        "esbuild": "^0.8.26",
         "typescript": "^3.7.5"
     },
     "scripts": {
         "copy": "cp build/*.js dist/src/",
-        "parcel": "parcel build build/background.js -d dist/src/ -o background && parcel build build/nn.js -d dist/src/ -o nn",
-        "build": "tsc && npm run copy && npm run parcel",
-        "watch": "nodemon -e ts -x \"npm run build\""
+        "build": "tsc && npm run copy && npm run esbuild",
+        "esbuild": "npm run esbuild-bg & npm run esbuild-content & npm run esbuild-popup",
+        "esbuild-bg": "esbuild build/background.js --sourcemap --bundle --outfile=dist/src/background.js",
+        "esbuild-content": "esbuild build/content.js --sourcemap --bundle --outfile=dist/src/content.js",
+        "esbuild-popup": "esbuild build/popup.js --sourcemap --bundle --outfile=dist/src/popup.js",
+        "watch": "nodemon -e ts -x \"npm run build\"",
+        "clean": "rm dist/src/*"
     },
     "devDependencies": {
         "babel-plugin-transform-runtime": "^6.23.0",
