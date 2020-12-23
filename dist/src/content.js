@@ -166,12 +166,14 @@
       return;
     }
     getStorage().then((storage2) => {
+      console.log(storage2);
       if (!storage2.isEnabled) {
         return;
       }
       const strippedURL = getStrippedUrl();
       storage2.blockedSites.forEach((site) => {
         if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
+          console.log("bro wtf just block this shit already");
           iterWhitelist();
         }
       });

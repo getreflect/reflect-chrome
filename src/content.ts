@@ -20,6 +20,7 @@ function checkIfBlocked(): void {
   }
 
   getStorage().then((storage) => {
+    console.log(storage)
     if (!storage.isEnabled) {
       return
     }
@@ -30,6 +31,7 @@ function checkIfBlocked(): void {
     storage.blockedSites.forEach((site: string) => {
       if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
         // found a match, check if currently on whitelist
+        console.log('bro wtf just block this shit already')
         iterWhitelist()
       }
     })

@@ -23856,13 +23856,15 @@
     }
     const prevVersion = details.previousVersion;
     const thisVersion = chrome.runtime.getManifest().version;
-    if (details.reason === "update" && prevVersion != thisVersion) {
+    if (details.reason === "update") {
       turnFilteringOn();
-      chrome.tabs.create({
-        url: "http://getreflect.app/latest",
-        active: true
-      });
-      console.log(`Updated from ${prevVersion} to ${thisVersion}!`);
+      if (prevVersion != thisVersion) {
+        chrome.tabs.create({
+          url: "http://getreflect.app/latest",
+          active: true
+        });
+        console.log(`Updated from ${prevVersion} to ${thisVersion}!`);
+      }
     }
     chrome.runtime.setUninstallURL("http://getreflect.app/uninstall");
   });
@@ -23877,7 +23879,8 @@
       whitelistTime: 5,
       numIntentEntries: 20,
       enableBlobs: true,
-      blockedSites
+      blockedSites,
+      isEnabled: true
     }).then(() => {
       console.log("Default values have been set.");
     });
@@ -23906,7 +23909,7 @@
     });
   }
   function turnFilteringOn() {
-    setStorage({isEnabled: false}).then(() => {
+    setStorage({isEnabled: true}).then(() => {
       setBadgeUpdate();
       chrome.browserAction.setIcon({path: "res/on.png"}, () => {
         console.log("Filtering enabled.");

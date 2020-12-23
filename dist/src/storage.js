@@ -71,7 +71,7 @@ export function addToWhitelist(url, minutes) {
     });
 }
 export function logIntentToStorage(intentString, intentDate, url) {
-    getStorage().then(storage => {
+    getStorage().then((storage) => {
         let intentList = storage.intentList;
         // getting oldest date value from intent list map
         let oldest_date = new Date();
