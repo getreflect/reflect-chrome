@@ -22,6 +22,18 @@
       });
     });
   }
+  function addToBlocked(url, callback) {
+    getStorage().then((storage2) => {
+      if (!storage2.blockedSites.includes(url)) {
+        storage2.blockedSites.push(url);
+        setStorage({blockedSites: storage2.blockedSites}).then(() => {
+          console.log(`${url} added to blocked sites`);
+          callback ? callback() : () => {
+          };
+        });
+      }
+    });
+  }
 
   // build/options.js
   var ENTER_KEY_CODE = 13;
@@ -75,7 +87,10 @@
     }
   }
   function generateWebsiteDiv(id, site) {
-    return `<tr><td style="width: 95%"><p class="urlDisplay" id=${id}>${site}</p></td><td style="width: 5%"><button id=${id}>&times;</button></td></tr>`;
+    return `<tr>
+    <td style="width: 95%"><p class="urlDisplay" id=${id}>${site}</p></td>
+    <td style="width: 5%"><button id=${id}>&times;</button></td>
+    </tr>`;
   }
   function generateIntentDiv(id, intent, date, url) {
     const formattedDate = date.toLocaleDateString("default", {
@@ -85,18 +100,20 @@
       minute: "numeric",
       hour12: true
     });
-    return `<tr><td style="width: 40%"><p class="intentDisplay" id=${id}>${url}</p></td><td style="width: 40%"><p class="intentDisplay" id=${id}>${intent}</p></td><td style="width: 20%"><p class="intentDisplay" id=${id}>${formattedDate}</p></td></tr>`;
+    return `<tr>
+      <td style="width: 40%"><p class="intentDisplay" id=${id}>${url}</p></td>
+      <td style="width: 40%"><p class="intentDisplay" id=${id}>${intent}</p></td>
+      <td style="width: 20%"><p class="intentDisplay" id=${id}>${formattedDate}</p></td>
+    </tr>`;
   }
   function drawFilterListTable() {
     getStorage().then((storage2) => {
       const blockedSites = storage2.blockedSites;
-      let table = '<table class="hover shadow styled">';
-      let cur_id = 0;
-      blockedSites.forEach((site) => {
-        table += generateWebsiteDiv(cur_id, site);
-        cur_id++;
-      });
-      table += "</table>";
+      const tableContent = blockedSites.reduce((table2, site, cur_id) => {
+        table2 += generateWebsiteDiv(cur_id, site);
+        return table2;
+      }, "");
+      const table = `<table class="hover shadow styled">${tableContent}</table>`;
       const filterList = document.getElementById("filterList");
       if (filterList != null) {
         filterList.innerHTML = table;
@@ -107,13 +124,18 @@
   function drawIntentListTable() {
     getStorage().then((storage2) => {
       const intentList = storage2.intentList;
-      let table = '<table id="intentList" class="hover shadow styled"><tr><th id="urlHeader" style="width: 40%">url</th><th style="width: 40%">intent</th><th style="width: 20%">date</th></tr>';
+      let table = `<table id="intentList" class="hover shadow styled">
+        <tr>
+        <th id="urlHeader" style="width: 40%">url</th>
+        <th style="width: 40%">intent</th>
+        <th style="width: 20%">date</th>
+      </tr>`;
       let cur_id = 0;
       for (const rawDate in intentList) {
         if (cur_id < storage2.numIntentEntries) {
           const date = new Date(rawDate);
-          const intent = intentList[rawDate]["intent"];
-          const url = intentList[rawDate]["url"];
+          const intent = intentList[rawDate].intent;
+          const url = intentList[rawDate].url;
           table += generateIntentDiv(cur_id, intent, date, url);
           cur_id++;
         }
@@ -140,14 +162,10 @@
   function addUrlToFilterList() {
     const urlInput = document.getElementById("urlInput");
     if (urlInput.value !== "") {
-      getStorage().then((storage2) => {
-        const blockedSites = storage2.blockedSites;
-        blockedSites.push(urlInput.value);
-        setStorage({blockedSites}).then(() => {
-          console.log(`added ${urlInput} from blocked list`);
-          urlInput.value = "";
-          drawFilterListTable();
-        });
+      const url = urlInput.value;
+      addToBlocked(url, () => {
+        urlInput.value = "";
+        drawFilterListTable();
       });
     }
   }
