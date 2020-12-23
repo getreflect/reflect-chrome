@@ -118,36 +118,35 @@ chrome.runtime.onConnect.addListener((port) => {
         const intent: string = msg.intent
 
         // get whitelist period
-        chrome.storage.sync.get(null, async (storage) => {
+        getStorage().then(async (storage) => {
           const WHITELIST_PERIOD: number = storage.whitelistTime
-
-          // check if too short
           const words: string[] = intent.split(' ')
 
           if (words.length <= 3) {
-            // send status to tab
+            // if too short, let content script know and early return
             port.postMessage({ status: 'too_short' })
-          } else {
-            // send to nlp model for prediction
-            const valid: boolean = await model.predict(intent)
-
-            if (valid) {
-              // add whitelist period for site
-              chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                const urls: string[] = tabs.map((x) => x.url)
-                const domain: string = cleanDomain(urls)
-                addToWhitelist(domain, WHITELIST_PERIOD)
-              })
-
-              // send status to tab
-              port.postMessage({ status: 'ok' })
-              console.log(`Success! Redirecting`)
-            } else {
-              // send status to tab
-              port.postMessage({ status: 'invalid' })
-              console.log('Failed. Remaining on page.')
-            }
+            return
           }
+
+          // send to nlp model for prediction
+          const valid: boolean = await model.predict(intent)
+          if (!valid) {
+            // if invalid, let content script know and early return
+            port.postMessage({ status: 'invalid' })
+            console.log('Failed. Remaining on page.')
+            return
+          }
+
+          // add whitelist period for site
+          chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const urls: string[] = tabs.map((x) => x.url)
+            const domain: string = cleanDomain(urls)
+            addToWhitelist(domain, WHITELIST_PERIOD)
+          })
+
+          // send status to tab
+          port.postMessage({ status: 'ok' })
+          console.log(`Success! Redirecting`)
         })
       })
     }
