@@ -15,10 +15,7 @@
     "scripts": {
         "copy": "cp build/*.js dist/src/",
         "build": "tsc && npm run copy && npm run esbuild",
-        "esbuild": "npm run esbuild-bg & npm run esbuild-content & npm run esbuild-popup",
-        "esbuild-bg": "esbuild build/background.js --sourcemap --bundle --outfile=dist/src/background.js",
-        "esbuild-content": "esbuild build/content.js --sourcemap --bundle --outfile=dist/src/content.js",
-        "esbuild-popup": "esbuild build/popup.js --sourcemap --bundle --outfile=dist/src/popup.js",
+        "esbuild": "esbuild build/background.js build/content.js build/popup.js build/options.js --sourcemap --bundle --outdir=dist/src",
         "watch": "nodemon -e ts -x \"npm run build\"",
         "clean": "rm dist/src/*"
     },

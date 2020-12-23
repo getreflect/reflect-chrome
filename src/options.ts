@@ -1,3 +1,5 @@
+import { getStorage, setStorage } from './storage'
+
 const ENTER_KEY_CODE = 13
 
 // On page load, draw table and add button listener
@@ -7,103 +9,38 @@ document.addEventListener('DOMContentLoaded', () => {
   drawIntentListTable()
   setAddButtonListener()
 
-  restoreSavedOptions()
+  // set state of page based off of storage
+  getStorage().then((storage) => {
+    getElementFromForm('whitelistTime').value = storage.whitelistTime
+    getElementFromForm('numIntentEntries').value = storage.numIntentEntries
+    getElementFromForm('enable-blobs').checked = storage.enableBlobs ?? true
+  })
 
   // options listeners
-  setupOptionsListener()
+  document.getElementById('save').addEventListener('click', saveCurrentOptions)
 })
 
-function setupOptionsListener(): void {
-  document.getElementById('save').addEventListener('click', saveCurrentOptions)
-}
-
-// taken from https://www.w3schools.com/howto/howto_js_sort_table.asp
-function sortTable(): void {
-  var table,
-    rows,
-    switching,
-    i,
-    x,
-    y,
-    shouldSwitch,
-    dir,
-    switchcount = 0
-  table = document.getElementById('intentList')
-  switching = true
-  dir = 'asc'
-  while (switching) {
-    switching = false
-    rows = table.rows
-    for (i = 1; i < rows.length - 1; i++) {
-      shouldSwitch = false
-      x = rows[i].getElementsByTagName('td')[0].childNodes[0]
-      y = rows[i + 1].getElementsByTagName('td')[0].childNodes[0]
-      if (dir == 'asc') {
-        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-          shouldSwitch = true
-          break
-        }
-      } else if (dir == 'desc') {
-        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-          shouldSwitch = true
-          break
-        }
-      }
-    }
-    if (shouldSwitch) {
-      rows[i].parentNode.insertBefore(rows[i + 1], rows[i])
-      switching = true
-      switchcount++
-    } else {
-      if (switchcount == 0 && dir == 'asc') {
-        dir = 'desc'
-        switching = true
-      }
-    }
-  }
+function getElementFromForm(id: string): HTMLFormElement {
+  return document.getElementById(id) as HTMLFormElement
 }
 
 function saveCurrentOptions(): void {
   // get all form values
-  const whitelistTimeElement: HTMLFormElement = document.getElementById(
-    'whitelistTime'
-  ) as HTMLFormElement
-  const whitelistTime: number = whitelistTimeElement.value
+  const whitelistTime: number = getElementFromForm('whitelistTime').value
+  const numIntentEntries: number = getElementFromForm('numIntentEntries').value
+  const enableBlobs: boolean = getElementFromForm('enable-blobs').checked
 
-  const numIntentEntriesElement: HTMLFormElement = document.getElementById(
-    'numIntentEntries'
-  ) as HTMLFormElement
-  const numIntentEntries: number = numIntentEntriesElement.value
-
-  const enableBlobsElement: HTMLFormElement = document.getElementById(
-    'enable-blobs'
-  ) as HTMLFormElement
-  const enableBlobs: boolean = enableBlobsElement.checked
-
-  chrome.storage.sync.set(
-    {
-      numIntentEntries: numIntentEntries,
-      whitelistTime: whitelistTime,
-      enableBlobs: enableBlobs,
-    },
-    () => {
-      // Update status to let user know options were saved.
-      const status = document.getElementById('statusContent')
-      status.textContent = 'options saved.'
-      setTimeout(() => {
-        status.textContent = ''
-      }, 1500)
-    }
-  )
-}
-
-function restoreSavedOptions(): void {
-  chrome.storage.sync.get(null, (storage) => {
-    ;(document.getElementById('whitelistTime') as HTMLFormElement).value = storage.whitelistTime
-    ;(document.getElementById('numIntentEntries') as HTMLFormElement).value =
-      storage.numIntentEntries
-    ;(document.getElementById('enable-blobs') as HTMLFormElement).checked =
-      storage.enableBlobs ?? true
+  setStorage({
+    numIntentEntries: numIntentEntries,
+    whitelistTime: whitelistTime,
+    enableBlobs: enableBlobs,
+  }).then(() => {
+    // Update status to let user know options were saved.
+    const status = document.getElementById('statusContent')
+    status.textContent = 'options saved.'
+    setTimeout(() => {
+      status.textContent = ''
+    }, 1500)
   })
 }
 
@@ -230,9 +167,6 @@ function drawIntentListTable(): void {
     if (previousIntents != null) {
       previousIntents.innerHTML = table
     }
-
-    // setup table sort events
-    document.getElementById('urlHeader').addEventListener('click', sortTable)
   })
 }
 

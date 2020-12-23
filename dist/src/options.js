@@ -1,227 +1,155 @@
-const ENTER_KEY_CODE = 13;
-// On page load, draw table and add button listener
-document.addEventListener('DOMContentLoaded', () => {
-    // setup button listeners and draw tables
+(() => {
+  // build/storage.js
+  function getStorage() {
+    return new Promise((resolve, reject) => {
+      chrome.storage.sync.get(null, (storage2) => {
+        if (chrome.runtime.lastError !== void 0) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve(storage2);
+        }
+      });
+    });
+  }
+  function setStorage(key) {
+    return new Promise((resolve, reject) => {
+      chrome.storage.sync.set(key, () => {
+        if (chrome.runtime.lastError !== void 0) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  // build/options.js
+  var ENTER_KEY_CODE = 13;
+  document.addEventListener("DOMContentLoaded", () => {
     drawFilterListTable();
     drawIntentListTable();
     setAddButtonListener();
-    restoreSavedOptions();
-    // options listeners
-    setupOptionsListener();
-});
-function setupOptionsListener() {
-    document.getElementById('save').addEventListener('click', saveCurrentOptions);
-}
-// taken from https://www.w3schools.com/howto/howto_js_sort_table.asp
-function sortTable() {
-    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-    table = document.getElementById('intentList');
-    switching = true;
-    dir = 'asc';
-    while (switching) {
-        switching = false;
-        rows = table.rows;
-        for (i = 1; i < rows.length - 1; i++) {
-            shouldSwitch = false;
-            x = rows[i].getElementsByTagName('td')[0].childNodes[0];
-            y = rows[i + 1].getElementsByTagName('td')[0].childNodes[0];
-            if (dir == 'asc') {
-                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                    shouldSwitch = true;
-                    break;
-                }
-            }
-            else if (dir == 'desc') {
-                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                    shouldSwitch = true;
-                    break;
-                }
-            }
-        }
-        if (shouldSwitch) {
-            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-            switching = true;
-            switchcount++;
-        }
-        else {
-            if (switchcount == 0 && dir == 'asc') {
-                dir = 'desc';
-                switching = true;
-            }
-        }
-    }
-}
-function saveCurrentOptions() {
-    // get all form values
-    const whitelistTimeElement = document.getElementById('whitelistTime');
-    const whitelistTime = whitelistTimeElement.value;
-    const numIntentEntriesElement = document.getElementById('numIntentEntries');
-    const numIntentEntries = numIntentEntriesElement.value;
-    const enableBlobsElement = document.getElementById('enable-blobs');
-    const enableBlobs = enableBlobsElement.checked;
-    chrome.storage.sync.set({
-        numIntentEntries: numIntentEntries,
-        whitelistTime: whitelistTime,
-        enableBlobs: enableBlobs,
-    }, () => {
-        // Update status to let user know options were saved.
-        const status = document.getElementById('statusContent');
-        status.textContent = 'options saved.';
-        setTimeout(() => {
-            status.textContent = '';
-        }, 1500);
+    getStorage().then((storage2) => {
+      var _a;
+      getElementFromForm("whitelistTime").value = storage2.whitelistTime;
+      getElementFromForm("numIntentEntries").value = storage2.numIntentEntries;
+      getElementFromForm("enable-blobs").checked = (_a = storage2.enableBlobs, _a !== null && _a !== void 0 ? _a : true);
     });
-}
-function restoreSavedOptions() {
-    chrome.storage.sync.get(null, (storage) => {
-        var _a;
-        ;
-        document.getElementById('whitelistTime').value = storage.whitelistTime;
-        document.getElementById('numIntentEntries').value =
-            storage.numIntentEntries;
-        document.getElementById('enable-blobs').checked = (_a = storage.enableBlobs, (_a !== null && _a !== void 0 ? _a : true));
+    document.getElementById("save").addEventListener("click", saveCurrentOptions);
+  });
+  function getElementFromForm(id) {
+    return document.getElementById(id);
+  }
+  function saveCurrentOptions() {
+    const whitelistTime = getElementFromForm("whitelistTime").value;
+    const numIntentEntries = getElementFromForm("numIntentEntries").value;
+    const enableBlobs = getElementFromForm("enable-blobs").checked;
+    setStorage({
+      numIntentEntries,
+      whitelistTime,
+      enableBlobs
+    }).then(() => {
+      const status = document.getElementById("statusContent");
+      status.textContent = "options saved.";
+      setTimeout(() => {
+        status.textContent = "";
+      }, 1500);
     });
-}
-function updateButtonListeners() {
-    // get all buttons
-    const buttons = document.getElementsByTagName('button');
+  }
+  function updateButtonListeners() {
+    const buttons = document.getElementsByTagName("button");
     for (const button of buttons) {
-        button.addEventListener('click', () => {
-            var _a;
-            // get button ID
-            const id = parseInt(button.id[0]);
-            // get url
-            const url = (_a = document.getElementById(button.id[0] + 'site')) === null || _a === void 0 ? void 0 : _a.innerHTML;
-            // get blockedSites
-            chrome.storage.sync.get(null, (storage) => {
-                const blockedSites = storage.blockedSites;
-                // remove by ID
-                blockedSites.splice(id, 1);
-                // sync with chrome storage
-                chrome.storage.sync.set({ blockedSites: blockedSites }, () => {
-                    console.log(`removed ${url} from blocked list`);
-                    drawFilterListTable();
-                });
-            });
+      button.addEventListener("click", () => {
+        var _a;
+        const id = parseInt(button.id[0]);
+        const url = (_a = document.getElementById(button.id[0] + "site")) === null || _a === void 0 ? void 0 : _a.innerHTML;
+        chrome.storage.sync.get(null, (storage2) => {
+          const blockedSites = storage2.blockedSites;
+          blockedSites.splice(id, 1);
+          chrome.storage.sync.set({blockedSites}, () => {
+            console.log(`removed ${url} from blocked list`);
+            drawFilterListTable();
+          });
         });
+      });
     }
-}
-function generateWebsiteDiv(id, site) {
-    return ('<tr>' +
-        `<td style="width: 95%"><p class="urlDisplay" id=${id}>${site}</p></td>` +
-        `<td style="width: 5%"><button id=${id}>&times;</button></td>` +
-        '</tr>');
-}
-function generateIntentDiv(id, intent, date, url) {
-    // reformatting date to only include month, date, and 12 hour time
-    const formattedDate = date.toLocaleDateString('default', {
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true,
+  }
+  function generateWebsiteDiv(id, site) {
+    return `<tr><td style="width: 95%"><p class="urlDisplay" id=${id}>${site}</p></td><td style="width: 5%"><button id=${id}>&times;</button></td></tr>`;
+  }
+  function generateIntentDiv(id, intent, date, url) {
+    const formattedDate = date.toLocaleDateString("default", {
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
     });
-    // creating display table for intents and dates
-    return ('<tr>' +
-        `<td style="width: 40%"><p class="intentDisplay" id=${id}>${url}</p></td>` +
-        `<td style="width: 40%"><p class="intentDisplay" id=${id}>${intent}</p></td>` +
-        `<td style="width: 20%"><p class="intentDisplay" id=${id}>${formattedDate}</p></td>` +
-        '</tr>');
-}
-function drawFilterListTable() {
-    // accessing chrome storage for blocked sites
-    chrome.storage.sync.get(null, (storage) => {
-        //fetch blocked sites
-        const blockedSites = storage.blockedSites;
-        // generating table
-        let table = '<table class="hover shadow styled">';
-        let cur_id = 0;
-        // appending row for each addiitonal blocked site
-        blockedSites.forEach((site) => {
-            table += generateWebsiteDiv(cur_id, site);
-            cur_id++;
-        });
-        // generates new line in table for new intent
-        table += '</table>';
-        // adds table to html
-        const filterList = document.getElementById('filterList');
-        if (filterList != null) {
-            filterList.innerHTML = table;
-        }
-        // adding listener to "x"
-        updateButtonListeners();
+    return `<tr><td style="width: 40%"><p class="intentDisplay" id=${id}>${url}</p></td><td style="width: 40%"><p class="intentDisplay" id=${id}>${intent}</p></td><td style="width: 20%"><p class="intentDisplay" id=${id}>${formattedDate}</p></td></tr>`;
+  }
+  function drawFilterListTable() {
+    chrome.storage.sync.get(null, (storage2) => {
+      const blockedSites = storage2.blockedSites;
+      let table = '<table class="hover shadow styled">';
+      let cur_id = 0;
+      blockedSites.forEach((site) => {
+        table += generateWebsiteDiv(cur_id, site);
+        cur_id++;
+      });
+      table += "</table>";
+      const filterList = document.getElementById("filterList");
+      if (filterList != null) {
+        filterList.innerHTML = table;
+      }
+      updateButtonListeners();
     });
-}
-function drawIntentListTable() {
-    // accessing chrome storage for intents
-    chrome.storage.sync.get(null, (storage) => {
-        // fetch intent list
-        const intentList = storage.intentList;
-        // generate table element
-        let table = '<table id="intentList" class="hover shadow styled">' +
-            '<tr>' +
-            '<th id="urlHeader" style="width: 40%">url</th>' +
-            '<th style="width: 40%">intent</th>' +
-            '<th style="width: 20%">date</th>' +
-            '</tr>';
-        let cur_id = 0;
-        // iter dates in intentList
-        for (const rawDate in intentList) {
-            // if number of entries is less than max
-            if (cur_id < storage.numIntentEntries) {
-                // parse fields from intentlist[rawDate]
-                const date = new Date(rawDate);
-                const intent = intentList[rawDate]['intent'];
-                const url = intentList[rawDate]['url'];
-                // append table row with this info
-                table += generateIntentDiv(cur_id, intent, date, url);
-                cur_id++;
-            }
+  }
+  function drawIntentListTable() {
+    chrome.storage.sync.get(null, (storage2) => {
+      const intentList = storage2.intentList;
+      let table = '<table id="intentList" class="hover shadow styled"><tr><th id="urlHeader" style="width: 40%">url</th><th style="width: 40%">intent</th><th style="width: 20%">date</th></tr>';
+      let cur_id = 0;
+      for (const rawDate in intentList) {
+        if (cur_id < storage2.numIntentEntries) {
+          const date = new Date(rawDate);
+          const intent = intentList[rawDate]["intent"];
+          const url = intentList[rawDate]["url"];
+          table += generateIntentDiv(cur_id, intent, date, url);
+          cur_id++;
         }
-        // generates new line in table for new intent
-        table += '</table>';
-        // insert table into html
-        const previousIntents = document.getElementById('previousIntents');
-        if (previousIntents != null) {
-            previousIntents.innerHTML = table;
-        }
-        // setup table sort events
-        document.getElementById('urlHeader').addEventListener('click', sortTable);
+      }
+      table += "</table>";
+      const previousIntents = document.getElementById("previousIntents");
+      if (previousIntents != null) {
+        previousIntents.innerHTML = table;
+      }
     });
-}
-// sets event listeners for add new url operations
-function setAddButtonListener() {
-    const urlInputElement = document.getElementById('urlInput');
-    // add key listener to submit new url on <ENTER> pressed
-    urlInputElement.addEventListener('keypress', (event) => {
-        if (event.keyCode === ENTER_KEY_CODE) {
-            addUrlToFilterList();
-        }
-    });
-    // add click listener to add URL button
-    const addButton = document.getElementById('add');
-    addButton.addEventListener('click', () => {
+  }
+  function setAddButtonListener() {
+    const urlInputElement = document.getElementById("urlInput");
+    urlInputElement.addEventListener("keypress", (event) => {
+      if (event.keyCode === ENTER_KEY_CODE) {
         addUrlToFilterList();
+      }
     });
-}
-function addUrlToFilterList() {
-    // get urlInput
-    const urlInput = document.getElementById('urlInput');
-    // see if value is non-empty
-    if (urlInput.value !== '') {
-        chrome.storage.sync.get(null, (storage) => {
-            // get current blocked sites
-            const blockedSites = storage.blockedSites;
-            // add to blocked sites
-            blockedSites.push(urlInput.value);
-            // sync changes with chrome storage
-            chrome.storage.sync.set({ blockedSites: blockedSites }, () => {
-                console.log(`added ${urlInput} from blocked list`);
-                // clear input
-                urlInput.value = '';
-                // redraw filterList
-                drawFilterListTable();
-            });
+    const addButton = document.getElementById("add");
+    addButton.addEventListener("click", () => {
+      addUrlToFilterList();
+    });
+  }
+  function addUrlToFilterList() {
+    const urlInput = document.getElementById("urlInput");
+    if (urlInput.value !== "") {
+      chrome.storage.sync.get(null, (storage2) => {
+        const blockedSites = storage2.blockedSites;
+        blockedSites.push(urlInput.value);
+        chrome.storage.sync.set({blockedSites}, () => {
+          console.log(`added ${urlInput} from blocked list`);
+          urlInput.value = "";
+          drawFilterListTable();
         });
+      });
     }
-}
+  }
+})();
+//# sourceMappingURL=options.js.map
