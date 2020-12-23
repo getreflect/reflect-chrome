@@ -95,19 +95,6 @@
   };
   var blob_animation_default = BlobAnimation;
 
-  // build/storage.js
-  function getStorage() {
-    return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(null, (storage2) => {
-        if (chrome.runtime.lastError !== void 0) {
-          reject(chrome.runtime.lastError);
-        } else {
-          resolve(storage2);
-        }
-      });
-    });
-  }
-
   // build/util.js
   function cleanDomain(urls) {
     if (urls[0] === void 0) {
@@ -120,6 +107,19 @@
         return activeURL[1].replace("www.", "");
       }
     }
+  }
+
+  // build/storage.js
+  function getStorage() {
+    return new Promise((resolve, reject) => {
+      chrome.storage.sync.get(null, (storage2) => {
+        if (chrome.runtime.lastError !== void 0) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve(storage2);
+        }
+      });
+    });
   }
 
   // build/content.js

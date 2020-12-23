@@ -23670,6 +23670,17 @@
   }
 
   // build/storage.js
+  function getStorage() {
+    return new Promise((resolve, reject) => {
+      chrome.storage.sync.get(null, (storage2) => {
+        if (chrome.runtime.lastError !== void 0) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve(storage2);
+        }
+      });
+    });
+  }
   function setStorage(key) {
     return new Promise((resolve, reject) => {
       chrome.storage.sync.set(key, () => {
@@ -23678,6 +23689,35 @@
         } else {
           resolve();
         }
+      });
+    });
+  }
+  function addToBlocked(url) {
+    getStorage().then((storage2) => {
+      if (!storage2.blockedSites.includes(url)) {
+        storage2.blockedSites.push(url);
+        setStorage({blockedSites: storage2.blockedSites}).then(() => {
+          console.log(`${url} added to blocked sites`);
+        });
+      }
+    });
+  }
+  function removeFromBlocked(url) {
+    getStorage().then((storage2) => {
+      let blockedSites = storage2.blockedSites;
+      blockedSites = blockedSites.filter((e2) => e2 !== url);
+      setStorage({blockedSites}).then(() => {
+        console.log(`removed ${url} from blocked sites`);
+      });
+    });
+  }
+  function addToWhitelist(url, minutes) {
+    getStorage().then((storage2) => {
+      let whitelistedSites = storage2.whitelistedSites;
+      let expiry = addMinutes(new Date(), minutes);
+      whitelistedSites[url] = expiry.toJSON();
+      setStorage({whitelistedSites}).then(() => {
+        console.log(`${url} added to whitelisted sites`);
       });
     });
   }
@@ -23729,198 +23769,13 @@
     });
   }
 
-  // build/background.js
-  var __awaiter5 = function(thisArg, _arguments, P2, generator) {
-    function adopt(value) {
-      return value instanceof P2 ? value : new P2(function(resolve) {
-        resolve(value);
-      });
-    }
-    return new (P2 || (P2 = Promise))(function(resolve, reject) {
-      function fulfilled(value) {
-        try {
-          step(generator.next(value));
-        } catch (e2) {
-          reject(e2);
-        }
-      }
-      function rejected(value) {
-        try {
-          step(generator["throw"](value));
-        } catch (e2) {
-          reject(e2);
-        }
-      }
-      function step(result) {
-        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-      }
-      step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-  };
-  chrome.runtime.onInstalled.addListener((details) => {
-    if (details.reason === "install") {
-      chrome.tabs.create({
-        url: "http://getreflect.app/onboarding",
-        active: true
-      });
-      firstTimeSetup();
-    }
-    if (details.reason === "update") {
-      turnFilteringOn();
-      chrome.tabs.create({
-        url: "http://getreflect.app/latest",
-        active: true
-      });
-      const thisVersion = chrome.runtime.getManifest().version;
-      console.log(`Updated from ${details.previousVersion} to ${thisVersion}!`);
-    }
-    chrome.runtime.setUninstallURL("http://getreflect.app/uninstall");
-  });
-  function firstTimeSetup() {
-    turnFilteringOn();
-    const whitelist = {};
-    const intentList = {};
-    setStorage({
-      whitelistedSites: whitelist,
-      intentList,
-      whitelistTime: 5,
-      numIntentEntries: 20,
-      enableBlobs: true
-    }).then(() => {
-      console.log("Default values have been set.");
-    });
-    addDefaultFilters();
-    chrome.browserAction.setBadgeBackgroundColor({
-      color: "#576ca8"
-    });
-  }
-  function addDefaultFilters() {
-    const blockedSites = ["facebook.com", "twitter.com", "instagram.com", "youtube.com"];
-    chrome.storage.sync.set({blockedSites}, () => {
-      console.log("Default blocked sites have been loaded.");
-    });
-  }
-  chrome.runtime.onStartup.addListener(() => {
-    chrome.storage.sync.get(null, (storage2) => {
-      let icon = "res/icon.png";
-      if (storage2.isEnabled) {
-        icon = "res/on.png";
-      } else if (!storage2.isEnabled) {
-        icon = "res/off.png";
-      }
-      chrome.browserAction.setIcon({path: {"16": icon}});
-    });
-  });
-  chrome.contextMenus.onClicked.addListener((info, tab) => {
-    switch (info.menuItemId) {
-      case "baFilterListMenu":
-        chrome.runtime.openOptionsPage();
-        break;
-      case "baAddSiteToFilterList":
-      case "pgAddSiteToFilterList":
-        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-          const urls = tabs.map((x2) => x2.url);
-          addUrlToBlockedSites(urls[0]);
-        });
-        break;
-      case "baAddDomainToFilterList":
-      case "pgAddDomainToFilterList":
-        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-          const urls = tabs.map((x2) => x2.url);
-          const domain = cleanDomain(urls);
-          addUrlToBlockedSites(domain);
-        });
-        break;
-    }
-  });
-  context_menus_default();
-  var model = new IntentClassifier("acc85.95");
-  chrome.runtime.onConnect.addListener((port) => {
-    switch (port.name) {
-      case "intentStatus": {
-        port.onMessage.addListener((msg) => __awaiter5(void 0, void 0, void 0, function* () {
-          const intent = msg.intent;
-          chrome.storage.sync.get(null, (storage2) => __awaiter5(void 0, void 0, void 0, function* () {
-            const WHITELIST_PERIOD = storage2.whitelistTime;
-            const words = intent.split(" ");
-            if (words.length <= 3) {
-              port.postMessage({status: "too_short"});
-            } else {
-              const valid = yield model.predict(intent);
-              if (valid) {
-                chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-                  const urls = tabs.map((x2) => x2.url);
-                  const domain = cleanDomain(urls);
-                  addUrlToWhitelistedSites(domain, WHITELIST_PERIOD);
-                });
-                port.postMessage({status: "ok"});
-                console.log(`Success! Redirecting`);
-              } else {
-                port.postMessage({status: "invalid"});
-                console.log("Failed. Remaining on page.");
-              }
-            }
-          }));
-        }));
-      }
-      case "toggleState": {
-        port.onMessage.addListener((msg) => {
-          const on = msg.state;
-          if (on) {
-            turnFilteringOn();
-          } else if (on === false) {
-            turnFilteringOff();
-          }
-        });
-      }
-      case "blockFromPopup": {
-        port.onMessage.addListener((msg) => {
-          const url = msg.siteURL;
-          const unblock = msg.unblock;
-          if (url !== void 0 && url !== "" && unblock !== void 0) {
-            if (unblock) {
-              removeUrlFromblockedSites(url);
-            } else if (!unblock) {
-              addUrlToBlockedSites(url);
-            }
-            reloadActive();
-          }
-        });
-      }
-    }
-  });
-  function addUrlToBlockedSites(url) {
-    chrome.storage.sync.get(null, (storage2) => {
-      if (!storage2.blockedSites.includes(url)) {
-        storage2.blockedSites.push(url);
-        chrome.storage.sync.set({blockedSites: storage2.blockedSites}, () => {
-          console.log(`${url} added to blocked sites`);
-        });
-      }
-    });
-  }
-  function removeUrlFromblockedSites(url) {
-    console.log(`trying to remove ${url}`);
-    chrome.storage.sync.get(null, (storage2) => {
-      let blockedSites = storage2.blockedSites;
-      blockedSites = blockedSites.filter((e2) => e2 !== url);
-      chrome.storage.sync.set({blockedSites}, () => {
-        console.log(`removed ${url} from blocked sites`);
-      });
-    });
-  }
-  function addUrlToWhitelistedSites(url, minutes) {
-    chrome.storage.sync.get(null, (storage2) => {
-      let whitelistedSites = storage2.whitelistedSites;
-      let expiry = addMinutes(new Date(), minutes);
-      whitelistedSites[url] = expiry.toJSON();
-      chrome.storage.sync.set({whitelistedSites}, () => {
-        console.log(`${url} added to whitelisted sites`);
-      });
-    });
-  }
+  // build/badge.js
   var badgeUpdateCounter = window.setInterval(badgeCountDown, 1e3);
+  function setBadgeUpdate() {
+    badgeUpdateCounter = window.setInterval(badgeCountDown, 1e3);
+  }
   function cleanupBadge() {
+    window.clearInterval(badgeUpdateCounter);
     chrome.browserAction.setBadgeText({
       text: ""
     });
@@ -23967,9 +23822,165 @@
       }
     }
   }
+
+  // build/background.js
+  var __awaiter5 = function(thisArg, _arguments, P2, generator) {
+    function adopt(value) {
+      return value instanceof P2 ? value : new P2(function(resolve) {
+        resolve(value);
+      });
+    }
+    return new (P2 || (P2 = Promise))(function(resolve, reject) {
+      function fulfilled(value) {
+        try {
+          step(generator.next(value));
+        } catch (e2) {
+          reject(e2);
+        }
+      }
+      function rejected(value) {
+        try {
+          step(generator["throw"](value));
+        } catch (e2) {
+          reject(e2);
+        }
+      }
+      function step(result) {
+        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+      }
+      step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+  };
+  chrome.runtime.onInstalled.addListener((details) => {
+    if (details.reason === "install") {
+      chrome.tabs.create({
+        url: "http://getreflect.app/onboarding",
+        active: true
+      });
+      firstTimeSetup();
+    }
+    const prevVersion = details.previousVersion;
+    const thisVersion = chrome.runtime.getManifest().version;
+    if (details.reason === "update" && prevVersion != thisVersion) {
+      turnFilteringOn();
+      chrome.tabs.create({
+        url: "http://getreflect.app/latest",
+        active: true
+      });
+      console.log(`Updated from ${prevVersion} to ${thisVersion}!`);
+    }
+    chrome.runtime.setUninstallURL("http://getreflect.app/uninstall");
+  });
+  function firstTimeSetup() {
+    turnFilteringOn();
+    const whitelist = {};
+    const intentList = {};
+    const blockedSites = ["facebook.com", "twitter.com", "instagram.com", "youtube.com"];
+    setStorage({
+      whitelistedSites: whitelist,
+      intentList,
+      whitelistTime: 5,
+      numIntentEntries: 20,
+      enableBlobs: true,
+      blockedSites
+    }).then(() => {
+      console.log("Default values have been set.");
+    });
+    chrome.browserAction.setBadgeBackgroundColor({
+      color: "#576ca8"
+    });
+  }
+  chrome.runtime.onStartup.addListener(() => {
+    getStorage().then((storage2) => {
+      let icon = "res/icon.png";
+      if (storage2.isEnabled) {
+        icon = "res/on.png";
+      } else if (!storage2.isEnabled) {
+        icon = "res/off.png";
+      }
+      chrome.browserAction.setIcon({path: {"16": icon}});
+    });
+  });
+  chrome.contextMenus.onClicked.addListener((info, tab) => {
+    switch (info.menuItemId) {
+      case "baFilterListMenu":
+        chrome.runtime.openOptionsPage();
+        break;
+      case "baAddSiteToFilterList":
+      case "pgAddSiteToFilterList":
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+          const urls = tabs.map((x2) => x2.url);
+          addToBlocked(urls[0]);
+        });
+        break;
+      case "baAddDomainToFilterList":
+      case "pgAddDomainToFilterList":
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+          const urls = tabs.map((x2) => x2.url);
+          const domain = cleanDomain(urls);
+          addToBlocked(domain);
+        });
+        break;
+    }
+  });
+  context_menus_default();
+  var model = new IntentClassifier("acc85.95");
+  chrome.runtime.onConnect.addListener((port) => {
+    switch (port.name) {
+      case "intentStatus": {
+        port.onMessage.addListener((msg) => __awaiter5(void 0, void 0, void 0, function* () {
+          const intent = msg.intent;
+          chrome.storage.sync.get(null, (storage2) => __awaiter5(void 0, void 0, void 0, function* () {
+            const WHITELIST_PERIOD = storage2.whitelistTime;
+            const words = intent.split(" ");
+            if (words.length <= 3) {
+              port.postMessage({status: "too_short"});
+            } else {
+              const valid = yield model.predict(intent);
+              if (valid) {
+                chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+                  const urls = tabs.map((x2) => x2.url);
+                  const domain = cleanDomain(urls);
+                  addToWhitelist(domain, WHITELIST_PERIOD);
+                });
+                port.postMessage({status: "ok"});
+                console.log(`Success! Redirecting`);
+              } else {
+                port.postMessage({status: "invalid"});
+                console.log("Failed. Remaining on page.");
+              }
+            }
+          }));
+        }));
+      }
+      case "toggleState": {
+        port.onMessage.addListener((msg) => {
+          const on = msg.state;
+          if (on) {
+            turnFilteringOn();
+          } else if (on === false) {
+            turnFilteringOff();
+          }
+        });
+      }
+      case "blockFromPopup": {
+        port.onMessage.addListener((msg) => {
+          const url = msg.siteURL;
+          const unblock = msg.unblock;
+          if (url !== void 0 && url !== "" && unblock !== void 0) {
+            if (unblock) {
+              removeFromBlocked(url);
+            } else if (!unblock) {
+              addToBlocked(url);
+            }
+            reloadActive();
+          }
+        });
+      }
+    }
+  });
   function turnFilteringOff() {
-    chrome.storage.sync.set({isEnabled: false}, () => {
-      window.clearInterval(badgeUpdateCounter);
+    setStorage({isEnabled: false}).then(() => {
       cleanupBadge();
       chrome.browserAction.setIcon({path: "res/off.png"}, () => {
         console.log("Filtering disabled");
@@ -23978,8 +23989,8 @@
     });
   }
   function turnFilteringOn() {
-    chrome.storage.sync.set({isEnabled: true}, () => {
-      badgeUpdateCounter = window.setInterval(badgeCountDown, 1e3);
+    setStorage({isEnabled: false}).then(() => {
+      setBadgeUpdate();
       chrome.browserAction.setIcon({path: "res/on.png"}, () => {
         console.log("Filtering enabled.");
       });

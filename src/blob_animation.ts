@@ -1,3 +1,5 @@
+// blob_animation.ts is a module which provides a class to easily instantiate the animations on the block page
+
 interface BlobConfig {
   blur: number
   alphaMult: number

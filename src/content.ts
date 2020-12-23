@@ -62,7 +62,7 @@ function iterWhitelist(): void {
     const strippedURL: string = getStrippedUrl()
     if (strippedURL != '') {
       // get dictionary of whitelisted sites
-      const whitelist: { [key: string]: Date } = storage.whitelistedSites
+      const whitelist: { [key: string]: string } = storage.whitelistedSites
 
       // is current url whitelisted?
       if (whitelist.hasOwnProperty(strippedURL)) {

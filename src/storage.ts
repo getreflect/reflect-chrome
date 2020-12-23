@@ -1,3 +1,6 @@
+// storage.ts provides a thin wrapper around the chrome storage api to make it easier to read/write from it
+// you can also find helper functions that read/write to chrome storage
+
 import { Storage } from './types'
 import { addMinutes } from './util'
 
@@ -40,9 +43,8 @@ export function setStorage(key: Storage): Promise<void> {
 // Add a single url to blocklist (does nothing if url is already in list)
 export function addToBlocked(url: string): void {
   getStorage().then((storage) => {
-    // only add if not in list
     if (!storage.blockedSites.includes(url)) {
-      storage.blockedSites.push(url) // urls.hostname
+      storage.blockedSites.push(url)
       setStorage({ blockedSites: storage.blockedSites }).then(() => {
         console.log(`${url} added to blocked sites`)
       })
@@ -54,11 +56,7 @@ export function addToBlocked(url: string): void {
 export function removeFromBlocked(url: string): void {
   getStorage().then((storage) => {
     let blockedSites: string[] = storage.blockedSites
-
-    // remove url from blockedSites
     blockedSites = blockedSites.filter((e) => e !== url)
-
-    // sync with chrome storage
     setStorage({ blockedSites: blockedSites }).then(() => {
       console.log(`removed ${url} from blocked sites`)
     })

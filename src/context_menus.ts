@@ -1,3 +1,5 @@
+// context_menus.ts is a module whose only job is to create the browser context menus
+
 // closure around createContextMenus to ensure
 // it will only ever be called once
 export default () => {

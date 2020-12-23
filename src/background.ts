@@ -3,6 +3,7 @@ import { cleanDomain } from './util'
 import { getStorage, setStorage, addToBlocked, addToWhitelist, removeFromBlocked } from './storage'
 import setupContextMenus from './context_menus'
 import { Intent } from './types'
+import { setBadgeUpdate, cleanupBadge } from './badge'
 
 // On install script
 chrome.runtime.onInstalled.addListener((details) => {
@@ -181,72 +182,9 @@ chrome.runtime.onConnect.addListener((port) => {
   }
 })
 
-var badgeUpdateCounter: number = window.setInterval(badgeCountDown, 1000)
-
-function cleanupBadge(): void {
-  chrome.browserAction.setBadgeText({
-    text: '',
-  })
-}
-
-function badgeCountDown(): void {
-  // get current active tab
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    const urls: string[] = tabs.map((x) => x.url)
-    const currentURL: string = urls[0]
-
-    // check if currently on a page
-    if (currentURL != undefined) {
-      // clean url prefix stuff
-      const matched: RegExpMatchArray | null = currentURL.match(/^[\w]+:\/{2}([\w\.:-]+)/)
-      if (matched != null) {
-        // strip url
-        const strippedURL: string = matched[1].replace('www.', '')
-
-        // get whitelisted sites
-        chrome.storage.sync.get(null, (storage) => {
-          const whitelistedSites: { [key: string]: Date } = storage.whitelistedSites
-
-          if (whitelistedSites.hasOwnProperty(strippedURL)) {
-            const expiry: Date = new Date(whitelistedSites[strippedURL])
-            const currentDate: Date = new Date()
-
-            const timeDifference: number = expiry.getTime() - currentDate.getTime()
-
-            setBadge(timeDifference)
-          } else {
-            cleanupBadge()
-          }
-        })
-      }
-    } else {
-      cleanupBadge()
-    }
-  })
-}
-
-function setBadge(time: number) {
-  time = Math.round(time / 1000)
-  if (time <= 0) {
-    cleanupBadge()
-  } else {
-    if (time > 60) {
-      const min: number = Math.round(time / 60)
-      chrome.browserAction.setBadgeText({
-        text: min.toString() + 'm',
-      })
-    } else {
-      chrome.browserAction.setBadgeText({
-        text: time.toString() + 's',
-      })
-    }
-  }
-}
-
 function turnFilteringOff(): void {
-  chrome.storage.sync.set({ isEnabled: false }, () => {
+  setStorage({ isEnabled: false }).then(() => {
     // stop checking for badge updates
-    window.clearInterval(badgeUpdateCounter)
     cleanupBadge()
 
     chrome.browserAction.setIcon({ path: 'res/off.png' }, () => {
@@ -257,9 +195,9 @@ function turnFilteringOff(): void {
 }
 
 function turnFilteringOn(): void {
-  chrome.storage.sync.set({ isEnabled: true }, () => {
+  setStorage({ isEnabled: false }).then(() => {
     // start badge update counter
-    badgeUpdateCounter = window.setInterval(badgeCountDown, 1000)
+    setBadgeUpdate()
 
     chrome.browserAction.setIcon({ path: 'res/on.png' }, () => {
       console.log('Filtering enabled.')
@@ -268,6 +206,7 @@ function turnFilteringOn(): void {
   })
 }
 
+// reloads tab that is currently in focus
 function reloadActive(): void {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.reload(tabs[0].id)

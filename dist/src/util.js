@@ -1,3 +1,4 @@
+// util.ts provides utility functions that can be reused in other modules
 export function addMinutes(date, minutes) {
     return new Date(date.getTime() + minutes * 60000);
 }

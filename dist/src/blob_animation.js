@@ -1,3 +1,4 @@
+// blob_animation.ts is a module which provides a class to easily instantiate the animations on the block page
 class BlobElement {
     constructor(x, y, r) {
         this.fill = '#A6B1CE';

@@ -1,3 +1,5 @@
+// nn.ts is the definition for the NLP model
+
 import * as tf from '@tensorflow/tfjs'
 
 const stop_words: string[] = [
