@@ -218,16 +218,19 @@
   function loadBlockPage(strippedURL) {
     const prompt_page_url = chrome.runtime.getURL("res/pages/prompt.html");
     const options_page_url = chrome.runtime.getURL("res/pages/options.html");
-    getStorage().then((enableBlobs) => {
+    getStorage().then((storage2) => {
       $.get(prompt_page_url, (page) => {
+        var _a;
         window.stop();
         $("html").html(page);
         addFormListener(strippedURL);
         $("#linkToOptions").attr("href", options_page_url);
-        if (enableBlobs !== null && enableBlobs !== void 0 ? enableBlobs : true) {
+        if (_a = storage2.enableBlobs, _a !== null && _a !== void 0 ? _a : true) {
           const anim = new blob_animation_default();
           anim.animate();
         }
+        const welcome = document.getElementById("customMessageContent");
+        welcome.textContent = storage2.customMessage;
       });
     });
   }

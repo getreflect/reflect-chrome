@@ -53,6 +53,7 @@ function firstTimeSetup(): void {
     intentList: intentList,
     whitelistTime: 5,
     numIntentEntries: 20,
+    customMessage: 'hey! what are you here for?',
     enableBlobs: true,
     blockedSites: blockedSites,
     isEnabled: true,

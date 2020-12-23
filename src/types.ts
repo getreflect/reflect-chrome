@@ -14,6 +14,7 @@ export interface Storage {
   // lists
   blockedSites?: string[]
   intentList?: { [key: string]: Intent }
+  customMessage?: string
   whitelistedSites?: { [key: string]: string }
 
   // misc config

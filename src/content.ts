@@ -99,7 +99,7 @@ function loadBlockPage(strippedURL: string): void {
   const prompt_page_url: string = chrome.runtime.getURL('res/pages/prompt.html')
   const options_page_url: string = chrome.runtime.getURL('res/pages/options.html')
 
-  getStorage().then((enableBlobs) => {
+  getStorage().then((storage) => {
     // get prompt page content
     $.get(prompt_page_url, (page) => {
       // stop current page and replace with our blocker page
@@ -108,10 +108,14 @@ function loadBlockPage(strippedURL: string): void {
 
       addFormListener(strippedURL)
       $('#linkToOptions').attr('href', options_page_url)
-      if (enableBlobs ?? true) {
+      if (storage.enableBlobs ?? true) {
         const anim = new BlobAnimation()
         anim.animate()
       }
+
+      //modify custom message based on user input
+      const welcome = document.getElementById('customMessageContent')
+      welcome.textContent = storage.customMessage
     })
   })
 }
