@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
   getStorage().then((storage) => {
     getElementFromForm('whitelistTime').value = storage.whitelistTime
     getElementFromForm('numIntentEntries').value = storage.numIntentEntries
+    getElementFromForm('customMessage').value =
+      storage.customMessage ?? 'hey! what are you here for?'
     getElementFromForm('enable-blobs').checked = storage.enableBlobs ?? true
   })
 
@@ -29,11 +31,13 @@ function saveCurrentOptions(): void {
   // get all form values
   const whitelistTime: number = getElementFromForm('whitelistTime').value
   const numIntentEntries: number = getElementFromForm('numIntentEntries').value
-  const enableBlobs: boolean = getElementFromForm('enable-blobs').checked
+  const customMessage: string = getElementFromForm('customMessage').value
+  const enableBlobs: boolean = getElementFromForm('enableBlobs').checked
 
   setStorage({
     numIntentEntries: numIntentEntries,
     whitelistTime: whitelistTime,
+    customMessage: customMessage,
     enableBlobs: enableBlobs,
   }).then(() => {
     // Update status to let user know options were saved.
