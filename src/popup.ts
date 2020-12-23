@@ -9,12 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // get current state and set approriately
   getStorage().then((storage) => {
-    if (storage.isEnabled) {
-      toggleSwitch.checked = true
-    } else {
-      toggleSwitch.checked = false
-    }
-
+    toggleSwitch.checked = storage.isEnabled
     setupBlockListener(storage.blockedSites)
   })
 })
@@ -25,11 +20,8 @@ function toggleState(e) {
     name: 'toggleState',
   })
 
-  if (e.target.checked) {
-    port.postMessage({ state: true })
-  } else {
-    port.postMessage({ state: false })
-  }
+  port.postMessage({ state: e.target.checked })
+  port.disconnect()
 }
 
 function getButtonText(url: string, blockedSites: string[]): string {
@@ -64,6 +56,7 @@ function setupBlockListener(blockedSites) {
         port.postMessage({ unblock: true, siteURL: domain })
         document.getElementById('block').innerHTML = 'block page.'
       }
+      port.disconnect()
     })
   })
 }
