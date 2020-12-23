@@ -252,7 +252,7 @@
     port.onMessage.addListener((msg) => {
       switch (msg.status) {
         case "ok":
-          chrome.storage.sync.get(null, (storage2) => {
+          getStorage().then((storage2) => {
             const WHITELIST_PERIOD = storage2.whitelistTime;
             displayStatus(`got it! ${WHITELIST_PERIOD} minutes starting now.`, 3e3, REFLECT_INFO);
             location.reload();

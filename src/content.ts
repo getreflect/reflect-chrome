@@ -147,7 +147,7 @@ function callBackgroundWithIntent(intent: string): void {
     switch (msg.status) {
       case 'ok':
         // show success message
-        chrome.storage.sync.get(null, (storage) => {
+        getStorage().then((storage) => {
           const WHITELIST_PERIOD: number = storage.whitelistTime
           displayStatus(`got it! ${WHITELIST_PERIOD} minutes starting now.`, 3000, REFLECT_INFO)
           location.reload()

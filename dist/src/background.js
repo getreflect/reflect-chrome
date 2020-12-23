@@ -23692,12 +23692,14 @@
       });
     });
   }
-  function addToBlocked(url) {
+  function addToBlocked(url, callback) {
     getStorage().then((storage3) => {
       if (!storage3.blockedSites.includes(url)) {
         storage3.blockedSites.push(url);
         setStorage({blockedSites: storage3.blockedSites}).then(() => {
           console.log(`${url} added to blocked sites`);
+          callback ? callback() : () => {
+          };
         });
       }
     });

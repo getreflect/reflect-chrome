@@ -1,3 +1,6 @@
+import { addToBlocked, getStorage, setStorage } from './storage'
+import { Intent } from './types'
+
 const ENTER_KEY_CODE = 13
 
 // On page load, draw table and add button listener
@@ -7,103 +10,38 @@ document.addEventListener('DOMContentLoaded', () => {
   drawIntentListTable()
   setAddButtonListener()
 
-  restoreSavedOptions()
+  // set state of page based off of storage
+  getStorage().then((storage) => {
+    getElementFromForm('whitelistTime').value = storage.whitelistTime
+    getElementFromForm('numIntentEntries').value = storage.numIntentEntries
+    getElementFromForm('enable-blobs').checked = storage.enableBlobs ?? true
+  })
 
   // options listeners
-  setupOptionsListener()
+  document.getElementById('save').addEventListener('click', saveCurrentOptions)
 })
 
-function setupOptionsListener(): void {
-  document.getElementById('save').addEventListener('click', saveCurrentOptions)
-}
-
-// taken from https://www.w3schools.com/howto/howto_js_sort_table.asp
-function sortTable(): void {
-  var table,
-    rows,
-    switching,
-    i,
-    x,
-    y,
-    shouldSwitch,
-    dir,
-    switchcount = 0
-  table = document.getElementById('intentList')
-  switching = true
-  dir = 'asc'
-  while (switching) {
-    switching = false
-    rows = table.rows
-    for (i = 1; i < rows.length - 1; i++) {
-      shouldSwitch = false
-      x = rows[i].getElementsByTagName('td')[0].childNodes[0]
-      y = rows[i + 1].getElementsByTagName('td')[0].childNodes[0]
-      if (dir == 'asc') {
-        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-          shouldSwitch = true
-          break
-        }
-      } else if (dir == 'desc') {
-        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-          shouldSwitch = true
-          break
-        }
-      }
-    }
-    if (shouldSwitch) {
-      rows[i].parentNode.insertBefore(rows[i + 1], rows[i])
-      switching = true
-      switchcount++
-    } else {
-      if (switchcount == 0 && dir == 'asc') {
-        dir = 'desc'
-        switching = true
-      }
-    }
-  }
+function getElementFromForm(id: string): HTMLFormElement {
+  return document.getElementById(id) as HTMLFormElement
 }
 
 function saveCurrentOptions(): void {
   // get all form values
-  const whitelistTimeElement: HTMLFormElement = document.getElementById(
-    'whitelistTime'
-  ) as HTMLFormElement
-  const whitelistTime: number = whitelistTimeElement.value
+  const whitelistTime: number = getElementFromForm('whitelistTime').value
+  const numIntentEntries: number = getElementFromForm('numIntentEntries').value
+  const enableBlobs: boolean = getElementFromForm('enable-blobs').checked
 
-  const numIntentEntriesElement: HTMLFormElement = document.getElementById(
-    'numIntentEntries'
-  ) as HTMLFormElement
-  const numIntentEntries: number = numIntentEntriesElement.value
-
-  const enableBlobsElement: HTMLFormElement = document.getElementById(
-    'enable-blobs'
-  ) as HTMLFormElement
-  const enableBlobs: boolean = enableBlobsElement.checked
-
-  chrome.storage.sync.set(
-    {
-      numIntentEntries: numIntentEntries,
-      whitelistTime: whitelistTime,
-      enableBlobs: enableBlobs,
-    },
-    () => {
-      // Update status to let user know options were saved.
-      const status = document.getElementById('statusContent')
-      status.textContent = 'options saved.'
-      setTimeout(() => {
-        status.textContent = ''
-      }, 1500)
-    }
-  )
-}
-
-function restoreSavedOptions(): void {
-  chrome.storage.sync.get(null, (storage) => {
-    ;(document.getElementById('whitelistTime') as HTMLFormElement).value = storage.whitelistTime
-    ;(document.getElementById('numIntentEntries') as HTMLFormElement).value =
-      storage.numIntentEntries
-    ;(document.getElementById('enable-blobs') as HTMLFormElement).checked =
-      storage.enableBlobs ?? true
+  setStorage({
+    numIntentEntries: numIntentEntries,
+    whitelistTime: whitelistTime,
+    enableBlobs: enableBlobs,
+  }).then(() => {
+    // Update status to let user know options were saved.
+    const status = document.getElementById('statusContent')
+    status.textContent = 'options saved.'
+    setTimeout(() => {
+      status.textContent = ''
+    }, 1500)
   })
 }
 
@@ -119,14 +57,14 @@ function updateButtonListeners(): void {
       const url: string = document.getElementById(button.id[0] + 'site')?.innerHTML
 
       // get blockedSites
-      chrome.storage.sync.get(null, (storage) => {
+      getStorage().then((storage) => {
         const blockedSites: string[] = storage.blockedSites
 
         // remove by ID
         blockedSites.splice(id, 1)
 
         // sync with chrome storage
-        chrome.storage.sync.set({ blockedSites: blockedSites }, () => {
+        setStorage({ blockedSites: blockedSites }).then(() => {
           console.log(`removed ${url} from blocked list`)
           drawFilterListTable()
         })
@@ -136,12 +74,10 @@ function updateButtonListeners(): void {
 }
 
 function generateWebsiteDiv(id: number, site: string): string {
-  return (
-    '<tr>' +
-    `<td style="width: 95%"><p class="urlDisplay" id=${id}>${site}</p></td>` +
-    `<td style="width: 5%"><button id=${id}>&times;</button></td>` +
-    '</tr>'
-  )
+  return `<tr>
+    <td style="width: 95%"><p class="urlDisplay" id=${id}>${site}</p></td>
+    <td style="width: 5%"><button id=${id}>&times;</button></td>
+    </tr>`
 }
 
 function generateIntentDiv(id: number, intent: string, date: Date, url: string): string {
@@ -155,32 +91,24 @@ function generateIntentDiv(id: number, intent: string, date: Date, url: string):
   })
 
   // creating display table for intents and dates
-  return (
-    '<tr>' +
-    `<td style="width: 40%"><p class="intentDisplay" id=${id}>${url}</p></td>` +
-    `<td style="width: 40%"><p class="intentDisplay" id=${id}>${intent}</p></td>` +
-    `<td style="width: 20%"><p class="intentDisplay" id=${id}>${formattedDate}</p></td>` +
-    '</tr>'
-  )
+  return `<tr>
+      <td style="width: 40%"><p class="intentDisplay" id=${id}>${url}</p></td>
+      <td style="width: 40%"><p class="intentDisplay" id=${id}>${intent}</p></td>
+      <td style="width: 20%"><p class="intentDisplay" id=${id}>${formattedDate}</p></td>
+    </tr>`
 }
 
 function drawFilterListTable(): void {
-  // accessing chrome storage for blocked sites
-  chrome.storage.sync.get(null, (storage) => {
-    //fetch blocked sites
+  getStorage().then((storage) => {
     const blockedSites: string[] = storage.blockedSites
 
-    // generating table
-    let table: string = '<table class="hover shadow styled">'
-    let cur_id: number = 0
-
     // appending row for each addiitonal blocked site
-    blockedSites.forEach((site: string) => {
+    const tableContent: string = blockedSites.reduce((table, site, cur_id) => {
       table += generateWebsiteDiv(cur_id, site)
-      cur_id++
-    })
+      return table
+    }, '')
     // generates new line in table for new intent
-    table += '</table>'
+    const table: string = `<table class="hover shadow styled">${tableContent}</table>`
 
     // adds table to html
     const filterList: HTMLElement = document.getElementById('filterList')
@@ -193,19 +121,16 @@ function drawFilterListTable(): void {
 }
 
 function drawIntentListTable(): void {
-  // accessing chrome storage for intents
-  chrome.storage.sync.get(null, (storage) => {
-    // fetch intent list
-    const intentList: { [key: string]: string } = storage.intentList
+  getStorage().then((storage) => {
+    const intentList: { [key: string]: Intent } = storage.intentList
 
     // generate table element
-    let table: string =
-      '<table id="intentList" class="hover shadow styled">' +
-      '<tr>' +
-      '<th id="urlHeader" style="width: 40%">url</th>' +
-      '<th style="width: 40%">intent</th>' +
-      '<th style="width: 20%">date</th>' +
-      '</tr>'
+    let table: string = `<table id="intentList" class="hover shadow styled">
+        <tr>
+        <th id="urlHeader" style="width: 40%">url</th>
+        <th style="width: 40%">intent</th>
+        <th style="width: 20%">date</th>
+      </tr>`
 
     let cur_id: number = 0
     // iter dates in intentList
@@ -214,8 +139,8 @@ function drawIntentListTable(): void {
       if (cur_id < storage.numIntentEntries) {
         // parse fields from intentlist[rawDate]
         const date: Date = new Date(rawDate)
-        const intent: string = intentList[rawDate]['intent']
-        const url: string = intentList[rawDate]['url']
+        const intent: string = intentList[rawDate].intent
+        const url: string = intentList[rawDate].url
 
         // append table row with this info
         table += generateIntentDiv(cur_id, intent, date, url)
@@ -230,9 +155,6 @@ function drawIntentListTable(): void {
     if (previousIntents != null) {
       previousIntents.innerHTML = table
     }
-
-    // setup table sort events
-    document.getElementById('urlHeader').addEventListener('click', sortTable)
   })
 }
 
@@ -260,23 +182,10 @@ function addUrlToFilterList(): void {
 
   // see if value is non-empty
   if (urlInput.value !== '') {
-    chrome.storage.sync.get(null, (storage) => {
-      // get current blocked sites
-      const blockedSites: string[] = storage.blockedSites
-
-      // add to blocked sites
-      blockedSites.push(urlInput.value)
-
-      // sync changes with chrome storage
-      chrome.storage.sync.set({ blockedSites: blockedSites }, () => {
-        console.log(`added ${urlInput} from blocked list`)
-
-        // clear input
-        urlInput.value = ''
-
-        // redraw filterList
-        drawFilterListTable()
-      })
+    const url: string = urlInput.value
+    addToBlocked(url, () => {
+      urlInput.value = ''
+      drawFilterListTable()
     })
   }
 }
