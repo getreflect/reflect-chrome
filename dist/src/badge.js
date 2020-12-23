@@ -1,3 +1,6 @@
+// badge.ts is a module responsible for controlling the badge that displays whitelist time left
+import { cleanDomain } from './util';
+import { getStorage } from './storage';
 var badgeUpdateCounter = window.setInterval(badgeCountDown, 1000);
 export function setBadgeUpdate() {
     badgeUpdateCounter = window.setInterval(badgeCountDown, 1000);
@@ -12,32 +15,23 @@ function badgeCountDown() {
     // get current active tab
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const urls = tabs.map((x) => x.url);
-        const currentURL = urls[0];
-        // check if currently on a page
-        if (currentURL != undefined) {
-            // clean url prefix stuff
-            const matched = currentURL.match(/^[\w]+:\/{2}([\w\.:-]+)/);
-            if (matched != null) {
-                // strip url
-                const strippedURL = matched[1].replace('www.', '');
-                // get whitelisted sites
-                chrome.storage.sync.get(null, (storage) => {
-                    const whitelistedSites = storage.whitelistedSites;
-                    if (whitelistedSites.hasOwnProperty(strippedURL)) {
-                        const expiry = new Date(whitelistedSites[strippedURL]);
-                        const currentDate = new Date();
-                        const timeDifference = expiry.getTime() - currentDate.getTime();
-                        setBadge(timeDifference);
-                    }
-                    else {
-                        cleanupBadge();
-                    }
-                });
-            }
-        }
-        else {
+        const domain = cleanDomain(urls);
+        if (domain === '') {
             cleanupBadge();
+            return;
         }
+        // get whitelisted sites
+        getStorage().then((storage) => {
+            if (storage.whitelistedSites.hasOwnProperty(domain)) {
+                const expiry = new Date(storage.whitelistedSites[domain]);
+                const currentDate = new Date();
+                const timeDifference = expiry.getTime() - currentDate.getTime();
+                setBadge(timeDifference);
+            }
+            else {
+                cleanupBadge();
+            }
+        });
     });
 }
 function setBadge(time) {

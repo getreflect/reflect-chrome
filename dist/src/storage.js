@@ -70,3 +70,30 @@ export function addToWhitelist(url, minutes) {
         });
     });
 }
+export function logIntentToStorage(intentString, intentDate, url) {
+    getStorage().then(storage => {
+        let intentList = storage.intentList;
+        // getting oldest date value from intent list map
+        let oldest_date = new Date();
+        for (const rawDate in intentList) {
+            const date = new Date(rawDate);
+            if (date < oldest_date) {
+                oldest_date = date;
+            }
+        }
+        // deleting oldest intent to keep intent count under limit
+        if (Object.keys(intentList).length > storage.numIntentEntries) {
+            console.log(`list full, popping ${oldest_date.toJSON()}`);
+            delete intentList[oldest_date.toJSON()];
+        }
+        // adding new intent and date to intent list
+        intentList[intentDate.toJSON()] = {
+            intent: intentString,
+            url: url,
+        };
+        // saving intentList to chrome storage
+        setStorage({ intentList: intentList }).then(() => {
+            console.log(`logged intent "${intentString}"`);
+        });
+    });
+}

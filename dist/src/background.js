@@ -23672,11 +23672,11 @@
   // build/storage.js
   function getStorage() {
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(null, (storage2) => {
+      chrome.storage.sync.get(null, (storage3) => {
         if (chrome.runtime.lastError !== void 0) {
           reject(chrome.runtime.lastError);
         } else {
-          resolve(storage2);
+          resolve(storage3);
         }
       });
     });
@@ -23693,18 +23693,18 @@
     });
   }
   function addToBlocked(url) {
-    getStorage().then((storage2) => {
-      if (!storage2.blockedSites.includes(url)) {
-        storage2.blockedSites.push(url);
-        setStorage({blockedSites: storage2.blockedSites}).then(() => {
+    getStorage().then((storage3) => {
+      if (!storage3.blockedSites.includes(url)) {
+        storage3.blockedSites.push(url);
+        setStorage({blockedSites: storage3.blockedSites}).then(() => {
           console.log(`${url} added to blocked sites`);
         });
       }
     });
   }
   function removeFromBlocked(url) {
-    getStorage().then((storage2) => {
-      let blockedSites = storage2.blockedSites;
+    getStorage().then((storage3) => {
+      let blockedSites = storage3.blockedSites;
       blockedSites = blockedSites.filter((e2) => e2 !== url);
       setStorage({blockedSites}).then(() => {
         console.log(`removed ${url} from blocked sites`);
@@ -23712,8 +23712,8 @@
     });
   }
   function addToWhitelist(url, minutes) {
-    getStorage().then((storage2) => {
-      let whitelistedSites = storage2.whitelistedSites;
+    getStorage().then((storage3) => {
+      let whitelistedSites = storage3.whitelistedSites;
       let expiry = addMinutes(new Date(), minutes);
       whitelistedSites[url] = expiry.toJSON();
       setStorage({whitelistedSites}).then(() => {
@@ -23783,26 +23783,21 @@
   function badgeCountDown() {
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
       const urls = tabs.map((x2) => x2.url);
-      const currentURL = urls[0];
-      if (currentURL != void 0) {
-        const matched = currentURL.match(/^[\w]+:\/{2}([\w\.:-]+)/);
-        if (matched != null) {
-          const strippedURL = matched[1].replace("www.", "");
-          chrome.storage.sync.get(null, (storage2) => {
-            const whitelistedSites = storage2.whitelistedSites;
-            if (whitelistedSites.hasOwnProperty(strippedURL)) {
-              const expiry = new Date(whitelistedSites[strippedURL]);
-              const currentDate = new Date();
-              const timeDifference = expiry.getTime() - currentDate.getTime();
-              setBadge(timeDifference);
-            } else {
-              cleanupBadge();
-            }
-          });
-        }
-      } else {
+      const domain = cleanDomain(urls);
+      if (domain === "") {
         cleanupBadge();
+        return;
       }
+      getStorage().then((storage3) => {
+        if (storage3.whitelistedSites.hasOwnProperty(domain)) {
+          const expiry = new Date(storage3.whitelistedSites[domain]);
+          const currentDate = new Date();
+          const timeDifference = expiry.getTime() - currentDate.getTime();
+          setBadge(timeDifference);
+        } else {
+          cleanupBadge();
+        }
+      });
     });
   }
   function setBadge(time) {
@@ -23891,16 +23886,39 @@
     });
   }
   chrome.runtime.onStartup.addListener(() => {
-    getStorage().then((storage2) => {
+    getStorage().then((storage3) => {
       let icon = "res/icon.png";
-      if (storage2.isEnabled) {
+      if (storage3.isEnabled) {
         icon = "res/on.png";
-      } else if (!storage2.isEnabled) {
+      } else if (!storage3.isEnabled) {
         icon = "res/off.png";
       }
       chrome.browserAction.setIcon({path: {"16": icon}});
     });
   });
+  function turnFilteringOff() {
+    setStorage({isEnabled: false}).then(() => {
+      cleanupBadge();
+      chrome.browserAction.setIcon({path: "res/off.png"}, () => {
+        console.log("Filtering disabled");
+      });
+      reloadActive();
+    });
+  }
+  function turnFilteringOn() {
+    setStorage({isEnabled: false}).then(() => {
+      setBadgeUpdate();
+      chrome.browserAction.setIcon({path: "res/on.png"}, () => {
+        console.log("Filtering enabled.");
+      });
+      reloadActive();
+    });
+  }
+  function reloadActive() {
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+      chrome.tabs.reload(tabs[0].id);
+    });
+  }
   chrome.contextMenus.onClicked.addListener((info, tab) => {
     switch (info.menuItemId) {
       case "baFilterListMenu":
@@ -23928,79 +23946,61 @@
   chrome.runtime.onConnect.addListener((port) => {
     switch (port.name) {
       case "intentStatus": {
-        port.onMessage.addListener((msg) => __awaiter5(void 0, void 0, void 0, function* () {
-          const intent = msg.intent;
-          chrome.storage.sync.get(null, (storage2) => __awaiter5(void 0, void 0, void 0, function* () {
-            const WHITELIST_PERIOD = storage2.whitelistTime;
-            const words = intent.split(" ");
-            if (words.length <= 3) {
-              port.postMessage({status: "too_short"});
-            } else {
-              const valid = yield model.predict(intent);
-              if (valid) {
-                chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-                  const urls = tabs.map((x2) => x2.url);
-                  const domain = cleanDomain(urls);
-                  addToWhitelist(domain, WHITELIST_PERIOD);
-                });
-                port.postMessage({status: "ok"});
-                console.log(`Success! Redirecting`);
-              } else {
-                port.postMessage({status: "invalid"});
-                console.log("Failed. Remaining on page.");
-              }
-            }
-          }));
-        }));
+        port.onMessage.addListener((msg) => intentHandler(port, msg));
       }
       case "toggleState": {
-        port.onMessage.addListener((msg) => {
-          const on = msg.state;
-          if (on) {
-            turnFilteringOn();
-          } else if (on === false) {
-            turnFilteringOff();
-          }
-        });
+        port.onMessage.addListener((msg) => toggleStateHandler(port, msg));
       }
       case "blockFromPopup": {
-        port.onMessage.addListener((msg) => {
-          const url = msg.siteURL;
-          const unblock = msg.unblock;
-          if (url !== void 0 && url !== "" && unblock !== void 0) {
-            if (unblock) {
-              removeFromBlocked(url);
-            } else if (!unblock) {
-              addToBlocked(url);
-            }
-            reloadActive();
-          }
-        });
+        port.onMessage.addListener((msg) => blockFromPopupHandler(port, msg));
       }
     }
   });
-  function turnFilteringOff() {
-    setStorage({isEnabled: false}).then(() => {
-      cleanupBadge();
-      chrome.browserAction.setIcon({path: "res/off.png"}, () => {
-        console.log("Filtering disabled");
-      });
-      reloadActive();
+  function intentHandler(port, msg) {
+    return __awaiter5(this, void 0, void 0, function* () {
+      const intent = msg.intent;
+      getStorage().then((storage3) => __awaiter5(this, void 0, void 0, function* () {
+        const WHITELIST_PERIOD = storage3.whitelistTime;
+        const words = intent.split(" ");
+        if (words.length <= 3) {
+          port.postMessage({status: "too_short"});
+          return;
+        }
+        const valid = yield model.predict(intent);
+        if (!valid) {
+          port.postMessage({status: "invalid"});
+          console.log("Failed. Remaining on page.");
+          return;
+        }
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+          const urls = tabs.map((x2) => x2.url);
+          const domain = cleanDomain(urls);
+          addToWhitelist(domain, WHITELIST_PERIOD);
+        });
+        port.postMessage({status: "ok"});
+        console.log(`Success! Redirecting`);
+      }));
     });
   }
-  function turnFilteringOn() {
-    setStorage({isEnabled: false}).then(() => {
-      setBadgeUpdate();
-      chrome.browserAction.setIcon({path: "res/on.png"}, () => {
-        console.log("Filtering enabled.");
-      });
-      reloadActive();
-    });
+  function toggleStateHandler(port, msg) {
+    const on = msg.state;
+    if (on) {
+      turnFilteringOn();
+    } else if (on === false) {
+      turnFilteringOff();
+    }
   }
-  function reloadActive() {
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-      chrome.tabs.reload(tabs[0].id);
-    });
+  function blockFromPopupHandler(port, msg) {
+    const url = msg.siteURL;
+    const unblock = msg.unblock;
+    if (url !== void 0 && url !== "" && unblock !== void 0) {
+      if (unblock) {
+        removeFromBlocked(url);
+      } else if (!unblock) {
+        addToBlocked(url);
+      }
+      reloadActive();
+    }
   }
 })();
 //# sourceMappingURL=background.js.map

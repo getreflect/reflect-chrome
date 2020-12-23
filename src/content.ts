@@ -1,5 +1,5 @@
 import BlobAnimation from './blob_animation'
-import { getStorage } from './storage'
+import { getStorage, logIntentToStorage } from './storage'
 import { cleanDomain } from './util'
 
 // some colour definitions
@@ -13,23 +13,27 @@ checkIfBlocked()
 window.addEventListener('focus', checkIfBlocked)
 
 // check to see if the current website needs to be blocked
-function checkIfBlocked() {
+function checkIfBlocked(): void {
   // if already on reflect page, don't need to re-block
-  if (!!document.getElementById('reflect-main') === false) {
-    getStorage().then((storage) => {
-      if (storage.isEnabled) {
-        const strippedURL: string = getStrippedUrl()
+  if (!!document.getElementById('reflect-main')) {
+    return
+  }
 
-        // match current url against stored blocklist
-        storage.blockedSites.forEach((site: string) => {
-          if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
-            // found a match, check if currently on whitelist
-            iterWhitelist()
-          }
-        })
+  getStorage().then((storage) => {
+    if (!storage.isEnabled) {
+      return
+    }
+
+    const strippedURL: string = getStrippedUrl()
+
+    // match current url against stored blocklist
+    storage.blockedSites.forEach((site: string) => {
+      if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
+        // found a match, check if currently on whitelist
+        iterWhitelist()
       }
     })
-  }
+  })
 }
 
 // display a message under intent entry field
@@ -46,8 +50,6 @@ function displayStatus(
 // check to see if domain is whitelisted
 function isWhitelistedWrapper(): boolean {
   const WHITELISTED_WRAPPERS: string[] = ['facebook.com/flx', 'l.facebook.com']
-
-  // check if any wrapper urls are present in current url
   return WHITELISTED_WRAPPERS.some((wrapper) => window.location.href.includes(wrapper))
 }
 
@@ -60,30 +62,33 @@ function iterWhitelist(): void {
   // iterate whitelisted sites
   getStorage().then((storage) => {
     const strippedURL: string = getStrippedUrl()
-    if (strippedURL != '') {
-      // get dictionary of whitelisted sites
-      const whitelist: { [key: string]: string } = storage.whitelistedSites
-
-      // is current url whitelisted?
-      if (whitelist.hasOwnProperty(strippedURL)) {
-        // check whitelist period is expired
-        const parsedDate: Date = new Date(whitelist[strippedURL])
-        const currentDate: Date = new Date()
-        const expired: boolean = currentDate >= parsedDate
-        if (expired) {
-          loadBlockPage(strippedURL)
-        } else {
-          const timeDifference: number = parsedDate.getTime() - currentDate.getTime()
-
-          // set timer to re-block page after whitelist period expires
-          setTimeout(() => {
-            loadBlockPage(strippedURL)
-          }, timeDifference)
-        }
-      } else {
-        loadBlockPage(strippedURL)
-      }
+    if (strippedURL === '') {
+      return
     }
+
+    // get dictionary of whitelisted sites
+    const whitelist: { [key: string]: string } = storage.whitelistedSites
+
+    // is current url whitelisted?
+    if (!whitelist.hasOwnProperty(strippedURL)) {
+      loadBlockPage(strippedURL)
+      return
+    }
+
+    // check if whitelist period is expired
+    const parsedDate: Date = new Date(whitelist[strippedURL])
+    const currentDate: Date = new Date()
+    const expired: boolean = currentDate >= parsedDate
+    if (expired) {
+      loadBlockPage(strippedURL)
+      return
+    }
+
+    const timeDifference: number = parsedDate.getTime() - currentDate.getTime()
+    // set timer to re-block page after whitelist period expires
+    setTimeout(() => {
+      loadBlockPage(strippedURL)
+    }, timeDifference)
   })
 }
 
@@ -124,40 +129,7 @@ function addFormListener(strippedURL: string): void {
     const intentDate: Date = new Date()
 
     callBackgroundWithIntent(intentString)
-    addToStorage(intentString, intentDate, strippedURL)
-  })
-}
-
-function addToStorage(intentString: string, intentDate: Date, url: string): void {
-  chrome.storage.sync.get(null, (storage) => {
-    // getting intent list map from storage
-    let intentList: { [key: string]: Object } = storage.intentList
-
-    // getting oldest date value from intent list map
-    let oldest_date: Date = new Date()
-    for (const rawDate in intentList) {
-      const date: Date = new Date(rawDate)
-      if (date < oldest_date) {
-        oldest_date = date
-      }
-    }
-
-    // deleting oldest intent to keep intent count under 20
-    if (Object.keys(intentList).length > storage.numIntentEntries) {
-      console.log(`list full, popping ${oldest_date.toJSON()}`)
-      delete intentList[oldest_date.toJSON()]
-    }
-
-    // adding new intent and date to intent list
-    intentList[intentDate.toJSON()] = {
-      intent: intentString,
-      url: url,
-    }
-
-    // saving intentList to chrome storage
-    chrome.storage.sync.set({ intentList: intentList }, () => {
-      console.log('the intent "' + intentString + '" has been added')
-    })
+    logIntentToStorage(intentString, intentDate, strippedURL)
   })
 }
 
@@ -166,12 +138,13 @@ function callBackgroundWithIntent(intent: string): void {
   const port: chrome.runtime.Port = chrome.runtime.connect({
     name: 'intentStatus',
   })
+
+  // send message then wait for response
   port.postMessage({ intent: intent, url: window.location.href })
   port.onMessage.addListener((msg) => {
     switch (msg.status) {
       case 'ok':
         // show success message
-        // optional: transition?
         chrome.storage.sync.get(null, (storage) => {
           const WHITELIST_PERIOD: number = storage.whitelistTime
           displayStatus(`got it! ${WHITELIST_PERIOD} minutes starting now.`, 3000, REFLECT_INFO)
@@ -180,29 +153,21 @@ function callBackgroundWithIntent(intent: string): void {
         break
 
       case 'too_short':
-        $('#inputFields').effect('shake', { times: 3, distance: 5 })
-
-        // display message
-        displayStatus('your response is a little short. be more specific!', 3000, REFLECT_ERR)
-        $('#textbox').val('')
+        invalidIntent('your response is a little short. be more specific!')
         break
 
       case 'invalid':
-        $('#inputFields').effect('shake', { times: 3, distance: 5 })
-
-        // display message
-        displayStatus(
-          "that doesn't seem to be productive. try being more specific.",
-          3000,
-          REFLECT_ERR
-        )
-
-        // clear input
-        $('#textbox').val('')
+        invalidIntent("that doesn't seem to be productive. try being more specific.")
         break
     }
 
     // close connection
     port.disconnect()
   })
+}
+
+function invalidIntent(msg: string) {
+  $('#inputFields').effect('shake', { times: 3, distance: 5 })
+  displayStatus(msg, 3000, REFLECT_ERR)
+  $('#textbox').val('')
 }

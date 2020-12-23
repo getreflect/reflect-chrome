@@ -121,6 +121,40 @@
       });
     });
   }
+  function setStorage(key) {
+    return new Promise((resolve, reject) => {
+      chrome.storage.sync.set(key, () => {
+        if (chrome.runtime.lastError !== void 0) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+  function logIntentToStorage(intentString, intentDate, url) {
+    getStorage().then((storage2) => {
+      let intentList = storage2.intentList;
+      let oldest_date = new Date();
+      for (const rawDate in intentList) {
+        const date = new Date(rawDate);
+        if (date < oldest_date) {
+          oldest_date = date;
+        }
+      }
+      if (Object.keys(intentList).length > storage2.numIntentEntries) {
+        console.log(`list full, popping ${oldest_date.toJSON()}`);
+        delete intentList[oldest_date.toJSON()];
+      }
+      intentList[intentDate.toJSON()] = {
+        intent: intentString,
+        url
+      };
+      setStorage({intentList}).then(() => {
+        console.log(`logged intent "${intentString}"`);
+      });
+    });
+  }
 
   // build/content.js
   var REFLECT_INFO = "#576ca8";
@@ -128,18 +162,20 @@
   checkIfBlocked();
   window.addEventListener("focus", checkIfBlocked);
   function checkIfBlocked() {
-    if (!!document.getElementById("reflect-main") === false) {
-      getStorage().then((storage2) => {
-        if (storage2.isEnabled) {
-          const strippedURL = getStrippedUrl();
-          storage2.blockedSites.forEach((site) => {
-            if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
-              iterWhitelist();
-            }
-          });
+    if (!!document.getElementById("reflect-main")) {
+      return;
+    }
+    getStorage().then((storage2) => {
+      if (!storage2.isEnabled) {
+        return;
+      }
+      const strippedURL = getStrippedUrl();
+      storage2.blockedSites.forEach((site) => {
+        if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
+          iterWhitelist();
         }
       });
-    }
+    });
   }
   function displayStatus(message, duration = 3e3, colour = REFLECT_INFO) {
     $("#statusContent").css("color", colour);
@@ -156,24 +192,25 @@
   function iterWhitelist() {
     getStorage().then((storage2) => {
       const strippedURL = getStrippedUrl();
-      if (strippedURL != "") {
-        const whitelist = storage2.whitelistedSites;
-        if (whitelist.hasOwnProperty(strippedURL)) {
-          const parsedDate = new Date(whitelist[strippedURL]);
-          const currentDate = new Date();
-          const expired = currentDate >= parsedDate;
-          if (expired) {
-            loadBlockPage(strippedURL);
-          } else {
-            const timeDifference = parsedDate.getTime() - currentDate.getTime();
-            setTimeout(() => {
-              loadBlockPage(strippedURL);
-            }, timeDifference);
-          }
-        } else {
-          loadBlockPage(strippedURL);
-        }
+      if (strippedURL === "") {
+        return;
       }
+      const whitelist = storage2.whitelistedSites;
+      if (!whitelist.hasOwnProperty(strippedURL)) {
+        loadBlockPage(strippedURL);
+        return;
+      }
+      const parsedDate = new Date(whitelist[strippedURL]);
+      const currentDate = new Date();
+      const expired = currentDate >= parsedDate;
+      if (expired) {
+        loadBlockPage(strippedURL);
+        return;
+      }
+      const timeDifference = parsedDate.getTime() - currentDate.getTime();
+      setTimeout(() => {
+        loadBlockPage(strippedURL);
+      }, timeDifference);
     });
   }
   function loadBlockPage(strippedURL) {
@@ -202,30 +239,7 @@
       const intentString = intent.toString();
       const intentDate = new Date();
       callBackgroundWithIntent(intentString);
-      addToStorage(intentString, intentDate, strippedURL);
-    });
-  }
-  function addToStorage(intentString, intentDate, url) {
-    chrome.storage.sync.get(null, (storage2) => {
-      let intentList = storage2.intentList;
-      let oldest_date = new Date();
-      for (const rawDate in intentList) {
-        const date = new Date(rawDate);
-        if (date < oldest_date) {
-          oldest_date = date;
-        }
-      }
-      if (Object.keys(intentList).length > storage2.numIntentEntries) {
-        console.log(`list full, popping ${oldest_date.toJSON()}`);
-        delete intentList[oldest_date.toJSON()];
-      }
-      intentList[intentDate.toJSON()] = {
-        intent: intentString,
-        url
-      };
-      chrome.storage.sync.set({intentList}, () => {
-        console.log('the intent "' + intentString + '" has been added');
-      });
+      logIntentToStorage(intentString, intentDate, strippedURL);
     });
   }
   function callBackgroundWithIntent(intent) {
@@ -243,18 +257,19 @@
           });
           break;
         case "too_short":
-          $("#inputFields").effect("shake", {times: 3, distance: 5});
-          displayStatus("your response is a little short. be more specific!", 3e3, REFLECT_ERR);
-          $("#textbox").val("");
+          invalidIntent("your response is a little short. be more specific!");
           break;
         case "invalid":
-          $("#inputFields").effect("shake", {times: 3, distance: 5});
-          displayStatus("that doesn't seem to be productive. try being more specific.", 3e3, REFLECT_ERR);
-          $("#textbox").val("");
+          invalidIntent("that doesn't seem to be productive. try being more specific.");
           break;
       }
       port.disconnect();
     });
+  }
+  function invalidIntent(msg) {
+    $("#inputFields").effect("shake", {times: 3, distance: 5});
+    displayStatus(msg, 3e3, REFLECT_ERR);
+    $("#textbox").val("");
   }
 })();
 //# sourceMappingURL=content.js.map

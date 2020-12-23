@@ -1,7 +1,7 @@
 // storage.ts provides a thin wrapper around the chrome storage api to make it easier to read/write from it
 // you can also find helper functions that read/write to chrome storage
 
-import { Storage } from './types'
+import { Storage, Intent } from './types'
 import { addMinutes } from './util'
 
 // helper function to retrive chrome storage object
@@ -73,6 +73,38 @@ export function addToWhitelist(url: string, minutes: number): void {
 
     setStorage({ whitelistedSites: whitelistedSites }).then(() => {
       console.log(`${url} added to whitelisted sites`)
+    })
+  })
+}
+
+export function logIntentToStorage(intentString: string, intentDate: Date, url: string): void {
+  getStorage().then((storage) => {
+    let intentList: { [key: string]: Intent } = storage.intentList
+
+    // getting oldest date value from intent list map
+    let oldest_date: Date = new Date()
+    for (const rawDate in intentList) {
+      const date: Date = new Date(rawDate)
+      if (date < oldest_date) {
+        oldest_date = date
+      }
+    }
+
+    // deleting oldest intent to keep intent count under limit
+    if (Object.keys(intentList).length > storage.numIntentEntries) {
+      console.log(`list full, popping ${oldest_date.toJSON()}`)
+      delete intentList[oldest_date.toJSON()]
+    }
+
+    // adding new intent and date to intent list
+    intentList[intentDate.toJSON()] = {
+      intent: intentString,
+      url: url,
+    }
+
+    // saving intentList to chrome storage
+    setStorage({ intentList: intentList }).then(() => {
+      console.log(`logged intent "${intentString}"`)
     })
   })
 }
