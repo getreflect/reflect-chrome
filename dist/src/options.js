@@ -63,10 +63,10 @@
         var _a;
         const id = parseInt(button.id[0]);
         const url = (_a = document.getElementById(button.id[0] + "site")) === null || _a === void 0 ? void 0 : _a.innerHTML;
-        chrome.storage.sync.get(null, (storage2) => {
+        getStorage().then((storage2) => {
           const blockedSites = storage2.blockedSites;
           blockedSites.splice(id, 1);
-          chrome.storage.sync.set({blockedSites}, () => {
+          setStorage({blockedSites}).then(() => {
             console.log(`removed ${url} from blocked list`);
             drawFilterListTable();
           });
@@ -88,7 +88,7 @@
     return `<tr><td style="width: 40%"><p class="intentDisplay" id=${id}>${url}</p></td><td style="width: 40%"><p class="intentDisplay" id=${id}>${intent}</p></td><td style="width: 20%"><p class="intentDisplay" id=${id}>${formattedDate}</p></td></tr>`;
   }
   function drawFilterListTable() {
-    chrome.storage.sync.get(null, (storage2) => {
+    getStorage().then((storage2) => {
       const blockedSites = storage2.blockedSites;
       let table = '<table class="hover shadow styled">';
       let cur_id = 0;
@@ -105,7 +105,7 @@
     });
   }
   function drawIntentListTable() {
-    chrome.storage.sync.get(null, (storage2) => {
+    getStorage().then((storage2) => {
       const intentList = storage2.intentList;
       let table = '<table id="intentList" class="hover shadow styled"><tr><th id="urlHeader" style="width: 40%">url</th><th style="width: 40%">intent</th><th style="width: 20%">date</th></tr>';
       let cur_id = 0;
@@ -140,10 +140,10 @@
   function addUrlToFilterList() {
     const urlInput = document.getElementById("urlInput");
     if (urlInput.value !== "") {
-      chrome.storage.sync.get(null, (storage2) => {
+      getStorage().then((storage2) => {
         const blockedSites = storage2.blockedSites;
         blockedSites.push(urlInput.value);
-        chrome.storage.sync.set({blockedSites}, () => {
+        setStorage({blockedSites}).then(() => {
           console.log(`added ${urlInput} from blocked list`);
           urlInput.value = "";
           drawFilterListTable();

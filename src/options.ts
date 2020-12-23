@@ -1,4 +1,5 @@
 import { getStorage, setStorage } from './storage'
+import { Intent } from './types'
 
 const ENTER_KEY_CODE = 13
 
@@ -56,14 +57,14 @@ function updateButtonListeners(): void {
       const url: string = document.getElementById(button.id[0] + 'site')?.innerHTML
 
       // get blockedSites
-      chrome.storage.sync.get(null, (storage) => {
+      getStorage().then((storage) => {
         const blockedSites: string[] = storage.blockedSites
 
         // remove by ID
         blockedSites.splice(id, 1)
 
         // sync with chrome storage
-        chrome.storage.sync.set({ blockedSites: blockedSites }, () => {
+        setStorage({ blockedSites: blockedSites }).then(() => {
           console.log(`removed ${url} from blocked list`)
           drawFilterListTable()
         })
@@ -103,7 +104,7 @@ function generateIntentDiv(id: number, intent: string, date: Date, url: string):
 
 function drawFilterListTable(): void {
   // accessing chrome storage for blocked sites
-  chrome.storage.sync.get(null, (storage) => {
+  getStorage().then((storage) => {
     //fetch blocked sites
     const blockedSites: string[] = storage.blockedSites
 
@@ -131,9 +132,9 @@ function drawFilterListTable(): void {
 
 function drawIntentListTable(): void {
   // accessing chrome storage for intents
-  chrome.storage.sync.get(null, (storage) => {
+  getStorage().then((storage) => {
     // fetch intent list
-    const intentList: { [key: string]: string } = storage.intentList
+    const intentList: { [key: string]: Intent } = storage.intentList
 
     // generate table element
     let table: string =
@@ -194,7 +195,7 @@ function addUrlToFilterList(): void {
 
   // see if value is non-empty
   if (urlInput.value !== '') {
-    chrome.storage.sync.get(null, (storage) => {
+    getStorage().then((storage) => {
       // get current blocked sites
       const blockedSites: string[] = storage.blockedSites
 
@@ -202,7 +203,7 @@ function addUrlToFilterList(): void {
       blockedSites.push(urlInput.value)
 
       // sync changes with chrome storage
-      chrome.storage.sync.set({ blockedSites: blockedSites }, () => {
+      setStorage({ blockedSites: blockedSites }).then(() => {
         console.log(`added ${urlInput} from blocked list`)
 
         // clear input
