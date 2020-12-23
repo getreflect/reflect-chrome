@@ -1,7 +1,9 @@
 import { getStorage } from './storage'
 import { cleanDomain } from './util'
 
+// when popup is loaded, setup event listeners
 document.addEventListener('DOMContentLoaded', () => {
+  // setup listener for toggle
   const toggleSwitch: HTMLInputElement = document.querySelector(
     '#reflect-toggle'
   ) as HTMLInputElement
@@ -9,12 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // get current state and set approriately
   getStorage().then((storage) => {
+    // set toggle state to storage value
     toggleSwitch.checked = storage.isEnabled
     setupBlockListener(storage.blockedSites)
   })
 })
 
-// message background
+// function to update background with current toggle state
 function toggleState(e) {
   const port: chrome.runtime.Port = chrome.runtime.connect({
     name: 'toggleState',
@@ -24,30 +27,31 @@ function toggleState(e) {
   port.disconnect()
 }
 
+// return what current text of button should be
 function getButtonText(url: string, blockedSites: string[]): string {
   return blockedSites.includes(url) ? 'unblock page.' : 'block page.'
 }
 
+// setup listener for what block button should do
 function setupBlockListener(blockedSites) {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const urls: string[] = tabs.map((x) => x.url)
     const domain: string = cleanDomain(urls)
 
+    // not on a page (probably new tab)
     if (domain === '') {
       document.getElementById('curDomain').textContent = 'none.'
       return
     }
 
     document.getElementById('curDomain').textContent = domain
-
     document.getElementById('block').innerHTML = getButtonText(domain, blockedSites)
     document.getElementById('block').addEventListener('click', () => {
-      // send url to be blocked by background script
       const port: chrome.runtime.Port = chrome.runtime.connect({
         name: 'blockFromPopup',
       })
 
-      // toggle state text
+      // toggle state text and update background script
       const buttonText: string = document.getElementById('block').innerHTML
       if (buttonText == 'block page.') {
         port.postMessage({ unblock: false, siteURL: domain })
@@ -56,6 +60,8 @@ function setupBlockListener(blockedSites) {
         port.postMessage({ unblock: true, siteURL: domain })
         document.getElementById('block').innerHTML = 'block page.'
       }
+
+      // cleanup connection
       port.disconnect()
     })
   })
