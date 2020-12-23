@@ -1,4 +1,6 @@
 // badge.ts is a module responsible for controlling the badge that displays whitelist time left
+import { cleanDomain } from './util'
+import { getStorage } from './storage'
 
 var badgeUpdateCounter: number = window.setInterval(badgeCountDown, 1000)
 
@@ -17,35 +19,25 @@ function badgeCountDown(): void {
   // get current active tab
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const urls: string[] = tabs.map((x) => x.url)
-    const currentURL: string = urls[0]
+    const domain: string = cleanDomain(urls)
 
-    // check if currently on a page
-    if (currentURL != undefined) {
-      // clean url prefix stuff
-      const matched: RegExpMatchArray | null = currentURL.match(/^[\w]+:\/{2}([\w\.:-]+)/)
-      if (matched != null) {
-        // strip url
-        const strippedURL: string = matched[1].replace('www.', '')
-
-        // get whitelisted sites
-        chrome.storage.sync.get(null, (storage) => {
-          const whitelistedSites: { [key: string]: Date } = storage.whitelistedSites
-
-          if (whitelistedSites.hasOwnProperty(strippedURL)) {
-            const expiry: Date = new Date(whitelistedSites[strippedURL])
-            const currentDate: Date = new Date()
-
-            const timeDifference: number = expiry.getTime() - currentDate.getTime()
-
-            setBadge(timeDifference)
-          } else {
-            cleanupBadge()
-          }
-        })
-      }
-    } else {
+    if (domain === '') {
       cleanupBadge()
+      return
     }
+
+    // get whitelisted sites
+    getStorage().then((storage) => {
+      if (storage.whitelistedSites.hasOwnProperty(domain)) {
+        const expiry: Date = new Date(storage.whitelistedSites[domain])
+        const currentDate: Date = new Date()
+        const timeDifference: number = expiry.getTime() - currentDate.getTime()
+
+        setBadge(timeDifference)
+      } else {
+        cleanupBadge()
+      }
+    })
   })
 }
 
