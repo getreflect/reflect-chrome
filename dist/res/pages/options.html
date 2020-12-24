@@ -14,10 +14,30 @@
 				<table>
 					<tr>
 						<td style="width:75%">
+							<h3 class="setting">enable blobs.</h3>
+							<p class="subtext">whether to render the interactive blobs on the block page.</p>
+						</td>
+						<td>
+							<input class='toggle' id='enableBlobs' type='checkbox'>
+							<label class='toggle-button' for='enableBlobs'></label>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<h3 class="setting">enable 3D.</h3>
+							<p class="subtext">whether to enable the 3D-like effect on the blobs on the block page.</p>
+						</td>
+						<td>
+							<input class='toggle' id='enable3D' type='checkbox'>
+							<label class='toggle-button' for='enable3D'></label>
+						</td>
+					</tr>
+					<tr>
+						<td>
 							<h3 class="setting">whitelist time.</h3>
 							<p class="subtext">time allowed on a website after successful intent (minutes).</p>
 						</td>
-						<td style="width:25%">
+						<td>
 							<input id="whitelistTime" type="number" min="0">
 						</td>
 					</tr>
@@ -33,26 +53,17 @@
 					<tr>
 						<td>
 							<h3 class="setting">custom message.</h3>
-							<p class="subtext">text that is shown every time block page is loaded.</p>
+							<p class="subtext">text that is shown every time the block page is loaded.</p>
 						</td>
 						<td>
-							<input id="customMessage" type="text-short">
+							<input id="customMessage" class="short" type="text" placeholder="hey! what are you here for?">
 						</td>
 					</tr>
 					<tr>
 						<td>
-							<h3 class="setting">enable blobs.</h3>
-							<p class="subtext">whether to render the interactive blobs on the block page.</p>
 						</td>
 						<td>
-							<label class="llabel" for='enableBlobs'>
-								<p>off.</p>
-							</label>
-							<input class='toggle' id='enableBlobs' type='checkbox'>
-							<label class='toggle-button' for='enableBlobs'></label>
-							<label class="llabel" for='enableBlobs'>
-								<p>on.</p>
-							</label>
+							<input id="save" class="ripple" type="submit" value="save">
 						</td>
 					</tr>
 				</table>
@@ -60,7 +71,6 @@
 				  	<span>&nbsp;</span>
 				  	<span id="statusContent"></span>
 				</p>
-				<input id="save" class="ripple" type="submit" value="save">
 			</div>
 
 			<div class="sites_panel">

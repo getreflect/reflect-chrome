@@ -14,9 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
   getStorage().then((storage) => {
     getElementFromForm('whitelistTime').value = storage.whitelistTime
     getElementFromForm('numIntentEntries').value = storage.numIntentEntries
-    getElementFromForm('customMessage').value =
-      storage.customMessage ?? 'hey! what are you here for?'
-    getElementFromForm('enable-blobs').checked = storage.enableBlobs ?? true
+    getElementFromForm('customMessage').value = storage.customMessage || ''
+    getElementFromForm('enableBlobs').checked = storage.enableBlobs ?? true
+    getElementFromForm('enable3D').checked = storage.enable3D ?? true
   })
 
   // options listeners
@@ -33,12 +33,14 @@ function saveCurrentOptions(): void {
   const numIntentEntries: number = getElementFromForm('numIntentEntries').value
   const customMessage: string = getElementFromForm('customMessage').value
   const enableBlobs: boolean = getElementFromForm('enableBlobs').checked
+  const enable3D: boolean = getElementFromForm('enable3D').checked
 
   setStorage({
     numIntentEntries: numIntentEntries,
     whitelistTime: whitelistTime,
     customMessage: customMessage,
     enableBlobs: enableBlobs,
+    enable3D: enable3D,
   }).then(() => {
     // Update status to let user know options were saved.
     const status = document.getElementById('statusContent')

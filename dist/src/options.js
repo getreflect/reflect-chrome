@@ -45,8 +45,9 @@
       var _a, _b;
       getElementFromForm("whitelistTime").value = storage2.whitelistTime;
       getElementFromForm("numIntentEntries").value = storage2.numIntentEntries;
-      getElementFromForm("customMessage").value = (_a = storage2.customMessage, _a !== null && _a !== void 0 ? _a : "hey! what are you here for?");
-      getElementFromForm("enable-blobs").checked = (_b = storage2.enableBlobs, _b !== null && _b !== void 0 ? _b : true);
+      getElementFromForm("customMessage").value = storage2.customMessage || "";
+      getElementFromForm("enableBlobs").checked = (_a = storage2.enableBlobs, _a !== null && _a !== void 0 ? _a : true);
+      getElementFromForm("enable3D").checked = (_b = storage2.enable3D, _b !== null && _b !== void 0 ? _b : true);
     });
     document.getElementById("save").addEventListener("click", saveCurrentOptions);
   });
@@ -58,11 +59,13 @@
     const numIntentEntries = getElementFromForm("numIntentEntries").value;
     const customMessage = getElementFromForm("customMessage").value;
     const enableBlobs = getElementFromForm("enableBlobs").checked;
+    const enable3D = getElementFromForm("enable3D").checked;
     setStorage({
       numIntentEntries,
       whitelistTime,
       customMessage,
-      enableBlobs
+      enableBlobs,
+      enable3D
     }).then(() => {
       const status = document.getElementById("statusContent");
       status.textContent = "options saved.";

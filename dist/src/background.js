@@ -11,15 +11,15 @@
   var require_crypto = __commonJS(() => {
   });
 
-  // empty:C:\Users\anson\Projects\reflect\reflect-chrome\node_modules\node-fetch\browser.js
+  // empty:/Users/jzhao/projects/reflect/node_modules/node-fetch/browser.js
   var require_browser = __commonJS(() => {
   });
 
-  // empty:C:\Users\anson\Projects\reflect\reflect-chrome\node_modules\util\util.js
+  // empty:/Users/jzhao/projects/reflect/node_modules/util/util.js
   var require_util = __commonJS(() => {
   });
 
-  // empty:C:\Users\anson\Projects\reflect\reflect-chrome\node_modules\string_decoder\lib\string_decoder.js
+  // empty:/Users/jzhao/projects/reflect/node_modules/string_decoder/lib/string_decoder.js
   var require_string_decoder = __commonJS(() => {
   });
 
@@ -23880,8 +23880,9 @@
       intentList,
       whitelistTime: 5,
       numIntentEntries: 20,
-      customMessage: "hey! what are you here for?",
+      customMessage: "",
       enableBlobs: true,
+      enable3D: true,
       blockedSites,
       isEnabled: true
     }).then(() => {

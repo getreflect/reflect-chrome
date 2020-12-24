@@ -1,12 +1,12 @@
 (() => {
   // build/blob_animation.js
   var BlobElement = class {
-    constructor(x, y, r) {
-      this.fill = "#A6B1CE";
+    constructor(x, y, r, is3D) {
       this.x = this.originalX = x;
       this.y = this.originalY = y;
       this.r = r || 10;
       this.element = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      this.fill = is3D ? "url(#_r_gradient)" : "#A6B1CE";
       this.element.setAttribute("r", this.r.toString());
       this.element.setAttribute("style", `fill: ${this.fill};`);
     }
@@ -24,14 +24,14 @@
     }
   };
   var BlobAnimation = class {
-    constructor() {
+    constructor(is3D) {
       this.config = {
         blur: 8,
         alphaMult: 30,
         alphaAdd: -10,
-        numSeeds: 8,
-        childrenPerSeed: 3,
-        childrenDistanceRange: 100,
+        numSeeds: 6,
+        childrenPerSeed: 4,
+        childrenDistanceRange: 125,
         circleMinRadius: 15,
         circleMaxRadius: 75,
         attraction: 0.1,
@@ -43,6 +43,7 @@
           e.update(this.mouseX, this.mouseY, this.config.repulsion, this.config.attraction);
         });
       };
+      this.is3D = is3D;
       this.svg = document.getElementById("svg");
       this.colorMatrixF = document.getElementById("colorMatrixF");
       const body = document.getElementById("reflect-main");
@@ -68,14 +69,14 @@
       const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
       this.svg.appendChild(group);
       for (let i = 0; i < this.config.numSeeds; i++) {
-        const e = new BlobElement(this.randomRange(this.centerX, this.width * 0.4), this.randomRange(this.centerY, this.height * 0.4), this.random(this.config.circleMinRadius, this.config.circleMaxRadius));
+        const e = new BlobElement(this.random(this.width * 0.4, this.width), this.randomRange(this.centerY, this.height * 0.4), this.random(this.config.circleMinRadius, this.config.circleMaxRadius), this.is3D);
         e.update(this.mouseX, this.mouseY, this.config.repulsion, this.config.attraction);
         group.appendChild(e.element);
         this.elements.push(e);
       }
       this.elements.forEach((e) => {
         for (let j = 0; j < this.config.childrenPerSeed; j++) {
-          const child = new BlobElement(this.randomRange(e.x, this.config.childrenDistanceRange), this.randomRange(e.y, this.config.childrenDistanceRange), this.random(this.config.circleMinRadius, this.config.circleMaxRadius));
+          const child = new BlobElement(this.randomRange(e.x, this.config.childrenDistanceRange), this.randomRange(e.y, this.config.childrenDistanceRange), this.random(this.config.circleMinRadius, this.config.circleMaxRadius), this.is3D);
           child.update(this.mouseX, this.mouseY, this.config.repulsion, this.config.attraction);
           group.appendChild(child.element);
           this.elements.push(child);
@@ -166,7 +167,6 @@
       return;
     }
     getStorage().then((storage2) => {
-      console.log(storage2);
       if (!storage2.isEnabled) {
         return;
       }
@@ -220,17 +220,17 @@
     const options_page_url = chrome.runtime.getURL("res/pages/options.html");
     getStorage().then((storage2) => {
       $.get(prompt_page_url, (page) => {
-        var _a;
+        var _a, _b;
         window.stop();
         $("html").html(page);
         addFormListener(strippedURL);
         $("#linkToOptions").attr("href", options_page_url);
         if (_a = storage2.enableBlobs, _a !== null && _a !== void 0 ? _a : true) {
-          const anim = new blob_animation_default();
+          const anim = new blob_animation_default((_b = storage2.enable3D, _b !== null && _b !== void 0 ? _b : true));
           anim.animate();
         }
         const welcome = document.getElementById("customMessageContent");
-        welcome.textContent = storage2.customMessage;
+        welcome.textContent = storage2.customMessage || "hey! what are you here for?";
       });
     });
   }

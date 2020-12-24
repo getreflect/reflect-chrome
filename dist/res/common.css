@@ -8,8 +8,8 @@ table {
 	width: 90%;
 }
 
-.options_panel tr > td:nth-child(2) {
-	text-align: center;
+.options_panel tr>td:nth-child(2) {
+	text-align: right;
 }
 
 th {
@@ -172,15 +172,9 @@ input[type=text] {
 	font-size: 1em;
 }
 
-input[type=text-short] {
+input[type=text].short {
 	width: 12.5em;
-	margin-right: 1em;
-	border-radius: 20px;
-	border: 1.5px solid var(--shale);
-	padding: 0.5em 1.5em;
-	font-family: "circular-lt";
-	cursor: pointer;
-	font-size: 1em;
+	margin-right: 0;
 }
 
 input[type=submit] {
