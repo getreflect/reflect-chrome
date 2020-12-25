@@ -1,4 +1,9 @@
 (() => {
+  // build/util.js
+  function getElementFromForm(id) {
+    return document.getElementById(id);
+  }
+
   // build/storage.js
   function getStorage() {
     return new Promise((resolve, reject) => {
@@ -51,9 +56,6 @@
     });
     document.getElementById("save").addEventListener("click", saveCurrentOptions);
   });
-  function getElementFromForm(id) {
-    return document.getElementById(id);
-  }
   function saveCurrentOptions() {
     const whitelistTime = getElementFromForm("whitelistTime").value;
     const numIntentEntries = getElementFromForm("numIntentEntries").value;

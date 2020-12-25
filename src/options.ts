@@ -1,5 +1,6 @@
 import { addToBlocked, getStorage, setStorage } from './storage'
 import { Intent } from './types'
+import { getElementFromForm } from './util'
 
 const ENTER_KEY_CODE = 13
 
@@ -22,10 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // options listeners
   document.getElementById('save').addEventListener('click', saveCurrentOptions)
 })
-
-function getElementFromForm(id: string): HTMLFormElement {
-  return document.getElementById(id) as HTMLFormElement
-}
 
 function saveCurrentOptions(): void {
   // get all form values

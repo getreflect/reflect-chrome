@@ -109,15 +109,26 @@
       }
     }
   }
+  function insertAfter(newNode, existingNode) {
+    existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
+  }
+  function createDivFromHTML(htmlString) {
+    const newDiv = document.createElement("div");
+    newDiv.insertAdjacentHTML("beforeend", htmlString);
+    return newDiv;
+  }
+  function getElementFromForm(id) {
+    return document.getElementById(id);
+  }
 
   // build/storage.js
   function getStorage() {
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(null, (storage2) => {
+      chrome.storage.sync.get(null, (storage3) => {
         if (chrome.runtime.lastError !== void 0) {
           reject(chrome.runtime.lastError);
         } else {
-          resolve(storage2);
+          resolve(storage3);
         }
       });
     });
@@ -134,8 +145,8 @@
     });
   }
   function logIntentToStorage(intentString, intentDate, url) {
-    getStorage().then((storage2) => {
-      let intentList = storage2.intentList;
+    getStorage().then((storage3) => {
+      let intentList = storage3.intentList;
       let oldest_date = new Date();
       for (const rawDate in intentList) {
         const date = new Date(rawDate);
@@ -143,7 +154,7 @@
           oldest_date = date;
         }
       }
-      if (Object.keys(intentList).length > storage2.numIntentEntries) {
+      if (Object.keys(intentList).length > storage3.numIntentEntries) {
         console.log(`list full, popping ${oldest_date.toJSON()}`);
         delete intentList[oldest_date.toJSON()];
       }
@@ -157,23 +168,108 @@
     });
   }
 
+  // build/onboarding_options.js
+  var getSettingsHTMLString = () => {
+    return `
+    <table class="options_panel">
+        <tr>
+            <td style="width:50%">
+                <h3 class="setting">enable blobs.</h3>
+                <p class="subtext">whether to render the interactive blobs on the block page.</p>
+            </td>
+            <td>
+                <input class='toggle' id='enableBlobs' type='checkbox'>
+                <label class='toggle-button' for='enableBlobs'></label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h3 class="setting">enable 3D.</h3>
+                <p class="subtext">whether to enable the 3D-like effect on the blobs on the block page.</p>
+            </td>
+            <td>
+                <input class='toggle' id='enable3D' type='checkbox'>
+                <label class='toggle-button' for='enable3D'></label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h3 class="setting">whitelist time.</h3>
+                <p class="subtext">time allowed on a website after successful intent (minutes).</p>
+            </td>
+            <td>
+                <input id="whitelistTime" type="number" min="0">
+            </td>
+        </tr>
+    </table>
+    <p id="statusMessage">
+        <span>&nbsp;</span>
+        <span id="statusContent"></span>
+    </p>
+    `;
+  };
+  var saveSettings = () => {
+    const whitelistTime = getElementFromForm("whitelistTime").value;
+    const enableBlobs = getElementFromForm("enableBlobs").checked;
+    const enable3D = getElementFromForm("enable3D").checked;
+    setStorage({
+      whitelistTime,
+      enableBlobs,
+      enable3D
+    }).then(() => {
+      const status = document.getElementById("statusContent");
+      status.textContent = "options saved.";
+      setTimeout(() => {
+        status.textContent = "";
+      }, 1500);
+    });
+  };
+  var onboarding_options_default = () => {
+    document.addEventListener("DOMContentLoaded", () => {
+      getStorage().then((storage3) => {
+        var _a, _b;
+        getElementFromForm("whitelistTime").value = storage3.whitelistTime;
+        getElementFromForm("enableBlobs").checked = (_a = storage3.enableBlobs, _a !== null && _a !== void 0 ? _a : true);
+        getElementFromForm("enable3D").checked = (_b = storage3.enable3D, _b !== null && _b !== void 0 ? _b : true);
+      });
+      const optionsDiv = document.getElementById("options");
+      const goToEndButton = document.getElementById("page3button");
+      goToEndButton.innerText = "skip.";
+      const newOptionsSection = createDivFromHTML(`
+            <div class="text-section">
+                <h2>configure.</h2>
+                <p>buttons and knobs to customize your reflect experience.</p>
+                ${getSettingsHTMLString()}
+                <a id="saveButton" class="lt-hover white_button shadow nextPage">save!</a>
+            </div>
+            `);
+      insertAfter(newOptionsSection, optionsDiv);
+      document.getElementById("saveButton").addEventListener("click", saveSettings);
+    });
+  };
+
   // build/content.js
   var REFLECT_INFO = "#576ca8";
   var REFLECT_ERR = "#ff4a47";
+  var REFLECT_ONBOARDING_URL = "https://getreflect.app/onboarding/";
+  var DEV_REFLECT_ONBOARDING_URL = "http://localhost:1313/onboarding/";
   checkIfBlocked();
   window.addEventListener("focus", checkIfBlocked);
   function checkIfBlocked() {
+    if (window.location.href === REFLECT_ONBOARDING_URL || window.location.href === DEV_REFLECT_ONBOARDING_URL) {
+      onboarding_options_default();
+      return;
+    }
     if (!!document.getElementById("reflect-main")) {
       return;
     }
-    getStorage().then((storage2) => {
-      if (!storage2.isEnabled) {
+    getStorage().then((storage3) => {
+      if (!storage3.isEnabled) {
         return;
       }
       const strippedURL = getStrippedUrl();
-      storage2.blockedSites.forEach((site) => {
+      storage3.blockedSites.forEach((site) => {
         if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
-          console.log("bro wtf just block this shit already");
           iterWhitelist();
         }
       });
@@ -192,12 +288,12 @@
     return cleanDomain([window.location.href]);
   }
   function iterWhitelist() {
-    getStorage().then((storage2) => {
+    getStorage().then((storage3) => {
       const strippedURL = getStrippedUrl();
       if (strippedURL === "") {
         return;
       }
-      const whitelist = storage2.whitelistedSites;
+      const whitelist = storage3.whitelistedSites;
       if (!whitelist.hasOwnProperty(strippedURL)) {
         loadBlockPage(strippedURL);
         return;
@@ -218,19 +314,19 @@
   function loadBlockPage(strippedURL) {
     const prompt_page_url = chrome.runtime.getURL("res/pages/prompt.html");
     const options_page_url = chrome.runtime.getURL("res/pages/options.html");
-    getStorage().then((storage2) => {
+    getStorage().then((storage3) => {
       $.get(prompt_page_url, (page) => {
         var _a, _b;
         window.stop();
         $("html").html(page);
         addFormListener(strippedURL);
         $("#linkToOptions").attr("href", options_page_url);
-        if (_a = storage2.enableBlobs, _a !== null && _a !== void 0 ? _a : true) {
-          const anim = new blob_animation_default((_b = storage2.enable3D, _b !== null && _b !== void 0 ? _b : true));
+        if (_a = storage3.enableBlobs, _a !== null && _a !== void 0 ? _a : true) {
+          const anim = new blob_animation_default((_b = storage3.enable3D, _b !== null && _b !== void 0 ? _b : true));
           anim.animate();
         }
         const welcome = document.getElementById("customMessageContent");
-        welcome.textContent = storage2.customMessage || "hey! what are you here for?";
+        welcome.textContent = storage3.customMessage || "hey! what are you here for?";
       });
     });
   }
@@ -255,8 +351,8 @@
     port.onMessage.addListener((msg) => {
       switch (msg.status) {
         case "ok":
-          getStorage().then((storage2) => {
-            const WHITELIST_PERIOD = storage2.whitelistTime;
+          getStorage().then((storage3) => {
+            const WHITELIST_PERIOD = storage3.whitelistTime;
             displayStatus(`got it! ${WHITELIST_PERIOD} minutes starting now.`, 3e3, REFLECT_INFO);
             location.reload();
           });
