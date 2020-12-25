@@ -4,7 +4,7 @@ const getSettingsHTMLString = () => {
     return `
     <table class="options_panel">
         <tr>
-            <td style="width:50%">
+            <td style="width:60%">
                 <h3 class="setting">enable blobs.</h3>
                 <p class="subtext">whether to render the interactive blobs on the block page.</p>
             </td>
@@ -34,8 +34,8 @@ const getSettingsHTMLString = () => {
         </tr>
     </table>
     <p id="statusMessage">
-        <span>&nbsp;</span>
         <span id="statusContent"></span>
+        <span>&nbsp;</span>
     </p>
     `;
 };
@@ -64,10 +64,10 @@ export default () => {
             getElementFromForm('enableBlobs').checked = (_a = storage.enableBlobs, (_a !== null && _a !== void 0 ? _a : true));
             getElementFromForm('enable3D').checked = (_b = storage.enable3D, (_b !== null && _b !== void 0 ? _b : true));
         });
-        const optionsDiv = document.getElementById("options");
+        const optionsDiv = document.getElementById('options');
         // change last button to say it will skip rather than setting settings
-        const goToEndButton = document.getElementById("page3button");
-        goToEndButton.innerText = "skip.";
+        const goToEndButton = document.getElementById('page3button');
+        goToEndButton.innerText = 'skip.';
         const newOptionsSection = createDivFromHTML(`
             <div class="text-section">
                 <h2>configure.</h2>

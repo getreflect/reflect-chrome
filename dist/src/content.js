@@ -173,7 +173,7 @@
     return `
     <table class="options_panel">
         <tr>
-            <td style="width:50%">
+            <td style="width:60%">
                 <h3 class="setting">enable blobs.</h3>
                 <p class="subtext">whether to render the interactive blobs on the block page.</p>
             </td>
@@ -203,8 +203,8 @@
         </tr>
     </table>
     <p id="statusMessage">
-        <span>&nbsp;</span>
         <span id="statusContent"></span>
+        <span>&nbsp;</span>
     </p>
     `;
   };
@@ -325,6 +325,7 @@
           const anim = new blob_animation_default((_b = storage3.enable3D, _b !== null && _b !== void 0 ? _b : true));
           anim.animate();
         }
+        console.log($("html"));
         const welcome = document.getElementById("customMessageContent");
         welcome.textContent = storage3.customMessage || "hey! what are you here for?";
       });

@@ -5,7 +5,7 @@ const getSettingsHTMLString = () => {
   return `
     <table class="options_panel">
         <tr>
-            <td style="width:50%">
+            <td style="width:60%">
                 <h3 class="setting">enable blobs.</h3>
                 <p class="subtext">whether to render the interactive blobs on the block page.</p>
             </td>
