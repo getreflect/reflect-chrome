@@ -21,3 +21,14 @@ export function cleanDomain(urls) {
         }
     }
 }
+export function insertAfter(newNode, existingNode) {
+    existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
+}
+export function createDivFromHTML(htmlString) {
+    const newDiv = document.createElement('div');
+    newDiv.insertAdjacentHTML('beforeend', htmlString);
+    return newDiv;
+}
+export function getElementFromForm(id) {
+    return document.getElementById(id);
+}

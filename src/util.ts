@@ -22,3 +22,17 @@ export function cleanDomain(urls: (string | undefined)[]): string {
     }
   }
 }
+
+export function insertAfter(newNode: HTMLElement, existingNode: HTMLElement) {
+  existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling)
+}
+
+export function createDivFromHTML(htmlString: string): HTMLElement {
+  const newDiv = document.createElement('div')
+  newDiv.insertAdjacentHTML('beforeend', htmlString)
+  return newDiv
+}
+
+export function getElementFromForm(id: string): HTMLFormElement {
+  return document.getElementById(id) as HTMLFormElement
+}

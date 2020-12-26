@@ -53,8 +53,9 @@ function firstTimeSetup(): void {
     intentList: intentList,
     whitelistTime: 5,
     numIntentEntries: 20,
-    customMessage: 'hey! what are you here for?',
+    customMessage: '',
     enableBlobs: true,
+    enable3D: true,
     blockedSites: blockedSites,
     isEnabled: true,
   }).then(() => {

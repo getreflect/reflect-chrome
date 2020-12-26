@@ -21,7 +21,7 @@
 						<span id="statusContent"></span>
 					</p>
 				</form>
-				<a class="shadow" id="linkToOptions" target="_blank">options.</a>
+				<a id="linkToOptions" target="_blank">options.</a>
 			</div>
 		</div>
 	
@@ -31,6 +31,10 @@
 					<feGaussianBlur in="displacement" stdDeviation="10" result="blur" id="blurF" />
 					<feColorMatrix in="blur" mode="matrix" id="colorMatrixF" />
 				</filter>
+				<linearGradient id="_r_gradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientTransform="rotate(90)">
+					<stop offset="20%" style="stop-color:#a6b5da;stop-opacity:1" />
+					<stop offset="100%" style="stop-color: #7389c4;stop-opacity:1" />
+				</linearGradient>
 			</defs>
 		</svg>
 	</div>

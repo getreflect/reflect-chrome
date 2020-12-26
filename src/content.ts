@@ -1,10 +1,13 @@
 import BlobAnimation from './blob_animation'
 import { getStorage, logIntentToStorage } from './storage'
 import { cleanDomain } from './util'
+import injectOptionsToOnboarding from './onboarding_options'
 
-// some colour definitions
+// some constants
 const REFLECT_INFO: string = '#576ca8'
 const REFLECT_ERR: string = '#ff4a47'
+const REFLECT_ONBOARDING_URL: string = 'https://getreflect.app/onboarding/'
+const DEV_REFLECT_ONBOARDING_URL: string = 'http://localhost:1313/onboarding/'
 
 // as soon as page loads, check if we need to block it
 checkIfBlocked()
@@ -14,13 +17,21 @@ window.addEventListener('focus', checkIfBlocked)
 
 // check to see if the current website needs to be blocked
 function checkIfBlocked(): void {
+  // if onboarding, inject options to page
+  if (
+    window.location.href === REFLECT_ONBOARDING_URL ||
+    window.location.href === DEV_REFLECT_ONBOARDING_URL
+  ) {
+    injectOptionsToOnboarding()
+    return
+  }
+
   // if already on reflect page, don't need to re-block
   if (!!document.getElementById('reflect-main')) {
     return
   }
 
   getStorage().then((storage) => {
-    console.log(storage)
     if (!storage.isEnabled) {
       return
     }
@@ -31,7 +42,6 @@ function checkIfBlocked(): void {
     storage.blockedSites.forEach((site: string) => {
       if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
         // found a match, check if currently on whitelist
-        console.log('bro wtf just block this shit already')
         iterWhitelist()
       }
     })
@@ -109,13 +119,13 @@ function loadBlockPage(strippedURL: string): void {
       addFormListener(strippedURL)
       $('#linkToOptions').attr('href', options_page_url)
       if (storage.enableBlobs ?? true) {
-        const anim = new BlobAnimation()
+        const anim = new BlobAnimation(storage.enable3D ?? true)
         anim.animate()
       }
 
-      //modify custom message based on user input
+      // modify custom message based on user input
       const welcome = document.getElementById('customMessageContent')
-      welcome.textContent = storage.customMessage
+      welcome.textContent = storage.customMessage || 'hey! what are you here for?'
     })
   })
 }

@@ -14,7 +14,7 @@ interface BlobConfig {
 }
 
 class BlobElement {
-  fill: string = '#A6B1CE'
+  fill: string
   x: number
   y: number
   r: number
@@ -22,11 +22,13 @@ class BlobElement {
   originalY: number
   element: SVGCircleElement
 
-  constructor(x: number, y: number, r: number) {
+  constructor(x: number, y: number, r: number, is3D: boolean) {
     this.x = this.originalX = x
     this.y = this.originalY = y
     this.r = r || 10
     this.element = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+
+    this.fill = is3D ? 'url(#_r_gradient)' : '#A6B1CE'
 
     // set styling
     this.element.setAttribute('r', this.r.toString())
@@ -55,6 +57,8 @@ export default class BlobAnimation {
   centerX: number
   centerY: number
 
+  is3D: boolean
+
   // dom refs
   svg: HTMLElement
   colorMatrixF: HTMLElement
@@ -68,16 +72,18 @@ export default class BlobAnimation {
     blur: 8,
     alphaMult: 30,
     alphaAdd: -10,
-    numSeeds: 8,
-    childrenPerSeed: 3,
-    childrenDistanceRange: 100,
+    numSeeds: 6,
+    childrenPerSeed: 4,
+    childrenDistanceRange: 125,
     circleMinRadius: 15,
     circleMaxRadius: 75,
     attraction: 0.1,
     repulsion: 1000,
   }
 
-  constructor() {
+  constructor(is3D: boolean) {
+    this.is3D = is3D
+
     // grab dom elements
     this.svg = document.getElementById('svg')
     this.colorMatrixF = document.getElementById('colorMatrixF')
@@ -122,9 +128,10 @@ export default class BlobAnimation {
     // create seeds
     for (let i = 0; i < this.config.numSeeds; i++) {
       const e: BlobElement = new BlobElement(
-        this.randomRange(this.centerX, this.width * 0.4),
+        this.random(this.width * 0.4, this.width),
         this.randomRange(this.centerY, this.height * 0.4),
-        this.random(this.config.circleMinRadius, this.config.circleMaxRadius)
+        this.random(this.config.circleMinRadius, this.config.circleMaxRadius),
+        this.is3D
       )
 
       e.update(this.mouseX, this.mouseY, this.config.repulsion, this.config.attraction)
@@ -138,7 +145,8 @@ export default class BlobAnimation {
         const child: BlobElement = new BlobElement(
           this.randomRange(e.x, this.config.childrenDistanceRange),
           this.randomRange(e.y, this.config.childrenDistanceRange),
-          this.random(this.config.circleMinRadius, this.config.circleMaxRadius)
+          this.random(this.config.circleMinRadius, this.config.circleMaxRadius),
+          this.is3D
         )
 
         child.update(this.mouseX, this.mouseY, this.config.repulsion, this.config.attraction)

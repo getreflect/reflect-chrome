@@ -10,6 +10,7 @@ export interface Storage {
   // feature toggles
   isEnabled?: boolean
   enableBlobs?: boolean
+  enable3D?: boolean
 
   // lists
   blockedSites?: string[]
