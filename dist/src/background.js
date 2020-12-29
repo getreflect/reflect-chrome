@@ -23369,6 +23369,78 @@
     }, e2;
   }(DataSource);
 
+  // build/util.js
+  function addMinutes(date, minutes) {
+    return new Date(date.getTime() + minutes * 6e4);
+  }
+  function cleanDomain(urls) {
+    if (urls[0] === void 0) {
+      return "";
+    } else {
+      const activeURL = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/);
+      if (activeURL == null) {
+        return "";
+      } else {
+        return activeURL[1].replace("www.", "");
+      }
+    }
+  }
+
+  // build/storage.js
+  function getStorage() {
+    return new Promise((resolve, reject) => {
+      chrome.storage.sync.get(null, (storage4) => {
+        if (chrome.runtime.lastError !== void 0) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve(storage4);
+        }
+      });
+    });
+  }
+  function setStorage(key) {
+    return new Promise((resolve, reject) => {
+      chrome.storage.sync.set(key, () => {
+        if (chrome.runtime.lastError !== void 0) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+  function addToBlocked(url, callback) {
+    getStorage().then((storage4) => {
+      if (!storage4.blockedSites.includes(url)) {
+        storage4.blockedSites.push(url);
+        setStorage({blockedSites: storage4.blockedSites}).then(() => {
+          console.log(`${url} added to blocked sites`);
+          callback ? callback() : () => {
+          };
+        });
+      }
+    });
+  }
+  function removeFromBlocked(url) {
+    getStorage().then((storage4) => {
+      let blockedSites = storage4.blockedSites;
+      blockedSites = blockedSites.filter((e2) => e2 !== url);
+      setStorage({blockedSites}).then(() => {
+        console.log(`removed ${url} from blocked sites`);
+      });
+    });
+  }
+  function addToWhitelist(url, minutes) {
+    getStorage().then((storage4) => {
+      let whitelistedSites = storage4.whitelistedSites;
+      let expiry = addMinutes(new Date(), minutes);
+      whitelistedSites[url] = expiry.toJSON();
+      setStorage({whitelistedSites}).then(() => {
+        console.log(`${url} added to whitelisted sites`);
+      });
+    });
+  }
+
   // build/nn.js
   var __awaiter4 = function(thisArg, _arguments, P2, generator) {
     function adopt(value) {
@@ -23623,9 +23695,17 @@
   var IntentClassifier = class {
     constructor(modelName, seq_max_len = 75) {
       this.tokenizer = new Tokenizer(modelName, seq_max_len);
-      this.loadModel(modelName);
+      this.modelName = modelName;
+      this.reload();
     }
-    predict(intent, threshold = 0.5) {
+    reload() {
+      this.loadModel(this.modelName);
+      getStorage().then((storage4) => {
+        var _a2;
+        this.threshold = (_a2 = storage4.predictionThreshold, _a2 !== null && _a2 !== void 0 ? _a2 : 0.5);
+      });
+    }
+    predict(intent) {
       return __awaiter4(this, void 0, void 0, function* () {
         const tokens = this.tokenizer.tokenize(intent);
         const inputTensor = Bn([tokens]);
@@ -23633,7 +23713,7 @@
         return predictionTensor.data().then((predictions) => {
           tn(inputTensor);
           const confidence = predictions[0];
-          return confidence > threshold;
+          return confidence > this.threshold;
         });
       });
     }
@@ -23651,78 +23731,6 @@
       });
     }
   };
-
-  // build/util.js
-  function addMinutes(date, minutes) {
-    return new Date(date.getTime() + minutes * 6e4);
-  }
-  function cleanDomain(urls) {
-    if (urls[0] === void 0) {
-      return "";
-    } else {
-      const activeURL = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/);
-      if (activeURL == null) {
-        return "";
-      } else {
-        return activeURL[1].replace("www.", "");
-      }
-    }
-  }
-
-  // build/storage.js
-  function getStorage() {
-    return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(null, (storage3) => {
-        if (chrome.runtime.lastError !== void 0) {
-          reject(chrome.runtime.lastError);
-        } else {
-          resolve(storage3);
-        }
-      });
-    });
-  }
-  function setStorage(key) {
-    return new Promise((resolve, reject) => {
-      chrome.storage.sync.set(key, () => {
-        if (chrome.runtime.lastError !== void 0) {
-          reject(chrome.runtime.lastError);
-        } else {
-          resolve();
-        }
-      });
-    });
-  }
-  function addToBlocked(url, callback) {
-    getStorage().then((storage3) => {
-      if (!storage3.blockedSites.includes(url)) {
-        storage3.blockedSites.push(url);
-        setStorage({blockedSites: storage3.blockedSites}).then(() => {
-          console.log(`${url} added to blocked sites`);
-          callback ? callback() : () => {
-          };
-        });
-      }
-    });
-  }
-  function removeFromBlocked(url) {
-    getStorage().then((storage3) => {
-      let blockedSites = storage3.blockedSites;
-      blockedSites = blockedSites.filter((e2) => e2 !== url);
-      setStorage({blockedSites}).then(() => {
-        console.log(`removed ${url} from blocked sites`);
-      });
-    });
-  }
-  function addToWhitelist(url, minutes) {
-    getStorage().then((storage3) => {
-      let whitelistedSites = storage3.whitelistedSites;
-      let expiry = addMinutes(new Date(), minutes);
-      whitelistedSites[url] = expiry.toJSON();
-      setStorage({whitelistedSites}).then(() => {
-        console.log(`${url} added to whitelisted sites`);
-      });
-    });
-  }
 
   // build/context_menus.js
   var context_menus_default = () => {
@@ -23790,9 +23798,9 @@
         cleanupBadge();
         return;
       }
-      getStorage().then((storage3) => {
-        if (storage3.whitelistedSites.hasOwnProperty(domain)) {
-          const expiry = new Date(storage3.whitelistedSites[domain]);
+      getStorage().then((storage4) => {
+        if (storage4.whitelistedSites.hasOwnProperty(domain)) {
+          const expiry = new Date(storage4.whitelistedSites[domain]);
           const currentDate = new Date();
           const timeDifference = expiry.getTime() - currentDate.getTime();
           setBadge(timeDifference);
@@ -23880,6 +23888,7 @@
       intentList,
       whitelistTime: 5,
       numIntentEntries: 20,
+      predictionThreshold: 0.5,
       customMessage: "",
       enableBlobs: true,
       enable3D: true,
@@ -23893,11 +23902,11 @@
     });
   }
   chrome.runtime.onStartup.addListener(() => {
-    getStorage().then((storage3) => {
+    getStorage().then((storage4) => {
       let icon = "res/icon.png";
-      if (storage3.isEnabled) {
+      if (storage4.isEnabled) {
         icon = "res/on.png";
-      } else if (!storage3.isEnabled) {
+      } else if (!storage4.isEnabled) {
         icon = "res/off.png";
       }
       chrome.browserAction.setIcon({path: {"16": icon}});
@@ -23966,8 +23975,8 @@
   function intentHandler(port, msg) {
     return __awaiter5(this, void 0, void 0, function* () {
       const intent = msg.intent;
-      getStorage().then((storage3) => __awaiter5(this, void 0, void 0, function* () {
-        const WHITELIST_PERIOD = storage3.whitelistTime;
+      getStorage().then((storage4) => __awaiter5(this, void 0, void 0, function* () {
+        const WHITELIST_PERIOD = storage4.whitelistTime;
         const words = intent.split(" ");
         if (words.length <= 3) {
           port.postMessage({status: "too_short"});

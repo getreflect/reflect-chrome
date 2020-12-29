@@ -188,6 +188,11 @@ input[type=submit] {
 	font-size: 1em;
 }
 
+input[type=range] {
+	width: 12.5em;
+	margin-right: 0;
+}
+
 .urlSubmit {
 	padding: 0.5em 1.4em !important;
 	font-size: 1.2em !important;

@@ -53,6 +53,7 @@ function firstTimeSetup(): void {
     intentList: intentList,
     whitelistTime: 5,
     numIntentEntries: 20,
+    predictionThreshold: 0.5,
     customMessage: '',
     enableBlobs: true,
     enable3D: true,

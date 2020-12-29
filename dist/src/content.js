@@ -325,7 +325,6 @@
           const anim = new blob_animation_default((_b = storage3.enable3D, _b !== null && _b !== void 0 ? _b : true));
           anim.animate();
         }
-        console.log($("html"));
         const welcome = document.getElementById("customMessageContent");
         welcome.textContent = storage3.customMessage || "hey! what are you here for?";
       });

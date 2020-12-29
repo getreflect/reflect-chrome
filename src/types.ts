@@ -21,4 +21,6 @@ export interface Storage {
   // misc config
   numIntentEntries?: number
   whitelistTime?: number
+
+  predictionThreshold?: number
 }
