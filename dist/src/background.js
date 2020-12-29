@@ -23696,24 +23696,20 @@
     constructor(modelName, seq_max_len = 75) {
       this.tokenizer = new Tokenizer(modelName, seq_max_len);
       this.modelName = modelName;
-      this.reload();
-    }
-    reload() {
       this.loadModel(this.modelName);
-      getStorage().then((storage4) => {
-        var _a2;
-        this.threshold = (_a2 = storage4.predictionThreshold, _a2 !== null && _a2 !== void 0 ? _a2 : 0.5);
-      });
     }
     predict(intent) {
       return __awaiter4(this, void 0, void 0, function* () {
         const tokens = this.tokenizer.tokenize(intent);
         const inputTensor = Bn([tokens]);
         const predictionTensor = this.model.predict(inputTensor);
-        return predictionTensor.data().then((predictions) => {
-          tn(inputTensor);
-          const confidence = predictions[0];
-          return confidence > this.threshold;
+        return getStorage().then((storage4) => {
+          return predictionTensor.data().then((predictions) => {
+            var _a2;
+            tn(inputTensor);
+            const confidence = predictions[0];
+            return confidence > (_a2 = storage4.predictionThreshold, _a2 !== null && _a2 !== void 0 ? _a2 : 0.5);
+          });
         });
       });
     }
@@ -23889,6 +23885,7 @@
       whitelistTime: 5,
       numIntentEntries: 20,
       predictionThreshold: 0.5,
+      minIntentLength: 3,
       customMessage: "",
       enableBlobs: true,
       enable3D: true,
@@ -23976,9 +23973,10 @@
     return __awaiter5(this, void 0, void 0, function* () {
       const intent = msg.intent;
       getStorage().then((storage4) => __awaiter5(this, void 0, void 0, function* () {
+        var _a2;
         const WHITELIST_PERIOD = storage4.whitelistTime;
         const words = intent.split(" ");
-        if (words.length <= 3) {
+        if (words.length <= (_a2 = storage4.minIntentLength, _a2 !== null && _a2 !== void 0 ? _a2 : 3)) {
           port.postMessage({status: "too_short"});
           return;
         }

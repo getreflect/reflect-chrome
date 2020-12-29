@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   getStorage().then((storage) => {
     getElementFromForm('whitelistTime').value = storage.whitelistTime
     getElementFromForm('numIntentEntries').value = storage.numIntentEntries
+    getElementFromForm('minIntentLength').value = storage.minIntentLength ?? 3
     getElementFromForm('customMessage').value = storage.customMessage || ''
     getElementFromForm('enableBlobs').checked = storage.enableBlobs ?? true
     getElementFromForm('enable3D').checked = storage.enable3D ?? true
@@ -37,6 +38,7 @@ function saveCurrentOptions(): void {
   // get all form values
   const whitelistTime: number = getElementFromForm('whitelistTime').value
   const numIntentEntries: number = getElementFromForm('numIntentEntries').value
+  const minIntentLength: number = getElementFromForm('minIntentLength').value
   const customMessage: string = getElementFromForm('customMessage').value
   const enableBlobs: boolean = getElementFromForm('enableBlobs').checked
   const enable3D: boolean = getElementFromForm('enable3D').checked
@@ -49,6 +51,7 @@ function saveCurrentOptions(): void {
     enableBlobs: enableBlobs,
     enable3D: enable3D,
     predictionThreshold: predictionThreshold,
+    minIntentLength: minIntentLength,
   }).then(() => {
     // Update status to let user know options were saved.
     const status = document.getElementById('statusContent')

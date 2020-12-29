@@ -253,14 +253,7 @@ export class IntentClassifier {
     constructor(modelName, seq_max_len = 75) {
         this.tokenizer = new Tokenizer(modelName, seq_max_len);
         this.modelName = modelName;
-        this.reload();
-    }
-    reload() {
         this.loadModel(this.modelName);
-        getStorage().then((storage) => {
-            var _a;
-            this.threshold = (_a = storage.predictionThreshold, (_a !== null && _a !== void 0 ? _a : 0.5));
-        });
     }
     predict(intent) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -269,12 +262,15 @@ export class IntentClassifier {
             const inputTensor = tf.tensor2d([tokens]);
             // predict
             const predictionTensor = this.model.predict(inputTensor);
-            return predictionTensor.data().then((predictions) => {
-                // garbage collect finished tensor to prevent mem leak
-                tf.dispose(inputTensor);
-                // threshold net output
-                const confidence = predictions[0];
-                return confidence > this.threshold;
+            return getStorage().then(storage => {
+                return predictionTensor.data().then((predictions) => {
+                    var _a;
+                    // garbage collect finished tensor to prevent mem leak
+                    tf.dispose(inputTensor);
+                    // threshold net output
+                    const confidence = predictions[0];
+                    return confidence > (_a = storage.predictionThreshold, (_a !== null && _a !== void 0 ? _a : 0.5));
+                });
             });
         });
     }

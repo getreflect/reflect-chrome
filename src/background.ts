@@ -54,6 +54,7 @@ function firstTimeSetup(): void {
     whitelistTime: 5,
     numIntentEntries: 20,
     predictionThreshold: 0.5,
+    minIntentLength: 3,
     customMessage: '',
     enableBlobs: true,
     enable3D: true,
@@ -175,7 +176,7 @@ async function intentHandler(port: chrome.runtime.Port, msg) {
     const WHITELIST_PERIOD: number = storage.whitelistTime
     const words: string[] = intent.split(' ')
 
-    if (words.length <= 3) {
+    if (words.length <= (storage.minIntentLength ?? 3)) {
       // if too short, let content script know and early return
       port.postMessage({ status: 'too_short' })
       return

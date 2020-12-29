@@ -55,6 +55,7 @@
       var _a, _b;
       getElementFromForm("whitelistTime").value = storage2.whitelistTime;
       getElementFromForm("numIntentEntries").value = storage2.numIntentEntries;
+      getElementFromForm("minIntentLength").value = storage2.minIntentLength;
       getElementFromForm("customMessage").value = storage2.customMessage || "";
       getElementFromForm("enableBlobs").checked = (_a = storage2.enableBlobs, _a !== null && _a !== void 0 ? _a : true);
       getElementFromForm("enable3D").checked = (_b = storage2.enable3D, _b !== null && _b !== void 0 ? _b : true);
@@ -66,6 +67,7 @@
   function saveCurrentOptions() {
     const whitelistTime = getElementFromForm("whitelistTime").value;
     const numIntentEntries = getElementFromForm("numIntentEntries").value;
+    const minIntentLength = getElementFromForm("minIntentLength").value;
     const customMessage = getElementFromForm("customMessage").value;
     const enableBlobs = getElementFromForm("enableBlobs").checked;
     const enable3D = getElementFromForm("enable3D").checked;
@@ -76,7 +78,8 @@
       customMessage,
       enableBlobs,
       enable3D,
-      predictionThreshold
+      predictionThreshold,
+      minIntentLength
     }).then(() => {
       const status = document.getElementById("statusContent");
       status.textContent = "options saved.";

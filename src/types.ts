@@ -23,4 +23,5 @@ export interface Storage {
   whitelistTime?: number
 
   predictionThreshold?: number
+  minIntentLength?: number
 }

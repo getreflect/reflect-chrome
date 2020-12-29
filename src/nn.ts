@@ -269,14 +269,7 @@ export class IntentClassifier {
   constructor(modelName: string, seq_max_len: number = 75) {
     this.tokenizer = new Tokenizer(modelName, seq_max_len)
     this.modelName = modelName
-    this.reload()
-  }
-
-  reload() {
     this.loadModel(this.modelName)
-    getStorage().then((storage) => {
-      this.threshold = storage.predictionThreshold ?? 0.5
-    })
   }
 
   async predict(intent: string): Promise<boolean> {
@@ -286,13 +279,16 @@ export class IntentClassifier {
 
     // predict
     const predictionTensor: tf.Tensor = this.model.predict(inputTensor) as tf.Tensor
-    return predictionTensor.data().then((predictions) => {
-      // garbage collect finished tensor to prevent mem leak
-      tf.dispose(inputTensor)
 
-      // threshold net output
-      const confidence: number = predictions[0]
-      return confidence > this.threshold
+    return getStorage().then((storage) => {
+      return predictionTensor.data().then((predictions) => {
+        // garbage collect finished tensor to prevent mem leak
+        tf.dispose(inputTensor)
+
+        // threshold net output
+        const confidence: number = predictions[0]
+        return confidence > (storage.predictionThreshold ?? 0.5)
+      })
     })
   }
 
