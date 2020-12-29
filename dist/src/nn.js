@@ -257,7 +257,7 @@ export class IntentClassifier {
     }
     reload() {
         this.loadModel(this.modelName);
-        getStorage().then(storage => {
+        getStorage().then((storage) => {
             var _a;
             this.threshold = (_a = storage.predictionThreshold, (_a !== null && _a !== void 0 ? _a : 0.5));
         });

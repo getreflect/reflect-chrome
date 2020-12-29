@@ -2,6 +2,7 @@ import BlobAnimation from './blob_animation'
 import { getStorage, logIntentToStorage } from './storage'
 import { cleanDomain } from './util'
 import injectOptionsToOnboarding from './onboarding_options'
+import SimpleMDE from 'simplemde'
 
 // some constants
 const REFLECT_INFO: string = '#576ca8'
@@ -126,6 +127,8 @@ function loadBlockPage(strippedURL: string): void {
       // modify custom message based on user input
       const welcome = document.getElementById('customMessageContent')
       welcome.textContent = storage.customMessage || 'hey! what are you here for?'
+
+      var simplemde = new SimpleMDE()
     })
   })
 }
