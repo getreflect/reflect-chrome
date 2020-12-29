@@ -11,6 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
   drawIntentListTable()
   setAddButtonListener()
 
+  // update threshold display value
+  const slider = document.getElementById('thresholdSlider') as HTMLInputElement
+  const display = document.getElementById('thresholdSliderValue')
+  slider.oninput = () => {
+    display.innerHTML = slider.value
+  }
+
   // set state of page based off of storage
   getStorage().then((storage) => {
     getElementFromForm('whitelistTime').value = storage.whitelistTime
@@ -18,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
     getElementFromForm('customMessage').value = storage.customMessage || ''
     getElementFromForm('enableBlobs').checked = storage.enableBlobs ?? true
     getElementFromForm('enable3D').checked = storage.enable3D ?? true
+    getElementFromForm('thresholdSlider').value = storage.predictionThreshold || 0.5
+    display.innerHTML = slider.value
   })
 
   // options listeners
@@ -31,6 +40,7 @@ function saveCurrentOptions(): void {
   const customMessage: string = getElementFromForm('customMessage').value
   const enableBlobs: boolean = getElementFromForm('enableBlobs').checked
   const enable3D: boolean = getElementFromForm('enable3D').checked
+  const predictionThreshold: number = getElementFromForm('thresholdSlider').value
 
   setStorage({
     numIntentEntries: numIntentEntries,
@@ -38,6 +48,7 @@ function saveCurrentOptions(): void {
     customMessage: customMessage,
     enableBlobs: enableBlobs,
     enable3D: enable3D,
+    predictionThreshold: predictionThreshold,
   }).then(() => {
     // Update status to let user know options were saved.
     const status = document.getElementById('statusContent')

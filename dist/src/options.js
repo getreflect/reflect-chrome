@@ -46,6 +46,11 @@
     drawFilterListTable();
     drawIntentListTable();
     setAddButtonListener();
+    const slider = document.getElementById("thresholdSlider");
+    const display = document.getElementById("thresholdSliderValue");
+    slider.oninput = () => {
+      display.innerHTML = slider.value;
+    };
     getStorage().then((storage2) => {
       var _a, _b;
       getElementFromForm("whitelistTime").value = storage2.whitelistTime;
@@ -53,6 +58,8 @@
       getElementFromForm("customMessage").value = storage2.customMessage || "";
       getElementFromForm("enableBlobs").checked = (_a = storage2.enableBlobs, _a !== null && _a !== void 0 ? _a : true);
       getElementFromForm("enable3D").checked = (_b = storage2.enable3D, _b !== null && _b !== void 0 ? _b : true);
+      getElementFromForm("thresholdSlider").value = storage2.predictionThreshold || 0.5;
+      display.innerHTML = slider.value;
     });
     document.getElementById("save").addEventListener("click", saveCurrentOptions);
   });
@@ -62,12 +69,14 @@
     const customMessage = getElementFromForm("customMessage").value;
     const enableBlobs = getElementFromForm("enableBlobs").checked;
     const enable3D = getElementFromForm("enable3D").checked;
+    const predictionThreshold = getElementFromForm("thresholdSlider").value;
     setStorage({
       numIntentEntries,
       whitelistTime,
       customMessage,
       enableBlobs,
-      enable3D
+      enable3D,
+      predictionThreshold
     }).then(() => {
       const status = document.getElementById("statusContent");
       status.textContent = "options saved.";
