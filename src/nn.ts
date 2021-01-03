@@ -1,6 +1,6 @@
 // nn.ts is the definition for the NLP model
-
 import * as tf from '@tensorflow/tfjs'
+import { getStorage } from './storage'
 
 const stop_words: string[] = [
   'i',
@@ -262,27 +262,33 @@ export class Tokenizer {
 // Load local ML Model
 export class IntentClassifier {
   model: tf.LayersModel
+  modelName: string
   tokenizer: Tokenizer
+  threshold: number
 
   constructor(modelName: string, seq_max_len: number = 75) {
     this.tokenizer = new Tokenizer(modelName, seq_max_len)
-    this.loadModel(modelName)
+    this.modelName = modelName
+    this.loadModel(this.modelName)
   }
 
-  async predict(intent: string, threshold: number = 0.5): Promise<boolean> {
+  async predict(intent: string): Promise<boolean> {
     // tokenize and convert to 1d tensor
     const tokens: number[] = this.tokenizer.tokenize(intent)
     const inputTensor: tf.Tensor = tf.tensor2d([tokens])
 
     // predict
     const predictionTensor: tf.Tensor = this.model.predict(inputTensor) as tf.Tensor
-    return predictionTensor.data().then((predictions) => {
-      // garbage collect finished tensor to prevent mem leak
-      tf.dispose(inputTensor)
 
-      // threshold net output
-      const confidence: number = predictions[0]
-      return confidence > threshold
+    return getStorage().then((storage) => {
+      return predictionTensor.data().then((predictions) => {
+        // garbage collect finished tensor to prevent mem leak
+        tf.dispose(inputTensor)
+
+        // threshold net output
+        const confidence: number = predictions[0]
+        return confidence > (storage.predictionThreshold ?? 0.5)
+      })
     })
   }
 

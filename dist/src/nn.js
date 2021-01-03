@@ -1,4 +1,3 @@
-// nn.ts is the definition for the NLP model
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,7 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+// nn.ts is the definition for the NLP model
 import * as tf from '@tensorflow/tfjs';
+import { getStorage } from './storage';
 const stop_words = [
     'i',
     'me',
@@ -251,21 +252,25 @@ export class Tokenizer {
 export class IntentClassifier {
     constructor(modelName, seq_max_len = 75) {
         this.tokenizer = new Tokenizer(modelName, seq_max_len);
-        this.loadModel(modelName);
+        this.modelName = modelName;
+        this.loadModel(this.modelName);
     }
-    predict(intent, threshold = 0.5) {
+    predict(intent) {
         return __awaiter(this, void 0, void 0, function* () {
             // tokenize and convert to 1d tensor
             const tokens = this.tokenizer.tokenize(intent);
             const inputTensor = tf.tensor2d([tokens]);
             // predict
             const predictionTensor = this.model.predict(inputTensor);
-            return predictionTensor.data().then((predictions) => {
-                // garbage collect finished tensor to prevent mem leak
-                tf.dispose(inputTensor);
-                // threshold net output
-                const confidence = predictions[0];
-                return confidence > threshold;
+            return getStorage().then((storage) => {
+                return predictionTensor.data().then((predictions) => {
+                    var _a;
+                    // garbage collect finished tensor to prevent mem leak
+                    tf.dispose(inputTensor);
+                    // threshold net output
+                    const confidence = predictions[0];
+                    return confidence > (_a = storage.predictionThreshold, (_a !== null && _a !== void 0 ? _a : 0.5));
+                });
             });
         });
     }

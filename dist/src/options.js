@@ -46,28 +46,41 @@
     drawFilterListTable();
     drawIntentListTable();
     setAddButtonListener();
+    const slider = document.getElementById("thresholdSlider");
+    const display = document.getElementById("thresholdSliderValue");
+    const sliderToValue = (slider2) => `${Math.round(+slider2.value * 100)}%`;
+    slider.oninput = () => {
+      display.innerHTML = sliderToValue(slider);
+    };
     getStorage().then((storage2) => {
-      var _a, _b;
+      var _a, _b, _c;
       getElementFromForm("whitelistTime").value = storage2.whitelistTime;
       getElementFromForm("numIntentEntries").value = storage2.numIntentEntries;
+      getElementFromForm("minIntentLength").value = (_a = storage2.minIntentLength, _a !== null && _a !== void 0 ? _a : 3);
       getElementFromForm("customMessage").value = storage2.customMessage || "";
-      getElementFromForm("enableBlobs").checked = (_a = storage2.enableBlobs, _a !== null && _a !== void 0 ? _a : true);
-      getElementFromForm("enable3D").checked = (_b = storage2.enable3D, _b !== null && _b !== void 0 ? _b : true);
+      getElementFromForm("enableBlobs").checked = (_b = storage2.enableBlobs, _b !== null && _b !== void 0 ? _b : true);
+      getElementFromForm("enable3D").checked = (_c = storage2.enable3D, _c !== null && _c !== void 0 ? _c : true);
+      getElementFromForm("thresholdSlider").value = storage2.predictionThreshold || 0.5;
+      display.innerHTML = sliderToValue(slider);
     });
     document.getElementById("save").addEventListener("click", saveCurrentOptions);
   });
   function saveCurrentOptions() {
     const whitelistTime = getElementFromForm("whitelistTime").value;
     const numIntentEntries = getElementFromForm("numIntentEntries").value;
+    const minIntentLength = getElementFromForm("minIntentLength").value;
     const customMessage = getElementFromForm("customMessage").value;
     const enableBlobs = getElementFromForm("enableBlobs").checked;
     const enable3D = getElementFromForm("enable3D").checked;
+    const predictionThreshold = getElementFromForm("thresholdSlider").value;
     setStorage({
       numIntentEntries,
       whitelistTime,
       customMessage,
       enableBlobs,
-      enable3D
+      enable3D,
+      predictionThreshold,
+      minIntentLength
     }).then(() => {
       const status = document.getElementById("statusContent");
       status.textContent = "options saved.";

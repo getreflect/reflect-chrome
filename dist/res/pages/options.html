@@ -52,11 +52,30 @@
 					</tr>
 					<tr>
 						<td>
+							<h3 class="setting">min intent length.</h3>
+							<p class="subtext">minimum length of intent. anything shorter will be rejected.</p>
+						</td>
+						<td>
+							<input id="minIntentLength" type="number" min="0">
+						</td>
+					</tr>
+					<tr>
+						<td>
 							<h3 class="setting">custom message.</h3>
 							<p class="subtext">text that is shown every time the block page is loaded.</p>
 						</td>
 						<td>
 							<input id="customMessage" class="short" type="text" placeholder="hey! what are you here for?">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<h3 class="setting">block page sensitivity.</h3>
+							<p class="subtext">how likely the model is to block an entered intent. 0% is always allow and 100% is never allow.</p>
+						</td>
+						<td>
+							<input type="range" min="0" max="1" value="0.5" step="0.01" id="thresholdSlider">
+							<p id="thresholdSliderValue">0.5</p>
 						</td>
 					</tr>
 					<tr>

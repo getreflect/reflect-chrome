@@ -28,7 +28,7 @@
     {
       "matches": [ "*://*/*" ],
       "js": ["jquery-3.4.1.min.js", "jquery-ui.min.js", "src/content.js"],
-      "css": ["res/fonts.css", "res/main.css"],
+      "css": ["res/fonts.css", "res/main.css", "res/simplemde.css"],
       "run_at": "document_start"
     }
   ],
