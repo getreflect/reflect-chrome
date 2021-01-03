@@ -14,8 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // update threshold display value
   const slider = document.getElementById('thresholdSlider') as HTMLInputElement
   const display = document.getElementById('thresholdSliderValue')
+
+  const sliderToValue = (slider) => `${Math.round(+slider.value * 100)}%`
   slider.oninput = () => {
-    display.innerHTML = slider.value
+    display.innerHTML = sliderToValue(slider)
   }
 
   // set state of page based off of storage
@@ -27,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     getElementFromForm('enableBlobs').checked = storage.enableBlobs ?? true
     getElementFromForm('enable3D').checked = storage.enable3D ?? true
     getElementFromForm('thresholdSlider').value = storage.predictionThreshold || 0.5
-    display.innerHTML = slider.value
+    display.innerHTML = sliderToValue(slider)
   })
 
   // options listeners

@@ -262,7 +262,7 @@ export class IntentClassifier {
             const inputTensor = tf.tensor2d([tokens]);
             // predict
             const predictionTensor = this.model.predict(inputTensor);
-            return getStorage().then(storage => {
+            return getStorage().then((storage) => {
                 return predictionTensor.data().then((predictions) => {
                     var _a;
                     // garbage collect finished tensor to prevent mem leak
