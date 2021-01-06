@@ -1,5 +1,5 @@
 import BlobAnimation from './blob_animation'
-import { getStorage, logIntentToStorage } from './storage'
+import { getStorage, logIntentToStorage, logMarkdownContentToStorage } from './storage'
 import { cleanDomain } from './util'
 import injectOptionsToOnboarding from './onboarding_options'
 
@@ -126,6 +126,14 @@ function loadBlockPage(strippedURL: string): void {
       // modify custom message based on user input
       const welcome = document.getElementById('customMessageContent')
       welcome.textContent = storage.customMessage || 'hey! what are you here for?'
+
+      let simplemde: SimpleMDE = new SimpleMDE({
+        placeholder: 'Type here...',
+        initialValue: storage.markdownContent,
+      })
+
+      logMarkdownContentToStorage(simplemde)
+      console.log('i am working')
     })
   })
 }

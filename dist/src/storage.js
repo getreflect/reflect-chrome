@@ -98,3 +98,10 @@ export function logIntentToStorage(intentString, intentDate, url) {
         });
     });
 }
+export function logMarkdownContentToStorage(simplemde) {
+    setInterval(() => {
+        setStorage({ markdownContent: simplemde.value() }).then(() => {
+            console.log('autosave successful');
+        });
+    }, 1000);
+}

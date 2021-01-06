@@ -12,11 +12,12 @@ export interface Storage {
   enableBlobs?: boolean
   enable3D?: boolean
 
-  // lists
+  // prompt page
   blockedSites?: string[]
   intentList?: { [key: string]: Intent }
   customMessage?: string
   whitelistedSites?: { [key: string]: string }
+  markdownContent?: string
 
   // misc config
   numIntentEntries?: number

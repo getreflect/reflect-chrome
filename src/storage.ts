@@ -3,6 +3,7 @@
 
 import { Storage, Intent } from './types'
 import { addMinutes } from './util'
+import SimpleMDE from 'simplemde'
 
 // helper function to retrive chrome storage object
 // usage:
@@ -108,4 +109,12 @@ export function logIntentToStorage(intentString: string, intentDate: Date, url: 
       console.log(`logged intent "${intentString}"`)
     })
   })
+}
+
+export function logMarkdownContentToStorage(simplemde: SimpleMDE): void {
+  setInterval(() => {
+    setStorage({ markdownContent: simplemde.value() }).then(() => {
+      console.log('autosave successful')
+    })
+  }, 1000)
 }

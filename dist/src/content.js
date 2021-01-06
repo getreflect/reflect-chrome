@@ -167,6 +167,13 @@
       });
     });
   }
+  function logMarkdownContentToStorage(simplemde2) {
+    setInterval(() => {
+      setStorage({markdownContent: simplemde2.value()}).then(() => {
+        console.log("autosave successful");
+      });
+    }, 1e3);
+  }
 
   // build/onboarding_options.js
   var getSettingsHTMLString = () => {
@@ -328,6 +335,15 @@
         console.log($("html"));
         const welcome = document.getElementById("customMessageContent");
         welcome.textContent = storage3.customMessage || "hey! what are you here for?";
+<<<<<<< Updated upstream
+=======
+        let simplemde2 = new simplemde.default({
+          placeholder: "Type here...",
+          initialValue: storage3.markdownContent
+        });
+        logMarkdownContentToStorage(simplemde2);
+        console.log("i am working");
+>>>>>>> Stashed changes
       });
     });
   }
