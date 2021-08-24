@@ -106,7 +106,7 @@ function iterWhitelist(): void {
 
 // replace current page with reflect block page
 function loadBlockPage(): void {
-  const strippedURL = getStrippedUrl()
+  const strippedURL: string = getStrippedUrl()
   const prompt_page_url: string = chrome.runtime.getURL('res/pages/prompt.html')
   const options_page_url: string = chrome.runtime.getURL('res/pages/options.html')
 
@@ -165,7 +165,7 @@ function callBackgroundWithIntent(intent: string): void {
         getStorage().then((storage) => {
           const WHITELIST_PERIOD: number = storage.whitelistTime
           displayStatus(`got it! ${WHITELIST_PERIOD} minutes starting now.`, 3000, REFLECT_INFO)
-          loadBlockPage()
+          location.reload()
         })
         break
 

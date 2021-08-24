@@ -124,11 +124,11 @@
   // build/storage.js
   function getStorage() {
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(null, (storage) => {
+      chrome.storage.sync.get(null, (storage3) => {
         if (chrome.runtime.lastError !== void 0) {
           reject(chrome.runtime.lastError);
         } else {
-          resolve(storage);
+          resolve(storage3);
         }
       });
     });
@@ -145,8 +145,8 @@
     });
   }
   function logIntentToStorage(intentString, intentDate, url) {
-    getStorage().then((storage) => {
-      let intentList = storage.intentList;
+    getStorage().then((storage3) => {
+      let intentList = storage3.intentList;
       let oldest_date = new Date();
       for (const rawDate in intentList) {
         const date = new Date(rawDate);
@@ -154,7 +154,7 @@
           oldest_date = date;
         }
       }
-      if (Object.keys(intentList).length > storage.numIntentEntries) {
+      if (Object.keys(intentList).length > storage3.numIntentEntries) {
         console.log(`list full, popping ${oldest_date.toJSON()}`);
         delete intentList[oldest_date.toJSON()];
       }
@@ -226,11 +226,11 @@
   };
   var onboarding_options_default = () => {
     document.addEventListener("DOMContentLoaded", () => {
-      getStorage().then((storage) => {
+      getStorage().then((storage3) => {
         var _a, _b;
-        getElementFromForm("whitelistTime").value = storage.whitelistTime;
-        getElementFromForm("enableBlobs").checked = (_a = storage.enableBlobs) !== null && _a !== void 0 ? _a : true;
-        getElementFromForm("enable3D").checked = (_b = storage.enable3D) !== null && _b !== void 0 ? _b : true;
+        getElementFromForm("whitelistTime").value = storage3.whitelistTime;
+        getElementFromForm("enableBlobs").checked = (_a = storage3.enableBlobs, _a !== null && _a !== void 0 ? _a : true);
+        getElementFromForm("enable3D").checked = (_b = storage3.enable3D, _b !== null && _b !== void 0 ? _b : true);
       });
       const optionsDiv = document.getElementById("options");
       const goToEndButton = document.getElementById("page3button");
@@ -263,12 +263,12 @@
     if (!!document.getElementById("reflect-main")) {
       return;
     }
-    getStorage().then((storage) => {
-      if (!storage.isEnabled) {
+    getStorage().then((storage3) => {
+      if (!storage3.isEnabled) {
         return;
       }
       const strippedURL = getStrippedUrl();
-      storage.blockedSites.forEach((site) => {
+      storage3.blockedSites.forEach((site) => {
         if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
           iterWhitelist();
         }
@@ -288,12 +288,12 @@
     return cleanDomain([window.location.href]);
   }
   function iterWhitelist() {
-    getStorage().then((storage) => {
+    getStorage().then((storage3) => {
       const strippedURL = getStrippedUrl();
       if (strippedURL === "") {
         return;
       }
-      const whitelist = storage.whitelistedSites;
+      const whitelist = storage3.whitelistedSites;
       if (!whitelist.hasOwnProperty(strippedURL)) {
         loadBlockPage();
         return;
@@ -315,25 +315,26 @@
     const strippedURL = getStrippedUrl();
     const prompt_page_url = chrome.runtime.getURL("res/pages/prompt.html");
     const options_page_url = chrome.runtime.getURL("res/pages/options.html");
-    getStorage().then((storage) => {
+    getStorage().then((storage3) => {
       $.get(prompt_page_url, (page) => {
         var _a, _b;
         window.stop();
         $("html").html(page);
         addFormListener(strippedURL);
         $("#linkToOptions").attr("href", options_page_url);
-        if ((_a = storage.enableBlobs) !== null && _a !== void 0 ? _a : true) {
-          const anim = new blob_animation_default((_b = storage.enable3D) !== null && _b !== void 0 ? _b : true);
+        if (_a = storage3.enableBlobs, _a !== null && _a !== void 0 ? _a : true) {
+          const anim = new blob_animation_default((_b = storage3.enable3D, _b !== null && _b !== void 0 ? _b : true));
           anim.animate();
         }
         const welcome = document.getElementById("customMessageContent");
-        welcome.textContent = storage.customMessage || "hey! what are you here for?";
+        welcome.textContent = storage3.customMessage || "hey! what are you here for?";
       });
     });
   }
   function addFormListener(strippedURL) {
+    var _a;
     const form = document.forms.namedItem("inputForm");
-    form === null || form === void 0 ? void 0 : form.addEventListener("submit", (event) => {
+    (_a = form) === null || _a === void 0 ? void 0 : _a.addEventListener("submit", (event) => {
       event.preventDefault();
       const intentForm = event.target;
       const intent = new FormData(intentForm).get("intent");
@@ -351,10 +352,10 @@
     port.onMessage.addListener((msg) => {
       switch (msg.status) {
         case "ok":
-          getStorage().then((storage) => {
-            const WHITELIST_PERIOD = storage.whitelistTime;
+          getStorage().then((storage3) => {
+            const WHITELIST_PERIOD = storage3.whitelistTime;
             displayStatus(`got it! ${WHITELIST_PERIOD} minutes starting now.`, 3e3, REFLECT_INFO);
-            loadBlockPage();
+            location.reload();
           });
           break;
         case "too_short":

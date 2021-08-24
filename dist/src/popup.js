@@ -16,11 +16,11 @@
   // build/storage.js
   function getStorage() {
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(null, (storage) => {
+      chrome.storage.sync.get(null, (storage2) => {
         if (chrome.runtime.lastError !== void 0) {
           reject(chrome.runtime.lastError);
         } else {
-          resolve(storage);
+          resolve(storage2);
         }
       });
     });
@@ -30,9 +30,9 @@
   document.addEventListener("DOMContentLoaded", () => {
     const toggleSwitch = document.querySelector("#reflect-toggle");
     toggleSwitch.addEventListener("change", toggleState, false);
-    getStorage().then((storage) => {
-      toggleSwitch.checked = storage.isEnabled;
-      setupBlockListener(storage.blockedSites);
+    getStorage().then((storage2) => {
+      toggleSwitch.checked = storage2.isEnabled;
+      setupBlockListener(storage2.blockedSites);
     });
   });
   function toggleState(e) {
