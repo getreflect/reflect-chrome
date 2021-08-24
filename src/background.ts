@@ -110,8 +110,13 @@ function turnFilteringOn(): void {
 
 // reloads tab that is currently in focus
 function reloadActive(): void {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.reload(tabs[0].id)
+  getStorage().then((storage) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const currentUrl = cleanDomain(tabs.map((tab) => tab.url))
+      if (storage.blockedSites.includes(currentUrl)) {
+        chrome.tabs.reload(tabs[0].id)
+      }
+    })
   })
 }
 

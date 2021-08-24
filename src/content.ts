@@ -2,7 +2,6 @@ import BlobAnimation from './blob_animation'
 import { getStorage, logIntentToStorage } from './storage'
 import { cleanDomain } from './util'
 import injectOptionsToOnboarding from './onboarding_options'
-import SimpleMDE from 'simplemde'
 
 // some constants
 const REFLECT_INFO: string = '#576ca8'
@@ -84,7 +83,7 @@ function iterWhitelist(): void {
 
     // is current url whitelisted?
     if (!whitelist.hasOwnProperty(strippedURL)) {
-      loadBlockPage(strippedURL)
+      loadBlockPage()
       return
     }
 
@@ -93,20 +92,21 @@ function iterWhitelist(): void {
     const currentDate: Date = new Date()
     const expired: boolean = currentDate >= parsedDate
     if (expired) {
-      loadBlockPage(strippedURL)
+      loadBlockPage()
       return
     }
 
     const timeDifference: number = parsedDate.getTime() - currentDate.getTime()
     // set timer to re-block page after whitelist period expires
     setTimeout(() => {
-      loadBlockPage(strippedURL)
+      loadBlockPage()
     }, timeDifference)
   })
 }
 
 // replace current page with reflect block page
-function loadBlockPage(strippedURL: string): void {
+function loadBlockPage(): void {
+  const strippedURL: string = getStrippedUrl()
   const prompt_page_url: string = chrome.runtime.getURL('res/pages/prompt.html')
   const options_page_url: string = chrome.runtime.getURL('res/pages/options.html')
 
@@ -127,8 +127,6 @@ function loadBlockPage(strippedURL: string): void {
       // modify custom message based on user input
       const welcome = document.getElementById('customMessageContent')
       welcome.textContent = storage.customMessage || 'hey! what are you here for?'
-
-      var simplemde = new SimpleMDE()
     })
   })
 }

@@ -11,15 +11,15 @@
   var require_crypto = __commonJS(() => {
   });
 
-  // empty:/Users/jzhao/projects/reflect/node_modules/node-fetch/browser.js
+  // empty:/Users/jzhao/projects/reflect/reflect/node_modules/node-fetch/browser.js
   var require_browser = __commonJS(() => {
   });
 
-  // empty:/Users/jzhao/projects/reflect/node_modules/util/util.js
+  // empty:/Users/jzhao/projects/reflect/reflect/node_modules/util/util.js
   var require_util = __commonJS(() => {
   });
 
-  // empty:/Users/jzhao/projects/reflect/node_modules/string_decoder/lib/string_decoder.js
+  // empty:/Users/jzhao/projects/reflect/reflect/node_modules/string_decoder/lib/string_decoder.js
   var require_string_decoder = __commonJS(() => {
   });
 
@@ -23928,8 +23928,13 @@
     });
   }
   function reloadActive() {
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-      chrome.tabs.reload(tabs[0].id);
+    getStorage().then((storage4) => {
+      chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+        const currentUrl = cleanDomain(tabs.map((tab) => tab.url));
+        if (storage4.blockedSites.includes(currentUrl)) {
+          chrome.tabs.reload(tabs[0].id);
+        }
+      });
     });
   }
   chrome.contextMenus.onClicked.addListener((info, tab) => {
