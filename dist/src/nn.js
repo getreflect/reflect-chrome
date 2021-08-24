@@ -269,7 +269,7 @@ export class IntentClassifier {
                     tf.dispose(inputTensor);
                     // threshold net output
                     const confidence = predictions[0];
-                    return confidence > (_a = storage.predictionThreshold, (_a !== null && _a !== void 0 ? _a : 0.5));
+                    return confidence > ((_a = storage.predictionThreshold) !== null && _a !== void 0 ? _a : 0.5);
                 });
             });
         });

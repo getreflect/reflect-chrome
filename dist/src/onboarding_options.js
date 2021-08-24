@@ -61,8 +61,8 @@ export default () => {
         getStorage().then((storage) => {
             var _a, _b;
             getElementFromForm('whitelistTime').value = storage.whitelistTime;
-            getElementFromForm('enableBlobs').checked = (_a = storage.enableBlobs, (_a !== null && _a !== void 0 ? _a : true));
-            getElementFromForm('enable3D').checked = (_b = storage.enable3D, (_b !== null && _b !== void 0 ? _b : true));
+            getElementFromForm('enableBlobs').checked = (_a = storage.enableBlobs) !== null && _a !== void 0 ? _a : true;
+            getElementFromForm('enable3D').checked = (_b = storage.enable3D) !== null && _b !== void 0 ? _b : true;
         });
         const optionsDiv = document.getElementById('options');
         // change last button to say it will skip rather than setting settings

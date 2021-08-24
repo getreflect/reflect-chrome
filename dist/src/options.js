@@ -7,11 +7,11 @@
   // build/storage.js
   function getStorage() {
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(null, (storage2) => {
+      chrome.storage.sync.get(null, (storage) => {
         if (chrome.runtime.lastError !== void 0) {
           reject(chrome.runtime.lastError);
         } else {
-          resolve(storage2);
+          resolve(storage);
         }
       });
     });
@@ -28,10 +28,10 @@
     });
   }
   function addToBlocked(url, callback) {
-    getStorage().then((storage2) => {
-      if (!storage2.blockedSites.includes(url)) {
-        storage2.blockedSites.push(url);
-        setStorage({blockedSites: storage2.blockedSites}).then(() => {
+    getStorage().then((storage) => {
+      if (!storage.blockedSites.includes(url)) {
+        storage.blockedSites.push(url);
+        setStorage({blockedSites: storage.blockedSites}).then(() => {
           console.log(`${url} added to blocked sites`);
           callback ? callback() : () => {
           };
@@ -52,15 +52,15 @@
     slider.oninput = () => {
       display.innerHTML = sliderToValue(slider);
     };
-    getStorage().then((storage2) => {
+    getStorage().then((storage) => {
       var _a, _b, _c;
-      getElementFromForm("whitelistTime").value = storage2.whitelistTime;
-      getElementFromForm("numIntentEntries").value = storage2.numIntentEntries;
-      getElementFromForm("minIntentLength").value = (_a = storage2.minIntentLength, _a !== null && _a !== void 0 ? _a : 3);
-      getElementFromForm("customMessage").value = storage2.customMessage || "";
-      getElementFromForm("enableBlobs").checked = (_b = storage2.enableBlobs, _b !== null && _b !== void 0 ? _b : true);
-      getElementFromForm("enable3D").checked = (_c = storage2.enable3D, _c !== null && _c !== void 0 ? _c : true);
-      getElementFromForm("thresholdSlider").value = storage2.predictionThreshold || 0.5;
+      getElementFromForm("whitelistTime").value = storage.whitelistTime;
+      getElementFromForm("numIntentEntries").value = storage.numIntentEntries;
+      getElementFromForm("minIntentLength").value = (_a = storage.minIntentLength) !== null && _a !== void 0 ? _a : 3;
+      getElementFromForm("customMessage").value = storage.customMessage || "";
+      getElementFromForm("enableBlobs").checked = (_b = storage.enableBlobs) !== null && _b !== void 0 ? _b : true;
+      getElementFromForm("enable3D").checked = (_c = storage.enable3D) !== null && _c !== void 0 ? _c : true;
+      getElementFromForm("thresholdSlider").value = storage.predictionThreshold || 0.5;
       display.innerHTML = sliderToValue(slider);
     });
     document.getElementById("save").addEventListener("click", saveCurrentOptions);
@@ -96,8 +96,8 @@
         var _a;
         const id = parseInt(button.id[0]);
         const url = (_a = document.getElementById(button.id[0] + "site")) === null || _a === void 0 ? void 0 : _a.innerHTML;
-        getStorage().then((storage2) => {
-          const blockedSites = storage2.blockedSites;
+        getStorage().then((storage) => {
+          const blockedSites = storage.blockedSites;
           blockedSites.splice(id, 1);
           setStorage({blockedSites}).then(() => {
             console.log(`removed ${url} from blocked list`);
@@ -128,8 +128,8 @@
     </tr>`;
   }
   function drawFilterListTable() {
-    getStorage().then((storage2) => {
-      const blockedSites = storage2.blockedSites;
+    getStorage().then((storage) => {
+      const blockedSites = storage.blockedSites;
       const tableContent = blockedSites.reduce((table2, site, cur_id) => {
         table2 += generateWebsiteDiv(cur_id, site);
         return table2;
@@ -143,8 +143,8 @@
     });
   }
   function drawIntentListTable() {
-    getStorage().then((storage2) => {
-      const intentList = storage2.intentList;
+    getStorage().then((storage) => {
+      const intentList = storage.intentList;
       let table = `<table id="intentList" class="hover shadow styled">
         <tr>
         <th id="urlHeader" style="width: 40%">url</th>
@@ -153,7 +153,7 @@
       </tr>`;
       let cur_id = 0;
       for (const rawDate in intentList) {
-        if (cur_id < storage2.numIntentEntries) {
+        if (cur_id < storage.numIntentEntries) {
           const date = new Date(rawDate);
           const intent = intentList[rawDate].intent;
           const url = intentList[rawDate].url;

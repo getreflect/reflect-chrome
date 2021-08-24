@@ -7,23 +7,23 @@
     return module.exports;
   };
 
-  // empty:crypto
+  // (disabled):crypto
   var require_crypto = __commonJS(() => {
   });
 
-  // empty:/Users/jzhao/projects/reflect/node_modules/node-fetch/browser.js
+  // (disabled):node_modules/node-fetch/browser.js
   var require_browser = __commonJS(() => {
   });
 
-  // empty:/Users/jzhao/projects/reflect/node_modules/util/util.js
+  // (disabled):node_modules/util/util.js
   var require_util = __commonJS(() => {
   });
 
-  // empty:/Users/jzhao/projects/reflect/node_modules/string_decoder/lib/string_decoder.js
+  // (disabled):node_modules/string_decoder/lib/string_decoder.js
   var require_string_decoder = __commonJS(() => {
   });
 
-  // empty:fs
+  // (disabled):fs
   var require_fs = __commonJS(() => {
   });
 
@@ -14995,7 +14995,7 @@
     }
     return o2;
   }
-  var version = "1.7.2";
+  var version = "1.7.4";
   function assertFeedCompatibility(e2, t2) {
     if (e2.dtype == null || e2.dtype === t2.dtype)
       return t2;
@@ -19914,7 +19914,7 @@
   var graph = Object.freeze({json: json$7});
   var json$8 = [{tfOpName: "ResizeBilinear", category: "image", inputs: [{start: 0, name: "images", type: "tensor"}, {start: 1, name: "size", type: "number[]"}], attrs: [{tfName: "align_corners", name: "alignCorners", type: "bool"}, {tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "ResizeNearestNeighbor", category: "image", inputs: [{start: 0, name: "images", type: "tensor"}, {start: 1, name: "size", type: "number[]"}], attrs: [{tfName: "align_corners", name: "alignCorners", type: "bool"}, {tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "CropAndResize", category: "image", inputs: [{start: 0, name: "image", type: "tensor"}, {start: 1, name: "boxes", type: "tensor"}, {start: 2, name: "boxInd", type: "tensor"}, {start: 3, name: "cropSize", type: "number[]"}], attrs: [{tfName: "method", name: "method", type: "string"}, {tfName: "extrapolation_value", name: "extrapolationValue", type: "number"}]}];
   var image$1 = Object.freeze({json: json$8});
-  var json$9 = [{tfOpName: "Equal", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "NotEqual", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "Greater", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "GreaterEqual", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "Less", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "LessEqual", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "LogicalAnd", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "LogicalNot", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "LogicalOr", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "Select", category: "logical", inputs: [{start: 0, name: "condition", type: "tensor"}, {start: 1, name: "a", type: "tensor"}, {start: 2, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}];
+  var json$9 = [{tfOpName: "Equal", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "NotEqual", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "Greater", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "GreaterEqual", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "Less", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "LessEqual", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "LogicalAnd", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "LogicalNot", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "LogicalOr", category: "logical", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "Select", category: "logical", inputs: [{start: 0, name: "condition", type: "tensor"}, {start: 1, name: "a", type: "tensor"}, {start: 2, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "SelectV2", category: "logical", inputs: [{start: 0, name: "condition", type: "tensor"}, {start: 1, name: "a", type: "tensor"}, {start: 2, name: "b", type: "tensor"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}];
   var logical = Object.freeze({json: json$9});
   var json$10 = [{tfOpName: "_FusedMatMul", category: "matrices", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}, {start: 2, end: 0, name: "args", type: "tensors"}], attrs: [{tfName: "num_args", name: "numArgs", type: "number"}, {tfName: "fused_ops", name: "fusedOps", type: "string[]", defaultValue: []}, {tfName: "epsilon", name: "epsilon", type: "number", defaultValue: 1e-4}, {tfName: "transpose_a", name: "transposeA", type: "bool", defaultValue: false}, {tfName: "transpose_b", name: "transposeB", type: "bool", defaultValue: false}, {tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "MatMul", category: "matrices", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "transpose_a", name: "transposeA", type: "bool", defaultValue: false}, {tfName: "transpose_b", name: "transposeB", type: "bool", defaultValue: false}, {tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "BatchMatMul", category: "matrices", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "adj_x", name: "transposeA", type: "bool", defaultValue: false}, {tfName: "adj_y", name: "transposeB", type: "bool", defaultValue: false}, {tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "BatchMatMulV2", category: "matrices", inputs: [{start: 0, name: "a", type: "tensor"}, {start: 1, name: "b", type: "tensor"}], attrs: [{tfName: "adj_x", name: "transposeA", type: "bool", defaultValue: false}, {tfName: "adj_y", name: "transposeB", type: "bool", defaultValue: false}, {tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}, {tfOpName: "Transpose", category: "matrices", inputs: [{start: 0, name: "x", type: "tensor"}, {start: 1, name: "perm", type: "number[]"}], attrs: [{tfName: "T", name: "dtype", type: "dtype", notSupported: true}]}];
   var matrices = Object.freeze({json: json$10});
@@ -20676,6 +20676,7 @@
       case "LogicalOr":
         return [gc(getParamValue("a", e2, t2, a2), getParamValue("b", e2, t2, a2))];
       case "Select":
+      case "SelectV2":
         return [yc(getParamValue("condition", e2, t2, a2), getParamValue("a", e2, t2, a2), getParamValue("b", e2, t2, a2))];
       default:
         throw TypeError("Node type " + e2.op + " is not implemented");
@@ -23389,11 +23390,11 @@
   // build/storage.js
   function getStorage() {
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(null, (storage4) => {
+      chrome.storage.sync.get(null, (storage) => {
         if (chrome.runtime.lastError !== void 0) {
           reject(chrome.runtime.lastError);
         } else {
-          resolve(storage4);
+          resolve(storage);
         }
       });
     });
@@ -23410,10 +23411,10 @@
     });
   }
   function addToBlocked(url, callback) {
-    getStorage().then((storage4) => {
-      if (!storage4.blockedSites.includes(url)) {
-        storage4.blockedSites.push(url);
-        setStorage({blockedSites: storage4.blockedSites}).then(() => {
+    getStorage().then((storage) => {
+      if (!storage.blockedSites.includes(url)) {
+        storage.blockedSites.push(url);
+        setStorage({blockedSites: storage.blockedSites}).then(() => {
           console.log(`${url} added to blocked sites`);
           callback ? callback() : () => {
           };
@@ -23422,8 +23423,8 @@
     });
   }
   function removeFromBlocked(url) {
-    getStorage().then((storage4) => {
-      let blockedSites = storage4.blockedSites;
+    getStorage().then((storage) => {
+      let blockedSites = storage.blockedSites;
       blockedSites = blockedSites.filter((e2) => e2 !== url);
       setStorage({blockedSites}).then(() => {
         console.log(`removed ${url} from blocked sites`);
@@ -23431,8 +23432,8 @@
     });
   }
   function addToWhitelist(url, minutes) {
-    getStorage().then((storage4) => {
-      let whitelistedSites = storage4.whitelistedSites;
+    getStorage().then((storage) => {
+      let whitelistedSites = storage.whitelistedSites;
       let expiry = addMinutes(new Date(), minutes);
       whitelistedSites[url] = expiry.toJSON();
       setStorage({whitelistedSites}).then(() => {
@@ -23703,12 +23704,12 @@
         const tokens = this.tokenizer.tokenize(intent);
         const inputTensor = Bn([tokens]);
         const predictionTensor = this.model.predict(inputTensor);
-        return getStorage().then((storage4) => {
+        return getStorage().then((storage) => {
           return predictionTensor.data().then((predictions) => {
             var _a2;
             tn(inputTensor);
             const confidence = predictions[0];
-            return confidence > (_a2 = storage4.predictionThreshold, _a2 !== null && _a2 !== void 0 ? _a2 : 0.5);
+            return confidence > ((_a2 = storage.predictionThreshold) !== null && _a2 !== void 0 ? _a2 : 0.5);
           });
         });
       });
@@ -23794,9 +23795,9 @@
         cleanupBadge();
         return;
       }
-      getStorage().then((storage4) => {
-        if (storage4.whitelistedSites.hasOwnProperty(domain)) {
-          const expiry = new Date(storage4.whitelistedSites[domain]);
+      getStorage().then((storage) => {
+        if (storage.whitelistedSites.hasOwnProperty(domain)) {
+          const expiry = new Date(storage.whitelistedSites[domain]);
           const currentDate = new Date();
           const timeDifference = expiry.getTime() - currentDate.getTime();
           setBadge(timeDifference);
@@ -23899,11 +23900,11 @@
     });
   }
   chrome.runtime.onStartup.addListener(() => {
-    getStorage().then((storage4) => {
+    getStorage().then((storage) => {
       let icon = "res/icon.png";
-      if (storage4.isEnabled) {
+      if (storage.isEnabled) {
         icon = "res/on.png";
-      } else if (!storage4.isEnabled) {
+      } else if (!storage.isEnabled) {
         icon = "res/off.png";
       }
       chrome.browserAction.setIcon({path: {"16": icon}});
@@ -23972,11 +23973,11 @@
   function intentHandler(port, msg) {
     return __awaiter5(this, void 0, void 0, function* () {
       const intent = msg.intent;
-      getStorage().then((storage4) => __awaiter5(this, void 0, void 0, function* () {
+      getStorage().then((storage) => __awaiter5(this, void 0, void 0, function* () {
         var _a2;
-        const WHITELIST_PERIOD = storage4.whitelistTime;
+        const WHITELIST_PERIOD = storage.whitelistTime;
         const words = intent.split(" ");
-        if (words.length <= (_a2 = storage4.minIntentLength, _a2 !== null && _a2 !== void 0 ? _a2 : 3)) {
+        if (words.length <= ((_a2 = storage.minIntentLength) !== null && _a2 !== void 0 ? _a2 : 3)) {
           port.postMessage({status: "too_short"});
           return;
         }
