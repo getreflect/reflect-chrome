@@ -39,6 +39,12 @@ chrome.runtime.onInstalled.addListener((details) => {
   chrome.runtime.setUninstallURL('http://getreflect.app/uninstall')
 })
 
+console.log('y u no working')
+// handle keyboard shortcut
+chrome.commands.onCommand.addListener((command) => {
+  console.log(`Command "${command}" triggered`)
+})
+
 function firstTimeSetup(): void {
   // defualt to on
   turnFilteringOn()

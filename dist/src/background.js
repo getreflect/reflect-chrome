@@ -23874,6 +23874,10 @@
     }
     chrome.runtime.setUninstallURL("http://getreflect.app/uninstall");
   });
+  console.log("y u no working");
+  chrome.commands.onCommand.addListener((command) => {
+    console.log(`Command "${command}" triggered`);
+  });
   function firstTimeSetup() {
     turnFilteringOn();
     const whitelist = {};
