@@ -2,7 +2,7 @@
 // you can also find helper functions that read/write to chrome storage
 
 import { Storage, Intent } from './types'
-import { addMinutes } from './util'
+import { addMinutes, cleanDomain } from './util'
 
 // helper function to retrive chrome storage object
 // usage:
@@ -44,6 +44,7 @@ export function setStorage(key: Storage): Promise<void> {
 export function addToBlocked(url: string, callback?: () => any): void {
   getStorage().then((storage) => {
     if (!storage.blockedSites.includes(url)) {
+      url = cleanDomain([url])
       storage.blockedSites.push(url)
       setStorage({ blockedSites: storage.blockedSites }).then(() => {
         console.log(`${url} added to blocked sites`)

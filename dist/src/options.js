@@ -1,5 +1,17 @@
 (() => {
   // build/util.js
+  function cleanDomain(urls) {
+    if (urls[0] === void 0) {
+      return "";
+    } else {
+      const activeURL = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/);
+      if (activeURL == null) {
+        return "";
+      } else {
+        return activeURL[1].replace("www.", "");
+      }
+    }
+  }
   function getElementFromForm(id) {
     return document.getElementById(id);
   }
@@ -30,6 +42,7 @@
   function addToBlocked(url, callback) {
     getStorage().then((storage2) => {
       if (!storage2.blockedSites.includes(url)) {
+        url = cleanDomain([url]);
         storage2.blockedSites.push(url);
         setStorage({blockedSites: storage2.blockedSites}).then(() => {
           console.log(`${url} added to blocked sites`);
