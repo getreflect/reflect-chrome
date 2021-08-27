@@ -23976,7 +23976,13 @@
   });
   chrome.commands.onCommand.addListener((command) => {
     console.log(`Command "${command}" triggered`);
-    turnFilteringOn();
+    getStorage().then((storage4) => {
+      if (storage4.isEnabled) {
+        turnFilteringOff();
+      } else {
+        turnFilteringOn();
+      }
+    });
   });
   function intentHandler(port, msg) {
     return __awaiter5(this, void 0, void 0, function* () {

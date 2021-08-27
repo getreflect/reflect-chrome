@@ -174,7 +174,13 @@ chrome.runtime.onConnect.addListener((port) => {
 // handle keyboard shortcut
 chrome.commands.onCommand.addListener((command) => {
   console.log(`Command "${command}" triggered`)
-  turnFilteringOn()
+  getStorage().then((storage) => {
+    if (storage.isEnabled) {
+      turnFilteringOff()
+    } else {
+      turnFilteringOn()
+    }
+  })
 })
 
 // handle content script intent submission
