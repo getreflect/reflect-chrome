@@ -40,8 +40,8 @@ export function setStorage(key) {
 // Add a single url to blocklist (does nothing if url is already in list)
 export function addToBlocked(url, callback) {
     getStorage().then((storage) => {
+        url = cleanDomain([url]) === '' ? url : cleanDomain([url]);
         if (!storage.blockedSites.includes(url)) {
-            url = cleanDomain([url]);
             storage.blockedSites.push(url);
             setStorage({ blockedSites: storage.blockedSites }).then(() => {
                 console.log(`${url} added to blocked sites`);

@@ -269,7 +269,7 @@
       }
       const strippedURL = getStrippedUrl();
       storage3.blockedSites.forEach((site) => {
-        if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
+        if (!strippedURL.includes(`.${site}`) && strippedURL.includes(site) && !isWhitelistedWrapper()) {
           iterWhitelist();
         }
       });

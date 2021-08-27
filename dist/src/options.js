@@ -41,8 +41,8 @@
   }
   function addToBlocked(url, callback) {
     getStorage().then((storage2) => {
+      url = cleanDomain([url]) === "" ? url : cleanDomain([url]);
       if (!storage2.blockedSites.includes(url)) {
-        url = cleanDomain([url]);
         storage2.blockedSites.push(url);
         setStorage({blockedSites: storage2.blockedSites}).then(() => {
           console.log(`${url} added to blocked sites`);
