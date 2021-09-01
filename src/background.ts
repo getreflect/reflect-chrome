@@ -4,6 +4,7 @@ import { getStorage, setStorage, addToBlocked, addToWhitelist, removeFromBlocked
 import setupContextMenus from './context_menus'
 import { Intent } from './types'
 import { setBadgeUpdate, cleanupBadge } from './badge'
+import { listenForCommand } from './commands'
 
 // On install script
 chrome.runtime.onInstalled.addListener((details) => {
@@ -171,18 +172,6 @@ chrome.runtime.onConnect.addListener((port) => {
   }
 })
 
-// handle keyboard shortcut
-chrome.commands.onCommand.addListener((command) => {
-  console.log(`Command "${command}" triggered`)
-  getStorage().then((storage) => {
-    if (storage.isEnabled) {
-      turnFilteringOff()
-    } else {
-      turnFilteringOn()
-    }
-  })
-})
-
 // handle content script intent submission
 async function intentHandler(port: chrome.runtime.Port, msg) {
   // extract intent and url from message
@@ -220,6 +209,9 @@ async function intentHandler(port: chrome.runtime.Port, msg) {
     console.log(`Success! Redirecting`)
   })
 }
+
+// handle keyboard shortcut
+listenForCommand(turnFilteringOn, turnFilteringOff)
 
 // handle user toggling extension on/off
 function toggleStateHandler(port: chrome.runtime.Port, msg) {
