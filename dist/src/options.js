@@ -46,6 +46,9 @@
     drawFilterListTable();
     drawIntentListTable();
     setAddButtonListener();
+    document.getElementById("shortcutsLink").addEventListener("click", function() {
+      chrome.tabs.update({url: "chrome://extensions/shortcuts"});
+    });
     const slider = document.getElementById("thresholdSlider");
     const display = document.getElementById("thresholdSliderValue");
     const sliderToValue = (slider2) => `${Math.round(+slider2.value * 100)}%`;

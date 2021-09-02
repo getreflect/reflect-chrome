@@ -24,6 +24,4 @@ export interface Storage {
 
   predictionThreshold?: number
   minIntentLength?: number
-
-  keyboardShortcut?: string
 }
