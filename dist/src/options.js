@@ -47,7 +47,7 @@
     drawIntentListTable();
     setAddButtonListener();
     document.getElementById("shortcutsLink").addEventListener("click", function() {
-      chrome.tabs.update({url: "chrome://extensions/shortcuts"});
+      chrome.tabs.create({url: "chrome://extensions/shortcuts"});
     });
     const slider = document.getElementById("thresholdSlider");
     const display = document.getElementById("thresholdSliderValue");

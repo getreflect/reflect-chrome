@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setAddButtonListener()
 
   document.getElementById('shortcutsLink').addEventListener('click', function() {
-    chrome.tabs.update({ url: 'chrome://extensions/shortcuts' });
+    chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
   });
 
   // update threshold display value
