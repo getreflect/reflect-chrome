@@ -45,6 +45,7 @@ function saveCurrentOptions(): void {
   const enableBlobs: boolean = getElementFromForm('enableBlobs').checked
   const enable3D: boolean = getElementFromForm('enable3D').checked
   const predictionThreshold: number = getElementFromForm('thresholdSlider').value
+  const keyboardShortcut: string = getElementFromForm('keyboardShortcut').value
 
   setStorage({
     numIntentEntries: numIntentEntries,
@@ -54,6 +55,7 @@ function saveCurrentOptions(): void {
     enable3D: enable3D,
     predictionThreshold: predictionThreshold,
     minIntentLength: minIntentLength,
+    keyboardShortcut: keyboardShortcut,
   }).then(() => {
     // Update status to let user know options were saved.
     const status = document.getElementById('statusContent')
