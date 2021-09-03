@@ -283,6 +283,15 @@ input[type=range]::-webkit-slider-thumb {
   padding: 0.5em;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+	border-left: 1px solid var(--shale);
+}
+
+.dropdown-menu {
+	display: none;
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block;
 }
 
 .llabel p {
