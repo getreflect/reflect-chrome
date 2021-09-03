@@ -269,6 +269,22 @@ input[type=range]::-webkit-slider-thumb {
 	width: 100%;
 }
 
+.button_group {
+  display: flex;
+}
+
+.button_group .popup_button {
+  flex: 1 1 auto;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.dropdown {
+  padding: 0.5em;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
 .llabel p {
 	display: inline-block;
 	transform: translateY(-0.4em);
