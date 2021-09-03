@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   drawIntentListTable()
   setAddButtonListener()
 
-  document.getElementById('shortcutsLink').addEventListener('click', function() {
+  document.getElementById('linkToShortcuts').addEventListener('click', function() {
     chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
   });
 

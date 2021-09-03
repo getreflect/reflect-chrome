@@ -46,7 +46,7 @@
     drawFilterListTable();
     drawIntentListTable();
     setAddButtonListener();
-    document.getElementById("shortcutsLink").addEventListener("click", function() {
+    document.getElementById("linkToShortcuts").addEventListener("click", function() {
       chrome.tabs.create({url: "chrome://extensions/shortcuts"});
     });
     const slider = document.getElementById("thresholdSlider");
