@@ -23829,9 +23829,9 @@
     chrome.commands.onCommand.addListener((command) => {
       getStorage().then((storage5) => {
         if (storage5.isEnabled) {
-          onCallback();
-        } else {
           offCallback();
+        } else {
+          onCallback();
         }
       });
     });

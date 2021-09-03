@@ -5,9 +5,9 @@ export function listenForCommand(onCallback: () => any, offCallback: () => any):
   chrome.commands.onCommand.addListener((command) => {
     getStorage().then((storage) => {
       if (storage.isEnabled) {
-        onCallback()
-      } else {
         offCallback()
+      } else {
+        onCallback()
       }
     })
   })

@@ -4,10 +4,10 @@ export function listenForCommand(onCallback, offCallback) {
     chrome.commands.onCommand.addListener((command) => {
         getStorage().then((storage) => {
             if (storage.isEnabled) {
-                onCallback();
+                offCallback();
             }
             else {
-                offCallback();
+                onCallback();
             }
         });
     });
