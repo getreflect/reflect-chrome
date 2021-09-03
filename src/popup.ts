@@ -54,10 +54,29 @@ function setupBlockListener(blockedSites) {
       // toggle state text and update background script
       const buttonText: string = document.getElementById('block').innerHTML
       if (buttonText == 'block page.') {
-        port.postMessage({ unblock: false, siteURL: domain })
+        port.postMessage({ unblock: false, siteURL: domain, clean: true })
         document.getElementById('block').innerHTML = 'unblock page.'
       } else {
-        port.postMessage({ unblock: true, siteURL: domain })
+        port.postMessage({ unblock: true, siteURL: domain, clean: true })
+        document.getElementById('block').innerHTML = 'block page.'
+      }
+
+      // cleanup connection
+      port.disconnect()
+    })
+    
+    document.getElementById('blockPath').addEventListener('click', () => {
+      const port: chrome.runtime.Port = chrome.runtime.connect({
+        name: 'blockFromPopup',
+      })
+      
+      // toggle state text and update background script
+      const buttonText: string = document.getElementById('block').innerHTML
+      if (buttonText == 'block page.') {
+        port.postMessage({ unblock: false, siteURL: domain, clean: false })
+        document.getElementById('block').innerHTML = 'unblock page.'
+      } else {
+        port.postMessage({ unblock: true, siteURL: domain, clean: false })
         document.getElementById('block').innerHTML = 'block page.'
       }
 

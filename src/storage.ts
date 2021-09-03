@@ -41,9 +41,10 @@ export function setStorage(key: Storage): Promise<void> {
 }
 
 // Add a single url to blocklist (does nothing if url is already in list)
-export function addToBlocked(url: string, callback?: () => any): void {
+export function addToBlocked(url: string, clean = true, callback?: () => any): void {
   getStorage().then((storage) => {
-    url = cleanDomain([url]) === '' ? url : cleanDomain([url])
+    if (clean)
+      url = cleanDomain([url]) === '' ? url : cleanDomain([url])
     if (!storage.blockedSites.includes(url)) {
       storage.blockedSites.push(url)
       setStorage({ blockedSites: storage.blockedSites }).then(() => {
