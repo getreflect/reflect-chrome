@@ -11,6 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
   drawIntentListTable()
   setAddButtonListener()
 
+  document.getElementById('linkToShortcuts').addEventListener('click', function() {
+    chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
+  });
+
   // update threshold display value
   const slider = document.getElementById('thresholdSlider') as HTMLInputElement
   const display = document.getElementById('thresholdSliderValue')
