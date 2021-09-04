@@ -39,9 +39,10 @@
       });
     });
   }
-  function addToBlocked(url, callback) {
+  function addToBlocked(url, clean = true, callback) {
     getStorage().then((storage2) => {
-      url = cleanDomain([url]) === "" ? url : cleanDomain([url]);
+      if (clean)
+        url = cleanDomain([url]) === "" ? url : cleanDomain([url]);
       if (!storage2.blockedSites.includes(url)) {
         storage2.blockedSites.push(url);
         setStorage({blockedSites: storage2.blockedSites}).then(() => {
@@ -197,7 +198,7 @@
     const urlInput = document.getElementById("urlInput");
     if (urlInput.value !== "") {
       const url = urlInput.value;
-      addToBlocked(url, () => {
+      addToBlocked(url, void 0, () => {
         urlInput.value = "";
         drawFilterListTable();
       });

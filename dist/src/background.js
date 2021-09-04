@@ -23409,9 +23409,10 @@
       });
     });
   }
-  function addToBlocked(url, callback) {
+  function addToBlocked(url, clean = true, callback) {
     getStorage().then((storage4) => {
-      url = cleanDomain([url]) === "" ? url : cleanDomain([url]);
+      if (clean)
+        url = cleanDomain([url]) === "" ? url : cleanDomain([url]);
       if (!storage4.blockedSites.includes(url)) {
         storage4.blockedSites.push(url);
         setStorage({blockedSites: storage4.blockedSites}).then(() => {
@@ -24013,11 +24014,12 @@
   function blockFromPopupHandler(port, msg) {
     const url = msg.siteURL;
     const unblock = msg.unblock;
+    const clean = msg.clean;
     if (url !== void 0 && url !== "" && unblock !== void 0) {
       if (unblock) {
         removeFromBlocked(url);
       } else if (!unblock) {
-        addToBlocked(url);
+        addToBlocked(url, clean);
       }
       reloadActive();
     }

@@ -61,10 +61,24 @@
         });
         const buttonText = document.getElementById("block").innerHTML;
         if (buttonText == "block page.") {
-          port.postMessage({unblock: false, siteURL: domain});
+          port.postMessage({unblock: false, siteURL: domain, clean: true});
           document.getElementById("block").innerHTML = "unblock page.";
         } else {
-          port.postMessage({unblock: true, siteURL: domain});
+          port.postMessage({unblock: true, siteURL: domain, clean: true});
+          document.getElementById("block").innerHTML = "block page.";
+        }
+        port.disconnect();
+      });
+      document.getElementById("blockPath").addEventListener("click", () => {
+        const port = chrome.runtime.connect({
+          name: "blockFromPopup"
+        });
+        const buttonText = document.getElementById("block").innerHTML;
+        if (buttonText == "block page.") {
+          port.postMessage({unblock: false, siteURL: domain, clean: false});
+          document.getElementById("block").innerHTML = "unblock page.";
+        } else {
+          port.postMessage({unblock: true, siteURL: domain, clean: false});
           document.getElementById("block").innerHTML = "block page.";
         }
         port.disconnect();
