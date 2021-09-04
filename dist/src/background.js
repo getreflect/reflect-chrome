@@ -23411,8 +23411,10 @@
   }
   function addToBlocked(url, clean = true, callback) {
     getStorage().then((storage4) => {
-      if (clean)
+      console.log("Clean: " + clean);
+      if (clean) {
         url = cleanDomain([url]) === "" ? url : cleanDomain([url]);
+      }
       if (!storage4.blockedSites.includes(url)) {
         storage4.blockedSites.push(url);
         setStorage({blockedSites: storage4.blockedSites}).then(() => {

@@ -48,13 +48,13 @@
   function setupBlockListener(blockedSites) {
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
       const urls = tabs.map((x) => x.url);
-      const domain = cleanDomain(urls);
+      const domain = urls[0];
       if (domain === "") {
         document.getElementById("curDomain").textContent = "none.";
         return;
       }
-      document.getElementById("curDomain").textContent = domain;
-      document.getElementById("block").innerHTML = getButtonText(domain, blockedSites);
+      document.getElementById("curDomain").textContent = cleanDomain(urls);
+      document.getElementById("block").innerHTML = getButtonText(cleanDomain(urls), blockedSites);
       document.getElementById("block").addEventListener("click", () => {
         const port = chrome.runtime.connect({
           name: "blockFromPopup"
