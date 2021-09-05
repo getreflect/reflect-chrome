@@ -28,12 +28,17 @@ function toggleState(e) {
 }
 
 // return what current text of button should be
-function getButtonText(domain: string, url: string, blockedSites: string[]): string {
+/*function getButtonText(domain: string, url: string, blockedSites: string[]): string {
   return blockedSites.includes(domain) || blockedSites.includes(url) ? 'unblock page.' : 'block page.'
+}*/
+
+function updateButton(unblock: boolean) {
+  document.getElementById('block').innerHTML = unblock ? 'block page.' : 'unblock page.'
+  // document.getElementById('dropdown').style.display = unblock ? 'block' : 'none'
 }
 
 // setup listener for what block button should do
-function setupBlockListener(blockedSites) {
+function setupBlockListener(blockedSites: string[]) {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const urls: string[] = tabs.map((x) => x.url)
     const domain: string = cleanDomain(urls)
@@ -46,7 +51,16 @@ function setupBlockListener(blockedSites) {
     }
 
     document.getElementById('curDomain').textContent = domain
-    document.getElementById('block').innerHTML = getButtonText(domain, url, blockedSites)
+    
+    let exact = false
+    if (blockedSites.includes(domain)) {
+      updateButton(false)
+    } else if (blockedSites.includes(url)) {
+      updateButton(false)
+      exact = true
+    }
+
+    //document.getElementById('block').innerHTML = getButtonText(domain, url, blockedSites)
     document.getElementById('block').addEventListener('click', () => {
       const port: chrome.runtime.Port = chrome.runtime.connect({
         name: 'blockFromPopup',
@@ -54,12 +68,12 @@ function setupBlockListener(blockedSites) {
 
       // toggle state text and update background script
       const buttonText: string = document.getElementById('block').innerHTML
-      if (buttonText == 'block page.') {
+      if (buttonText === 'block page.') {
         port.postMessage({ unblock: false, siteURL: domain })
-        document.getElementById('block').innerHTML = 'unblock page.'
+        updateButton(false)
       } else {
-        port.postMessage({ unblock: true, siteURL: domain })
-        document.getElementById('block').innerHTML = 'block page.'
+        port.postMessage({ unblock: true, siteURL: exact ? url : domain })
+        updateButton(true)
       }
 
       // cleanup connection
@@ -73,12 +87,9 @@ function setupBlockListener(blockedSites) {
       
       // toggle state text and update background script
       const buttonText: string = document.getElementById('block').innerHTML
-      if (buttonText == 'block page.') {
+      if (buttonText === 'block page.') {
         port.postMessage({ unblock: false, siteURL: url })
-        document.getElementById('block').innerHTML = 'unblock page.'
-      } else {
-        port.postMessage({ unblock: true, siteURL: url })
-        document.getElementById('block').innerHTML = 'block page.'
+        updateButton(false)
       }
 
       // cleanup connection
