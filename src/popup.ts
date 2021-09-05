@@ -28,8 +28,8 @@ function toggleState(e) {
 }
 
 // return what current text of button should be
-function getButtonText(url: string, blockedSites: string[]): string {
-  return blockedSites.includes(url) ? 'unblock page.' : 'block page.'
+function getButtonText(domain: string, url: string, blockedSites: string[]): string {
+  return blockedSites.includes(domain) || blockedSites.includes(url) ? 'unblock page.' : 'block page.'
 }
 
 // setup listener for what block button should do
@@ -37,6 +37,7 @@ function setupBlockListener(blockedSites) {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const urls: string[] = tabs.map((x) => x.url)
     const domain: string = cleanDomain(urls)
+    const url: string = cleanDomain(urls, true)
 
     // not on a page (probably new tab)
     if (domain === '') {
@@ -45,7 +46,7 @@ function setupBlockListener(blockedSites) {
     }
 
     document.getElementById('curDomain').textContent = domain
-    document.getElementById('block').innerHTML = getButtonText(domain, blockedSites)
+    document.getElementById('block').innerHTML = getButtonText(domain, url, blockedSites)
     document.getElementById('block').addEventListener('click', () => {
       const port: chrome.runtime.Port = chrome.runtime.connect({
         name: 'blockFromPopup',
@@ -73,10 +74,10 @@ function setupBlockListener(blockedSites) {
       // toggle state text and update background script
       const buttonText: string = document.getElementById('block').innerHTML
       if (buttonText == 'block page.') {
-        port.postMessage({ unblock: false, siteURL: cleanDomain(urls, true) })
+        port.postMessage({ unblock: false, siteURL: url })
         document.getElementById('block').innerHTML = 'unblock page.'
       } else {
-        port.postMessage({ unblock: true, siteURL: cleanDomain(urls, true) })
+        port.postMessage({ unblock: true, siteURL: url })
         document.getElementById('block').innerHTML = 'block page.'
       }
 

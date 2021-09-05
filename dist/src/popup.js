@@ -42,19 +42,20 @@
     port.postMessage({state: e.target.checked});
     port.disconnect();
   }
-  function getButtonText(url, blockedSites) {
-    return blockedSites.includes(url) ? "unblock page." : "block page.";
+  function getButtonText(domain, url, blockedSites) {
+    return blockedSites.includes(domain) || blockedSites.includes(url) ? "unblock page." : "block page.";
   }
   function setupBlockListener(blockedSites) {
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
       const urls = tabs.map((x) => x.url);
       const domain = cleanDomain(urls);
+      const url = cleanDomain(urls, true);
       if (domain === "") {
         document.getElementById("curDomain").textContent = "none.";
         return;
       }
       document.getElementById("curDomain").textContent = domain;
-      document.getElementById("block").innerHTML = getButtonText(domain, blockedSites);
+      document.getElementById("block").innerHTML = getButtonText(domain, url, blockedSites);
       document.getElementById("block").addEventListener("click", () => {
         const port = chrome.runtime.connect({
           name: "blockFromPopup"
@@ -75,10 +76,10 @@
         });
         const buttonText = document.getElementById("block").innerHTML;
         if (buttonText == "block page.") {
-          port.postMessage({unblock: false, siteURL: cleanDomain(urls, true)});
+          port.postMessage({unblock: false, siteURL: url});
           document.getElementById("block").innerHTML = "unblock page.";
         } else {
-          port.postMessage({unblock: true, siteURL: cleanDomain(urls, true)});
+          port.postMessage({unblock: true, siteURL: url});
           document.getElementById("block").innerHTML = "block page.";
         }
         port.disconnect();
