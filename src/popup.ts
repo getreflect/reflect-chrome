@@ -34,7 +34,8 @@ function toggleState(e) {
 
 function updateButton(unblock: boolean) {
   document.getElementById('block').innerHTML = unblock ? 'block page.' : 'unblock page.'
-  // document.getElementById('dropdown').style.display = unblock ? 'block' : 'none'
+  document.getElementById('block').style.borderRadius = unblock ? '5px 0 0 5px' : '5px'
+  document.getElementById('dropdown').style.display = unblock ? 'block' : 'none'
 }
 
 // setup listener for what block button should do

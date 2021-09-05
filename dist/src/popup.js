@@ -42,8 +42,10 @@
     port.postMessage({state: e.target.checked});
     port.disconnect();
   }
-  function getButtonText(domain, url, blockedSites) {
-    return blockedSites.includes(domain) || blockedSites.includes(url) ? "unblock page." : "block page.";
+  function updateButton(unblock) {
+    document.getElementById("block").innerHTML = unblock ? "block page." : "unblock page.";
+    document.getElementById("block").style.borderRadius = unblock ? "5px 0 0 5px" : "5px";
+    document.getElementById("dropdown").style.display = unblock ? "block" : "none";
   }
   function setupBlockListener(blockedSites) {
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
@@ -55,18 +57,24 @@
         return;
       }
       document.getElementById("curDomain").textContent = domain;
-      document.getElementById("block").innerHTML = getButtonText(domain, url, blockedSites);
+      let exact = false;
+      if (blockedSites.includes(domain)) {
+        updateButton(false);
+      } else if (blockedSites.includes(url)) {
+        updateButton(false);
+        exact = true;
+      }
       document.getElementById("block").addEventListener("click", () => {
         const port = chrome.runtime.connect({
           name: "blockFromPopup"
         });
         const buttonText = document.getElementById("block").innerHTML;
-        if (buttonText == "block page.") {
+        if (buttonText === "block page.") {
           port.postMessage({unblock: false, siteURL: domain});
-          document.getElementById("block").innerHTML = "unblock page.";
+          updateButton(false);
         } else {
-          port.postMessage({unblock: true, siteURL: domain});
-          document.getElementById("block").innerHTML = "block page.";
+          port.postMessage({unblock: true, siteURL: exact ? url : domain});
+          updateButton(true);
         }
         port.disconnect();
       });
@@ -75,12 +83,9 @@
           name: "blockFromPopup"
         });
         const buttonText = document.getElementById("block").innerHTML;
-        if (buttonText == "block page.") {
+        if (buttonText === "block page.") {
           port.postMessage({unblock: false, siteURL: url});
-          document.getElementById("block").innerHTML = "unblock page.";
-        } else {
-          port.postMessage({unblock: true, siteURL: url});
-          document.getElementById("block").innerHTML = "block page.";
+          updateButton(false);
         }
         port.disconnect();
       });
