@@ -1,5 +1,17 @@
 (() => {
   // build/util.js
+  function cleanDomain(urls, exact = false) {
+    if (urls[0] === void 0) {
+      return "";
+    } else {
+      const activeURL = urls[0].match(exact ? /^[\w]+:\/{2}([^#?]+)/ : /^[\w]+:\/{2}([\w\.:-]+)/);
+      if (activeURL == null) {
+        return "";
+      } else {
+        return activeURL[1].replace("www.", "");
+      }
+    }
+  }
   function getElementFromForm(id) {
     return document.getElementById(id);
   }
@@ -184,7 +196,8 @@
     const urlInput = document.getElementById("urlInput");
     if (urlInput.value !== "") {
       const url = urlInput.value;
-      addToBlocked(url, () => {
+      const cleanUrl = cleanDomain([url], true) === "" ? url : cleanDomain([url], true);
+      addToBlocked(cleanUrl, () => {
         urlInput.value = "";
         drawFilterListTable();
       });
