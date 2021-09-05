@@ -27,11 +27,7 @@ function toggleState(e) {
   port.disconnect()
 }
 
-// return what current text of button should be
-/*function getButtonText(domain: string, url: string, blockedSites: string[]): string {
-  return blockedSites.includes(domain) || blockedSites.includes(url) ? 'unblock page.' : 'block page.'
-}*/
-
+// updates the popup button when blocked or unblocked
 function updateButton(unblock: boolean) {
   document.getElementById('block').innerHTML = unblock ? 'block page.' : 'unblock page.'
   document.getElementById('block').style.borderRadius = unblock ? '5px 0 0 5px' : '5px'
@@ -53,6 +49,7 @@ function setupBlockListener(blockedSites: string[]) {
 
     document.getElementById('curDomain').textContent = domain
     
+    // initial popup button configuration
     let exact = false
     if (blockedSites.includes(domain)) {
       updateButton(false)
