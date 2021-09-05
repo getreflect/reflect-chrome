@@ -1,10 +1,10 @@
 (() => {
   // build/util.js
-  function cleanDomain(urls) {
+  function cleanDomain(urls, exact = false) {
     if (urls[0] === void 0) {
       return "";
     } else {
-      const activeURL = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/);
+      const activeURL = urls[0].match(exact ? /^[\w]+:\/{2}(.*)/ : /^[\w]+:\/{2}([\w\.:-]+)/);
       if (activeURL == null) {
         return "";
       } else {
@@ -48,23 +48,23 @@
   function setupBlockListener(blockedSites) {
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
       const urls = tabs.map((x) => x.url);
-      const domain = urls[0];
+      const domain = cleanDomain(urls);
       if (domain === "") {
         document.getElementById("curDomain").textContent = "none.";
         return;
       }
-      document.getElementById("curDomain").textContent = cleanDomain(urls);
-      document.getElementById("block").innerHTML = getButtonText(cleanDomain(urls), blockedSites);
+      document.getElementById("curDomain").textContent = domain;
+      document.getElementById("block").innerHTML = getButtonText(domain, blockedSites);
       document.getElementById("block").addEventListener("click", () => {
         const port = chrome.runtime.connect({
           name: "blockFromPopup"
         });
         const buttonText = document.getElementById("block").innerHTML;
         if (buttonText == "block page.") {
-          port.postMessage({unblock: false, siteURL: domain, clean: true});
+          port.postMessage({unblock: false, siteURL: domain});
           document.getElementById("block").innerHTML = "unblock page.";
         } else {
-          port.postMessage({unblock: true, siteURL: domain, clean: true});
+          port.postMessage({unblock: true, siteURL: domain});
           document.getElementById("block").innerHTML = "block page.";
         }
         port.disconnect();
@@ -75,10 +75,10 @@
         });
         const buttonText = document.getElementById("block").innerHTML;
         if (buttonText == "block page.") {
-          port.postMessage({unblock: false, siteURL: domain, clean: false});
+          port.postMessage({unblock: false, siteURL: cleanDomain(urls, true)});
           document.getElementById("block").innerHTML = "unblock page.";
         } else {
-          port.postMessage({unblock: true, siteURL: domain, clean: false});
+          port.postMessage({unblock: true, siteURL: cleanDomain(urls, true)});
           document.getElementById("block").innerHTML = "block page.";
         }
         port.disconnect();

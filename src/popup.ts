@@ -36,7 +36,7 @@ function getButtonText(url: string, blockedSites: string[]): string {
 function setupBlockListener(blockedSites) {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const urls: string[] = tabs.map((x) => x.url)
-    const domain: string = urls[0]
+    const domain: string = cleanDomain(urls)
 
     // not on a page (probably new tab)
     if (domain === '') {
@@ -44,8 +44,8 @@ function setupBlockListener(blockedSites) {
       return
     }
 
-    document.getElementById('curDomain').textContent = cleanDomain(urls)
-    document.getElementById('block').innerHTML = getButtonText(cleanDomain(urls), blockedSites)
+    document.getElementById('curDomain').textContent = domain
+    document.getElementById('block').innerHTML = getButtonText(domain, blockedSites)
     document.getElementById('block').addEventListener('click', () => {
       const port: chrome.runtime.Port = chrome.runtime.connect({
         name: 'blockFromPopup',
@@ -54,10 +54,10 @@ function setupBlockListener(blockedSites) {
       // toggle state text and update background script
       const buttonText: string = document.getElementById('block').innerHTML
       if (buttonText == 'block page.') {
-        port.postMessage({ unblock: false, siteURL: domain, clean: true })
+        port.postMessage({ unblock: false, siteURL: domain })
         document.getElementById('block').innerHTML = 'unblock page.'
       } else {
-        port.postMessage({ unblock: true, siteURL: domain, clean: true })
+        port.postMessage({ unblock: true, siteURL: domain })
         document.getElementById('block').innerHTML = 'block page.'
       }
 
@@ -73,10 +73,10 @@ function setupBlockListener(blockedSites) {
       // toggle state text and update background script
       const buttonText: string = document.getElementById('block').innerHTML
       if (buttonText == 'block page.') {
-        port.postMessage({ unblock: false, siteURL: domain, clean: false })
+        port.postMessage({ unblock: false, siteURL: cleanDomain(urls, true) })
         document.getElementById('block').innerHTML = 'unblock page.'
       } else {
-        port.postMessage({ unblock: true, siteURL: domain, clean: false })
+        port.postMessage({ unblock: true, siteURL: cleanDomain(urls, true) })
         document.getElementById('block').innerHTML = 'block page.'
       }
 

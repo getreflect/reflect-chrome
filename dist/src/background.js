@@ -23373,11 +23373,11 @@
   function addMinutes(date, minutes) {
     return new Date(date.getTime() + minutes * 6e4);
   }
-  function cleanDomain(urls) {
+  function cleanDomain(urls, exact = false) {
     if (urls[0] === void 0) {
       return "";
     } else {
-      const activeURL = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/);
+      const activeURL = urls[0].match(exact ? /^[\w]+:\/{2}(.*)/ : /^[\w]+:\/{2}([\w\.:-]+)/);
       if (activeURL == null) {
         return "";
       } else {
@@ -23409,12 +23409,8 @@
       });
     });
   }
-  function addToBlocked(url, clean = true, callback) {
+  function addToBlocked(url, callback) {
     getStorage().then((storage4) => {
-      console.log("Clean: " + clean);
-      if (clean) {
-        url = cleanDomain([url]) === "" ? url : cleanDomain([url]);
-      }
       if (!storage4.blockedSites.includes(url)) {
         storage4.blockedSites.push(url);
         setStorage({blockedSites: storage4.blockedSites}).then(() => {
@@ -24016,12 +24012,11 @@
   function blockFromPopupHandler(port, msg) {
     const url = msg.siteURL;
     const unblock = msg.unblock;
-    const clean = msg.clean;
     if (url !== void 0 && url !== "" && unblock !== void 0) {
       if (unblock) {
         removeFromBlocked(url);
       } else if (!unblock) {
-        addToBlocked(url, clean);
+        addToBlocked(url);
       }
       reloadActive();
     }

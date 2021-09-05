@@ -1,17 +1,5 @@
 (() => {
   // build/util.js
-  function cleanDomain(urls) {
-    if (urls[0] === void 0) {
-      return "";
-    } else {
-      const activeURL = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/);
-      if (activeURL == null) {
-        return "";
-      } else {
-        return activeURL[1].replace("www.", "");
-      }
-    }
-  }
   function getElementFromForm(id) {
     return document.getElementById(id);
   }
@@ -39,12 +27,8 @@
       });
     });
   }
-  function addToBlocked(url, clean = true, callback) {
+  function addToBlocked(url, callback) {
     getStorage().then((storage2) => {
-      console.log("Clean: " + clean);
-      if (clean) {
-        url = cleanDomain([url]) === "" ? url : cleanDomain([url]);
-      }
       if (!storage2.blockedSites.includes(url)) {
         storage2.blockedSites.push(url);
         setStorage({blockedSites: storage2.blockedSites}).then(() => {
@@ -200,7 +184,7 @@
     const urlInput = document.getElementById("urlInput");
     if (urlInput.value !== "") {
       const url = urlInput.value;
-      addToBlocked(url, void 0, () => {
+      addToBlocked(url, () => {
         urlInput.value = "";
         drawFilterListTable();
       });

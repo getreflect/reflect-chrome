@@ -202,7 +202,7 @@ function addUrlToFilterList(): void {
   // see if value is non-empty
   if (urlInput.value !== '') {
     const url: string = urlInput.value
-    addToBlocked(url, undefined, () => {
+    addToBlocked(url, () => {
       urlInput.value = ''
       drawFilterListTable()
     })

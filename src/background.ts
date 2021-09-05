@@ -223,12 +223,11 @@ function toggleStateHandler(port: chrome.runtime.Port, msg) {
 function blockFromPopupHandler(port: chrome.runtime.Port, msg) {
   const url: string = msg.siteURL
   const unblock: boolean = msg.unblock
-  const clean: boolean = msg.clean
   if (url !== undefined && url !== '' && unblock !== undefined) {
     if (unblock) {
       removeFromBlocked(url)
     } else if (!unblock) {
-      addToBlocked(url, clean)
+      addToBlocked(url)
     }
     reloadActive()
   }

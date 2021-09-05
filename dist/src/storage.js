@@ -1,6 +1,6 @@
 // storage.ts provides a thin wrapper around the chrome storage api to make it easier to read/write from it
 // you can also find helper functions that read/write to chrome storage
-import { addMinutes, cleanDomain } from './util';
+import { addMinutes } from './util';
 // helper function to retrive chrome storage object
 // usage:
 //
@@ -38,12 +38,9 @@ export function setStorage(key) {
     });
 }
 // Add a single url to blocklist (does nothing if url is already in list)
-export function addToBlocked(url, clean = true, callback) {
+export function addToBlocked(url, callback) {
     getStorage().then((storage) => {
-        console.log("Clean: " + clean);
-        if (clean) {
-            url = cleanDomain([url]) === '' ? url : cleanDomain([url]);
-        }
+        // url = cleanDomain([url]) === '' ? url : cleanDomain([url])
         if (!storage.blockedSites.includes(url)) {
             storage.blockedSites.push(url);
             setStorage({ blockedSites: storage.blockedSites }).then(() => {
