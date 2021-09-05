@@ -10,7 +10,7 @@ export function cleanDomain(urls, exact = false) {
     }
     else {
         // regex match for url
-        const activeURL = urls[0].match(exact ? /^[\w]+:\/{2}(.*)/ : /^[\w]+:\/{2}([\w\.:-]+)/);
+        const activeURL = urls[0].match(exact ? /^[\w]+:\/{2}([^#?]+)/ : /^[\w]+:\/{2}([\w\.:-]+)/);
         // no matching sites, return empty
         if (activeURL == null) {
             return '';
