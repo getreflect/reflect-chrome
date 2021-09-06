@@ -93,5 +93,23 @@ function setupBlockListener(blockedSites: string[]) {
       // cleanup connection
       port.disconnect()
     })
+
+    
+    /* When the user clicks on the button, 
+    toggle between hiding and showing the dropdown content */
+    document.getElementById('dropdown').addEventListener('click', () => {
+      const dropdown: HTMLElement = document.getElementById('blockPath')
+      console.log(dropdown.style.display)
+      dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none'
+    })
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event: MouseEvent) {
+      const target: HTMLElement = event.target as HTMLElement
+      if (!target.matches('#dropdown')) {
+        const dropdown: HTMLElement = document.getElementById('blockPath')
+        dropdown.style.display = 'none'
+      }
+    }
   })
 }

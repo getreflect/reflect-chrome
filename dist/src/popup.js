@@ -89,6 +89,18 @@
         }
         port.disconnect();
       });
+      document.getElementById("dropdown").addEventListener("click", () => {
+        const dropdown = document.getElementById("blockPath");
+        console.log(dropdown.style.display);
+        dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+      });
+      window.onclick = function(event) {
+        const target = event.target;
+        if (!target.matches("#dropdown")) {
+          const dropdown = document.getElementById("blockPath");
+          dropdown.style.display = "none";
+        }
+      };
     });
   }
 })();

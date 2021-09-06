@@ -288,10 +288,12 @@ input[type=range]::-webkit-slider-thumb {
 
 .dropdown-menu {
 	display: none;
-}
-
-.dropdown:hover .dropdown-menu {
-  display: block;
+	width: calc(100% - 16px - 1em);
+	position: absolute;
+	margin-top: 0;
+	padding: 0.5em 0;
+	background-color: #efefef;
+	cursor: pointer;
 }
 
 .llabel p {
