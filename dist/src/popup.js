@@ -89,9 +89,9 @@
         }
         port.disconnect();
       });
+      document.getElementById("blockPath").style.display = "none";
       document.getElementById("dropdown").addEventListener("click", () => {
         const dropdown = document.getElementById("blockPath");
-        console.log(dropdown.style.display);
         dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
       });
       window.onclick = function(event) {

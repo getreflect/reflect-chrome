@@ -48,7 +48,7 @@ function setupBlockListener(blockedSites: string[]) {
     }
 
     document.getElementById('curDomain').textContent = domain
-    
+
     // initial popup button configuration
     let exact = false
     if (blockedSites.includes(domain)) {
@@ -77,12 +77,12 @@ function setupBlockListener(blockedSites: string[]) {
       // cleanup connection
       port.disconnect()
     })
-    
+
     document.getElementById('blockPath').addEventListener('click', () => {
       const port: chrome.runtime.Port = chrome.runtime.connect({
         name: 'blockFromPopup',
       })
-      
+
       // toggle state text and update background script
       const buttonText: string = document.getElementById('block').innerHTML
       if (buttonText === 'block page.') {
@@ -94,17 +94,17 @@ function setupBlockListener(blockedSites: string[]) {
       port.disconnect()
     })
 
-    
+    document.getElementById('blockPath').style.display = 'none'
+
     /* When the user clicks on the button, 
     toggle between hiding and showing the dropdown content */
     document.getElementById('dropdown').addEventListener('click', () => {
       const dropdown: HTMLElement = document.getElementById('blockPath')
-      console.log(dropdown.style.display)
       dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none'
     })
 
     // Close the dropdown if the user clicks outside of it
-    window.onclick = function(event: MouseEvent) {
+    window.onclick = function (event: MouseEvent) {
       const target: HTMLElement = event.target as HTMLElement
       if (!target.matches('#dropdown')) {
         const dropdown: HTMLElement = document.getElementById('blockPath')

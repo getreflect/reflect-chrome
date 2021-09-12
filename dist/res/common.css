@@ -309,6 +309,23 @@ input[type=range]::-webkit-slider-thumb {
 	padding: 0.5em 0;
 	background-color: #efefef;
 	cursor: pointer;
+	border-radius: 5px;
+	border: 1px solid var(--shale);
+	transition: background-color 0.8s;
+}
+
+.dropdown-menu:hover {
+	background-color: #e0e0e0;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 }
 
 .llabel p {
