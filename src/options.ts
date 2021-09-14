@@ -1,6 +1,6 @@
 import { addToBlocked, getStorage, setStorage } from './storage'
 import { Intent } from './types'
-import { getElementFromForm } from './util'
+import { cleanDomain, getElementFromForm } from './util'
 
 const ENTER_KEY_CODE = 13
 
@@ -206,7 +206,8 @@ function addUrlToFilterList(): void {
   // see if value is non-empty
   if (urlInput.value !== '') {
     const url: string = urlInput.value
-    addToBlocked(url, () => {
+    const cleanUrl = cleanDomain([url], true) === '' ? url : cleanDomain([url], true)
+    addToBlocked(cleanUrl, () => {
       urlInput.value = ''
       drawFilterListTable()
     })

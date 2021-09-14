@@ -27,16 +27,19 @@ function toggleState(e) {
   port.disconnect()
 }
 
-// return what current text of button should be
-function getButtonText(url: string, blockedSites: string[]): string {
-  return blockedSites.includes(url) ? 'unblock page.' : 'block page.'
+// updates the popup button when blocked or unblocked
+function updateButton(unblock: boolean) {
+  document.getElementById('block').innerHTML = unblock ? 'block page.' : 'unblock page.'
+  document.getElementById('block').style.borderRadius = unblock ? '5px 0 0 5px' : '5px'
+  document.getElementById('dropdown').style.display = unblock ? 'block' : 'none'
 }
 
 // setup listener for what block button should do
-function setupBlockListener(blockedSites) {
+function setupBlockListener(blockedSites: string[]) {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const urls: string[] = tabs.map((x) => x.url)
     const domain: string = cleanDomain(urls)
+    const url: string = cleanDomain(urls, true)
 
     // not on a page (probably new tab)
     if (domain === '') {
@@ -45,7 +48,17 @@ function setupBlockListener(blockedSites) {
     }
 
     document.getElementById('curDomain').textContent = domain
-    document.getElementById('block').innerHTML = getButtonText(domain, blockedSites)
+
+    // initial popup button configuration
+    let exact = false
+    if (blockedSites.includes(domain)) {
+      updateButton(false)
+    } else if (blockedSites.includes(url)) {
+      updateButton(false)
+      exact = true
+    }
+
+    //document.getElementById('block').innerHTML = getButtonText(domain, url, blockedSites)
     document.getElementById('block').addEventListener('click', () => {
       const port: chrome.runtime.Port = chrome.runtime.connect({
         name: 'blockFromPopup',
@@ -53,16 +66,50 @@ function setupBlockListener(blockedSites) {
 
       // toggle state text and update background script
       const buttonText: string = document.getElementById('block').innerHTML
-      if (buttonText == 'block page.') {
+      if (buttonText === 'block page.') {
         port.postMessage({ unblock: false, siteURL: domain })
-        document.getElementById('block').innerHTML = 'unblock page.'
+        updateButton(false)
       } else {
-        port.postMessage({ unblock: true, siteURL: domain })
-        document.getElementById('block').innerHTML = 'block page.'
+        port.postMessage({ unblock: true, siteURL: exact ? url : domain })
+        updateButton(true)
       }
 
       // cleanup connection
       port.disconnect()
     })
+
+    document.getElementById('blockPath').addEventListener('click', () => {
+      const port: chrome.runtime.Port = chrome.runtime.connect({
+        name: 'blockFromPopup',
+      })
+
+      // toggle state text and update background script
+      const buttonText: string = document.getElementById('block').innerHTML
+      if (buttonText === 'block page.') {
+        port.postMessage({ unblock: false, siteURL: url })
+        updateButton(false)
+      }
+
+      // cleanup connection
+      port.disconnect()
+    })
+
+    document.getElementById('blockPath').style.display = 'none'
+
+    /* When the user clicks on the button, 
+    toggle between hiding and showing the dropdown content */
+    document.getElementById('dropdown').addEventListener('click', () => {
+      const dropdown: HTMLElement = document.getElementById('blockPath')
+      dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none'
+    })
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function (event: MouseEvent) {
+      const target: HTMLElement = event.target as HTMLElement
+      if (!target.matches('#dropdown')) {
+        const dropdown: HTMLElement = document.getElementById('blockPath')
+        dropdown.style.display = 'none'
+      }
+    }
   })
 }

@@ -37,10 +37,18 @@ function checkIfBlocked(): void {
     }
 
     const strippedURL: string = getStrippedUrl()
+    const exactURL: string = cleanDomain([window.location.href], true)
 
     // match current url against stored blocklist
     storage.blockedSites.forEach((site: string) => {
-      if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
+      // if google.com is blocked, meet.google.com includes .google.com --> meet.google.com is not blocked
+      // conversely if meet.google.com is blocked, google.com does not include meet.google.com --> google.com is not blocked
+      if (
+        ((!strippedURL.includes(`.${site}`) &&
+        strippedURL.includes(site)) ||
+        exactURL.includes(site)) &&
+        !isWhitelistedWrapper()
+      ) {
         // found a match, check if currently on whitelist
         iterWhitelist()
       }

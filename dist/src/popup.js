@@ -1,10 +1,10 @@
 (() => {
   // build/util.js
-  function cleanDomain(urls) {
+  function cleanDomain(urls, exact = false) {
     if (urls[0] === void 0) {
       return "";
     } else {
-      const activeURL = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/);
+      const activeURL = urls[0].match(exact ? /^[\w]+:\/{2}([^#?]+)/ : /^[\w]+:\/{2}([\w\.:-]+)/);
       if (activeURL == null) {
         return "";
       } else {
@@ -42,33 +42,65 @@
     port.postMessage({state: e.target.checked});
     port.disconnect();
   }
-  function getButtonText(url, blockedSites) {
-    return blockedSites.includes(url) ? "unblock page." : "block page.";
+  function updateButton(unblock) {
+    document.getElementById("block").innerHTML = unblock ? "block page." : "unblock page.";
+    document.getElementById("block").style.borderRadius = unblock ? "5px 0 0 5px" : "5px";
+    document.getElementById("dropdown").style.display = unblock ? "block" : "none";
   }
   function setupBlockListener(blockedSites) {
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
       const urls = tabs.map((x) => x.url);
       const domain = cleanDomain(urls);
+      const url = cleanDomain(urls, true);
       if (domain === "") {
         document.getElementById("curDomain").textContent = "none.";
         return;
       }
       document.getElementById("curDomain").textContent = domain;
-      document.getElementById("block").innerHTML = getButtonText(domain, blockedSites);
+      let exact = false;
+      if (blockedSites.includes(domain)) {
+        updateButton(false);
+      } else if (blockedSites.includes(url)) {
+        updateButton(false);
+        exact = true;
+      }
       document.getElementById("block").addEventListener("click", () => {
         const port = chrome.runtime.connect({
           name: "blockFromPopup"
         });
         const buttonText = document.getElementById("block").innerHTML;
-        if (buttonText == "block page.") {
+        if (buttonText === "block page.") {
           port.postMessage({unblock: false, siteURL: domain});
-          document.getElementById("block").innerHTML = "unblock page.";
+          updateButton(false);
         } else {
-          port.postMessage({unblock: true, siteURL: domain});
-          document.getElementById("block").innerHTML = "block page.";
+          port.postMessage({unblock: true, siteURL: exact ? url : domain});
+          updateButton(true);
         }
         port.disconnect();
       });
+      document.getElementById("blockPath").addEventListener("click", () => {
+        const port = chrome.runtime.connect({
+          name: "blockFromPopup"
+        });
+        const buttonText = document.getElementById("block").innerHTML;
+        if (buttonText === "block page.") {
+          port.postMessage({unblock: false, siteURL: url});
+          updateButton(false);
+        }
+        port.disconnect();
+      });
+      document.getElementById("blockPath").style.display = "none";
+      document.getElementById("dropdown").addEventListener("click", () => {
+        const dropdown = document.getElementById("blockPath");
+        dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+      });
+      window.onclick = function(event) {
+        const target = event.target;
+        if (!target.matches("#dropdown")) {
+          const dropdown = document.getElementById("blockPath");
+          dropdown.style.display = "none";
+        }
+      };
     });
   }
 })();

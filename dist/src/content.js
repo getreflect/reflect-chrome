@@ -97,11 +97,11 @@
   var blob_animation_default = BlobAnimation;
 
   // build/util.js
-  function cleanDomain(urls) {
+  function cleanDomain(urls, exact = false) {
     if (urls[0] === void 0) {
       return "";
     } else {
-      const activeURL = urls[0].match(/^[\w]+:\/{2}([\w\.:-]+)/);
+      const activeURL = urls[0].match(exact ? /^[\w]+:\/{2}([^#?]+)/ : /^[\w]+:\/{2}([\w\.:-]+)/);
       if (activeURL == null) {
         return "";
       } else {
@@ -268,8 +268,9 @@
         return;
       }
       const strippedURL = getStrippedUrl();
+      const exactURL = cleanDomain([window.location.href], true);
       storage3.blockedSites.forEach((site) => {
-        if (strippedURL.includes(site) && !isWhitelistedWrapper()) {
+        if ((!strippedURL.includes(`.${site}`) && strippedURL.includes(site) || exactURL.includes(site)) && !isWhitelistedWrapper()) {
           iterWhitelist();
         }
       });
