@@ -174,7 +174,8 @@
           const date = new Date(rawDate);
           const intent = intentList[rawDate].intent;
           const url = intentList[rawDate].url;
-          table += generateIntentDiv(cur_id, intent, date, url, "yes");
+          const accepted = intentList[rawDate].accepted ? intentList[rawDate].accepted : "n/a";
+          table += generateIntentDiv(cur_id, intent, date, url, accepted);
           cur_id++;
         }
       }

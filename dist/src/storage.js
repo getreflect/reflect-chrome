@@ -92,6 +92,7 @@ export function logIntentToStorage(intentString, intentDate, url, accepted) {
         intentList[intentDate.toJSON()] = {
             intent: intentString,
             url: url,
+            accepted: accepted,
         };
         // saving intentList to chrome storage
         setStorage({ intentList: intentList }).then(() => {

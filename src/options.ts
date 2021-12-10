@@ -172,9 +172,10 @@ function drawIntentListTable(): void {
         const date: Date = new Date(rawDate)
         const intent: string = intentList[rawDate].intent
         const url: string = intentList[rawDate].url
+        const accepted: string = intentList[rawDate].accepted ? intentList[rawDate].accepted : 'n/a'
 
         // append table row with this info
-        table += generateIntentDiv(cur_id, intent, date, url, 'yes')
+        table += generateIntentDiv(cur_id, intent, date, url, accepted)
         cur_id++
       }
     }

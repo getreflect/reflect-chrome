@@ -160,7 +160,8 @@
       }
       intentList[intentDate.toJSON()] = {
         intent: intentString,
-        url
+        url,
+        accepted
       };
       setStorage({intentList}).then(() => {
         console.log(`logged intent "${intentString}"`);

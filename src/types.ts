@@ -4,6 +4,7 @@
 export interface Intent {
   intent: string
   url: string
+  accepted?: string
 }
 
 export interface Storage {
