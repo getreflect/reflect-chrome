@@ -79,7 +79,12 @@ export function addToWhitelist(url: string, minutes: number): void {
   })
 }
 
-export function logIntentToStorage(intentString: string, intentDate: Date, url: string): void {
+export function logIntentToStorage(
+  intentString: string,
+  intentDate: Date,
+  url: string,
+  accepted: string
+): void {
   getStorage().then((storage) => {
     let intentList: { [key: string]: Intent } = storage.intentList
 

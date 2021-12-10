@@ -144,7 +144,7 @@
       });
     });
   }
-  function logIntentToStorage(intentString, intentDate, url) {
+  function logIntentToStorage(intentString, intentDate, url, accepted) {
     getStorage().then((storage3) => {
       let intentList = storage3.intentList;
       let oldest_date = new Date();
@@ -340,12 +340,10 @@
       const intentForm = event.target;
       const intent = new FormData(intentForm).get("intent");
       const intentString = intent.toString();
-      const intentDate = new Date();
-      callBackgroundWithIntent(intentString);
-      logIntentToStorage(intentString, intentDate, strippedURL);
+      callBackgroundWithIntent(intentString, strippedURL);
     });
   }
-  function callBackgroundWithIntent(intent) {
+  function callBackgroundWithIntent(intent, url) {
     const port = chrome.runtime.connect({
       name: "intentStatus"
     });
@@ -366,6 +364,9 @@
           invalidIntent("that doesn't seem to be productive. try being more specific.");
           break;
       }
+      const accepted = msg.status === "ok" ? "yes" : "no";
+      const intentDate = new Date();
+      logIntentToStorage(intent, intentDate, url, accepted);
       port.disconnect();
     });
   }

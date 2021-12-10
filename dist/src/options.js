@@ -128,7 +128,7 @@
     <td style="width: 5%"><button id=${id}>&times;</button></td>
     </tr>`;
   }
-  function generateIntentDiv(id, intent, date, url, status) {
+  function generateIntentDiv(id, intent, date, url, accepted) {
     const formattedDate = date.toLocaleDateString("default", {
       month: "long",
       day: "numeric",
@@ -139,8 +139,8 @@
     return `<tr>
       <td style="width: 20%"><p class="intentDisplay" id=${id}>${url}</p></td>
       <td style="width: 40%"><p class="intentDisplay" id=${id}>${intent}</p></td>
-      <td style="width: 20%"><p class="intentDisplay" id=${id}>${status}</p></td>
-      <td style="width: 20%"><p class="intentDisplay" id=${id}>${formattedDate}</p></td>
+      <td style="width: 15%"><p class="intentDisplay" id=${id}>${accepted}</p></td>
+      <td style="width: 25%"><p class="intentDisplay" id=${id}>${formattedDate}</p></td>
     </tr>`;
   }
   function drawFilterListTable() {
@@ -165,8 +165,8 @@
         <tr>
         <th id="urlHeader" style="width: 20%">url</th>
         <th style="width: 40%">intent</th>
-        <th style="width: 20%">accepted?</th>
-        <th style="width: 20%">date</th>
+        <th style="width: 15%">accepted?</th>
+        <th style="width: 25%">date</th>
       </tr>`;
       let cur_id = 0;
       for (const rawDate in intentList) {
