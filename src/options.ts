@@ -11,9 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
   drawIntentListTable()
   setAddButtonListener()
 
-  document.getElementById('linkToShortcuts').addEventListener('click', function() {
-    chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
-  });
+  document.getElementById('linkToShortcuts').addEventListener('click', function () {
+    chrome.tabs.create({ url: 'chrome://extensions/shortcuts' })
+  })
 
   // update threshold display value
   const slider = document.getElementById('thresholdSlider') as HTMLInputElement
@@ -103,7 +103,13 @@ function generateWebsiteDiv(id: number, site: string): string {
     </tr>`
 }
 
-function generateIntentDiv(id: number, intent: string, date: Date, url: string): string {
+function generateIntentDiv(
+  id: number,
+  intent: string,
+  date: Date,
+  url: string,
+  status: string
+): string {
   // reformatting date to only include month, date, and 12 hour time
   const formattedDate: string = date.toLocaleDateString('default', {
     month: 'long',
@@ -115,8 +121,9 @@ function generateIntentDiv(id: number, intent: string, date: Date, url: string):
 
   // creating display table for intents and dates
   return `<tr>
-      <td style="width: 40%"><p class="intentDisplay" id=${id}>${url}</p></td>
+      <td style="width: 20%"><p class="intentDisplay" id=${id}>${url}</p></td>
       <td style="width: 40%"><p class="intentDisplay" id=${id}>${intent}</p></td>
+      <td style="width: 20%"><p class="intentDisplay" id=${id}>${status}</p></td>
       <td style="width: 20%"><p class="intentDisplay" id=${id}>${formattedDate}</p></td>
     </tr>`
 }
@@ -150,8 +157,9 @@ function drawIntentListTable(): void {
     // generate table element
     let table: string = `<table id="intentList" class="hover shadow styled">
         <tr>
-        <th id="urlHeader" style="width: 40%">url</th>
+        <th id="urlHeader" style="width: 20%">url</th>
         <th style="width: 40%">intent</th>
+        <th style="width: 20%">accepted?</th>
         <th style="width: 20%">date</th>
       </tr>`
 
@@ -166,7 +174,7 @@ function drawIntentListTable(): void {
         const url: string = intentList[rawDate].url
 
         // append table row with this info
-        table += generateIntentDiv(cur_id, intent, date, url)
+        table += generateIntentDiv(cur_id, intent, date, url, 'yes')
         cur_id++
       }
     }

@@ -128,7 +128,7 @@
     <td style="width: 5%"><button id=${id}>&times;</button></td>
     </tr>`;
   }
-  function generateIntentDiv(id, intent, date, url) {
+  function generateIntentDiv(id, intent, date, url, status) {
     const formattedDate = date.toLocaleDateString("default", {
       month: "long",
       day: "numeric",
@@ -137,8 +137,9 @@
       hour12: true
     });
     return `<tr>
-      <td style="width: 40%"><p class="intentDisplay" id=${id}>${url}</p></td>
+      <td style="width: 20%"><p class="intentDisplay" id=${id}>${url}</p></td>
       <td style="width: 40%"><p class="intentDisplay" id=${id}>${intent}</p></td>
+      <td style="width: 20%"><p class="intentDisplay" id=${id}>${status}</p></td>
       <td style="width: 20%"><p class="intentDisplay" id=${id}>${formattedDate}</p></td>
     </tr>`;
   }
@@ -162,8 +163,9 @@
       const intentList = storage2.intentList;
       let table = `<table id="intentList" class="hover shadow styled">
         <tr>
-        <th id="urlHeader" style="width: 40%">url</th>
+        <th id="urlHeader" style="width: 20%">url</th>
         <th style="width: 40%">intent</th>
+        <th style="width: 20%">accepted?</th>
         <th style="width: 20%">date</th>
       </tr>`;
       let cur_id = 0;
@@ -172,7 +174,7 @@
           const date = new Date(rawDate);
           const intent = intentList[rawDate].intent;
           const url = intentList[rawDate].url;
-          table += generateIntentDiv(cur_id, intent, date, url);
+          table += generateIntentDiv(cur_id, intent, date, url, "yes");
           cur_id++;
         }
       }
