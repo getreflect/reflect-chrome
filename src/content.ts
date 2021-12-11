@@ -44,9 +44,8 @@ function checkIfBlocked(): void {
       // if google.com is blocked, meet.google.com includes .google.com --> meet.google.com is not blocked
       // conversely if meet.google.com is blocked, google.com does not include meet.google.com --> google.com is not blocked
       if (
-        ((!strippedURL.includes(`.${site}`) &&
-        strippedURL.includes(site)) ||
-        exactURL.includes(site)) &&
+        ((!strippedURL.includes(`.${site}`) && strippedURL.includes(site)) ||
+          exactURL.includes(site)) &&
         !isWhitelistedWrapper()
       ) {
         // found a match, check if currently on whitelist
@@ -151,14 +150,12 @@ function addFormListener(strippedURL: string): void {
     const intentForm: HTMLFormElement | null = event.target as HTMLFormElement
     const intent: FormDataEntryValue = new FormData(intentForm).get('intent')
     const intentString: string = intent.toString()
-    const intentDate: Date = new Date()
 
-    callBackgroundWithIntent(intentString)
-    logIntentToStorage(intentString, intentDate, strippedURL)
+    callBackgroundWithIntent(intentString, strippedURL)
   })
 }
 
-function callBackgroundWithIntent(intent: string): void {
+function callBackgroundWithIntent(intent: string, url: string): void {
   // open connection to runtime (background.ts)
   const port: chrome.runtime.Port = chrome.runtime.connect({
     name: 'intentStatus',
@@ -185,6 +182,10 @@ function callBackgroundWithIntent(intent: string): void {
         invalidIntent("that doesn't seem to be productive. try being more specific.")
         break
     }
+
+    const accepted: string = msg.status === 'ok' ? 'yes' : 'no'
+    const intentDate: Date = new Date()
+    logIntentToStorage(intent, intentDate, url, accepted)
 
     // close connection
     port.disconnect()

@@ -72,7 +72,7 @@ export function addToWhitelist(url, minutes) {
         });
     });
 }
-export function logIntentToStorage(intentString, intentDate, url) {
+export function logIntentToStorage(intentString, intentDate, url, accepted) {
     getStorage().then((storage) => {
         let intentList = storage.intentList;
         // getting oldest date value from intent list map
@@ -92,6 +92,7 @@ export function logIntentToStorage(intentString, intentDate, url) {
         intentList[intentDate.toJSON()] = {
             intent: intentString,
             url: url,
+            accepted: accepted,
         };
         // saving intentList to chrome storage
         setStorage({ intentList: intentList }).then(() => {

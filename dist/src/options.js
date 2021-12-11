@@ -128,7 +128,7 @@
     <td style="width: 5%"><button id=${id}>&times;</button></td>
     </tr>`;
   }
-  function generateIntentDiv(id, intent, date, url) {
+  function generateIntentDiv(id, intent, date, url, accepted) {
     const formattedDate = date.toLocaleDateString("default", {
       month: "long",
       day: "numeric",
@@ -137,9 +137,10 @@
       hour12: true
     });
     return `<tr>
-      <td style="width: 40%"><p class="intentDisplay" id=${id}>${url}</p></td>
+      <td style="width: 20%"><p class="intentDisplay" id=${id}>${url}</p></td>
       <td style="width: 40%"><p class="intentDisplay" id=${id}>${intent}</p></td>
-      <td style="width: 20%"><p class="intentDisplay" id=${id}>${formattedDate}</p></td>
+      <td style="width: 15%"><p class="intentDisplay" id=${id}>${accepted}</p></td>
+      <td style="width: 25%"><p class="intentDisplay" id=${id}>${formattedDate}</p></td>
     </tr>`;
   }
   function drawFilterListTable() {
@@ -162,9 +163,10 @@
       const intentList = storage2.intentList;
       let table = `<table id="intentList" class="hover shadow styled">
         <tr>
-        <th id="urlHeader" style="width: 40%">url</th>
+        <th id="urlHeader" style="width: 20%">url</th>
         <th style="width: 40%">intent</th>
-        <th style="width: 20%">date</th>
+        <th style="width: 15%">accepted?</th>
+        <th style="width: 25%">date</th>
       </tr>`;
       let cur_id = 0;
       for (const rawDate in intentList) {
@@ -172,7 +174,8 @@
           const date = new Date(rawDate);
           const intent = intentList[rawDate].intent;
           const url = intentList[rawDate].url;
-          table += generateIntentDiv(cur_id, intent, date, url);
+          const accepted = intentList[rawDate].accepted ? intentList[rawDate].accepted : "n/a";
+          table += generateIntentDiv(cur_id, intent, date, url, accepted);
           cur_id++;
         }
       }
