@@ -126,3 +126,19 @@ html[style] > #_r {
 #_r .shadow {
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.06), 0 10px 10px rgba(0, 0, 0, 0.02) !important;
 }
+
+#_r .ripple {
+	background-position: center !important;
+	background-color: var(--r-blue) !important;
+	transition: background 0.8s !important;
+}
+
+#_r .ripple:hover {
+	background: var(--r-shale) radial-gradient(circle, transparent 1%, var(--r-shale) 1%) center/15000% !important;
+}
+
+#_r .ripple:active {
+	background-color: var(--r-blue) !important;
+	background-size: 100% !important;
+	transition: background 0s !important;
+}
