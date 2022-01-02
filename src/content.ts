@@ -140,11 +140,15 @@ function loadBlockPage(): void {
 
 function addFormListener(strippedURL: string): void {
   const form: HTMLFormElement | null = document.forms.namedItem('inputForm')
+  const button: HTMLElement | null = document.getElementById('submitButton')
 
   // add listener for form submit
   form?.addEventListener('submit', (event) => {
     // prevent default submit
     event.preventDefault()
+
+    // change button to loading state
+    button?.setAttribute('disabled', 'disabled')
 
     // extract entry
     const intentForm: HTMLFormElement | null = event.target as HTMLFormElement
@@ -182,6 +186,10 @@ function callBackgroundWithIntent(intent: string, url: string): void {
         invalidIntent("that doesn't seem to be productive. try being more specific.")
         break
     }
+
+    // change button back to normal state
+    const button: HTMLElement | null = document.getElementById('submitButton')
+    button?.removeAttribute('disabled')
 
     const accepted: string = msg.status === 'ok' ? 'yes' : 'no'
     const intentDate: Date = new Date()

@@ -336,8 +336,11 @@
   function addFormListener(strippedURL) {
     var _a;
     const form = document.forms.namedItem("inputForm");
+    const button = document.getElementById("submitButton");
     (_a = form) === null || _a === void 0 ? void 0 : _a.addEventListener("submit", (event) => {
+      var _a2;
       event.preventDefault();
+      (_a2 = button) === null || _a2 === void 0 ? void 0 : _a2.setAttribute("disabled", "disabled");
       const intentForm = event.target;
       const intent = new FormData(intentForm).get("intent");
       const intentString = intent.toString();
@@ -350,6 +353,7 @@
     });
     port.postMessage({intent, url: window.location.href});
     port.onMessage.addListener((msg) => {
+      var _a;
       switch (msg.status) {
         case "ok":
           getStorage().then((storage3) => {
@@ -365,6 +369,8 @@
           invalidIntent("that doesn't seem to be productive. try being more specific.");
           break;
       }
+      const button = document.getElementById("submitButton");
+      (_a = button) === null || _a === void 0 ? void 0 : _a.removeAttribute("disabled");
       const accepted = msg.status === "ok" ? "yes" : "no";
       const intentDate = new Date();
       logIntentToStorage(intent, intentDate, url, accepted);

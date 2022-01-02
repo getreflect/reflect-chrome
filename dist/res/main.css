@@ -42,7 +42,7 @@ html[style] > #_r {
     font-size: 1em !important;
 }
 
-#_r input[type=submit] {
+#_r input[type=submit], #_r button {
     border-radius: 20px !important;
     background-color: var(--r-shale) !important;
     color: var(--r-white) !important;
@@ -51,6 +51,10 @@ html[style] > #_r {
     cursor: pointer !important;
     font-family: "circular-lt" !important;
     font-size: 1em !important;
+}
+
+#_r button:disabled {
+    background-color: var(--r-blue) !important;
 }
 
 #_r #top-text {
